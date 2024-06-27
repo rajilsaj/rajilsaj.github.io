@@ -1,8 +1,21 @@
 ---
-# Feel free to add content and custom Front Matter to this file.
-# To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
-
-layout: home
-list_title: Read Our Latest Posts
-title: ''
+layout: page
+title: Projects
+permalink: /projects/
 ---
+
+{% for repo in site.github.public_repositories %}
+
+{% if repo.fork == false and repo.topics.size > 0 %}
+
+## [{{ repo.name }}]({{ repo.html_url }})
+
+{{ repo.description }}
+
+Topics: {{ repo.topics | array_to_sentence_string }}
+
+Last updated: {{ repo.updated_at | date_to_string }}
+
+{% endif %}
+
+{% endfor %}
