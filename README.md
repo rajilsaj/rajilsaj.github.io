@@ -6,4 +6,4 @@ Unveiling my projects, curious insights, and reading moments for curious, recrui
 * My Projects
 * Analysis of my Readings (my readings)
 * How I understand concepts (the mechanics)
-* A basic about me page
+* A barely simple basic about me page
