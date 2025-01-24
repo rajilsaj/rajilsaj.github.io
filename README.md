@@ -1,2 +1,1 @@
-# rajilsaj.github.io
-Blogging might be fun :)
+How it started :)
