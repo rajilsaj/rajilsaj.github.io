@@ -94,8 +94,6 @@ footer {
   width: 100%;
   overflow: hidden;
   /* Fixed Bottom */
-  position: fixed;
-  bottom: 0px;
 }
 footer .r-foot-side {
   align-items: center;
