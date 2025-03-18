@@ -1,6 +1,12 @@
 ---
-# Feel free to add content and custom Front Matter to this file.
-# To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
-
 layout: home
+title: "Rajil's Blog"
 ---
+
+# Welcome to Rajil's Jekyll Blog 🚀
+
+This is my awesome blog about tech, coding, and life as a software engineer.
+
+## Latest Updates
+Stay tuned for more content!RRRRR
+
