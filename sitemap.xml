@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://rajil.me/</loc>
+    </url>
+    <url>
+        <loc>https://rajil.me/blog/</loc>
+    </url>
+    <url>
+        <loc>https://rajil.me/blog/page/1/</loc>
+    </url>
+    <url>
+        <loc>https://rajil.me/blog/post/</loc>
+        <lastmod>2025-06-29</lastmod>
+    </url>
+    <url>
+        <loc>https://rajil.me/home/</loc>
+    </url>
+</urlset>
