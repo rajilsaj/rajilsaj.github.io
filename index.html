@@ -4,8 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>My Blog</title>
-    <meta name="description" content="Personal blog about Mokele Mbembe, readings, labs and more.">
+    <title>Rajil Vembe · Blog</title>
+    <meta name="description"
+        content="Personal blog by Rajil Vembe about Mokele Mbembe, readings, labs, and side projects.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Font -->
@@ -21,12 +22,12 @@
     <div id="wrapper">
 
         <!-- HAMBURGER MENU BUTTON -->
-        <button id="menu-toggle" aria-label="Open navigation menu">
+        <button id="menu-toggle" aria-label="Toggle navigation menu">
             ☰
         </button>
 
-        <!-- NAVIGATION (Hidden under hamburger on mobile) -->
-        <nav id="main-nav" aria-label="Main navigation">
+        <!-- NAVIGATION (hidden under hamburger on mobile) -->
+        <nav id="main-nav" aria-label="Main navigation" class="redly">
             <ul>
                 <li><a href="#">About Me</a></li>
                 <li><a href="#">My Readings</a></li>
@@ -36,20 +37,35 @@
         </nav>
 
         <!-- HEADER -->
-        <header>
-            <div class="header-main">
+        <header class="redly site-header" role="banner">
+            <div class="header-main redly">
                 <div id="profile-pic-container">
-                    <img id="profile-pic" src="./assets/profile-pic.jpeg" alt="Profile picture of the blog author">
+                    <img id="profile-pic" src="./assets/profile-pic.jpeg" alt="Profile picture of Rajil Vembe"
+                        loading="lazy">
                 </div>
 
-                <div id="blog-desc" class="poiret-one-regular">
-                    <p>
-                        This blog is for those like me who believe in the legend of the last living dinosaurs —
-                        <em>Mokele Mbembe</em>. Learn more:
-                        <a href="https://www.youtube.com/watch?v=N-zq-AgUmEw" target="_blank" rel="noopener noreferrer">
-                            Watch the video
-                        </a>.
+                <div class="intro redly">
+                    <h1 class="author-name poiret-one-regular">Hello world ! I am Rajil Vembe</h1>
+                    <p class="author-role">
+                        I'm a US-based
+                        <span id="scramble-role">Software Engineer</span>
                     </p>
+
+                    <p class="personal-note redly">
+                        I like my coffee strong, my pastries French, my side projects unfinished,
+                        and my photos sharp.
+                    </p>
+
+                    <div id="blog-desc redly" class="blog-desc poiret-one-regular">
+                        <p>
+                            This blog is for those like me who believe in the legend of the last living dinosaurs —
+                            <em>Mokele Mbembe</em>. Learn more:
+                            <a href="https://www.youtube.com/watch?v=N-zq-AgUmEw" target="_blank"
+                                rel="noopener noreferrer">
+                                Watch the video
+                            </a>.
+                        </p>
+                    </div>
                 </div>
             </div>
         </header>
@@ -65,14 +81,14 @@
 
         <!-- MAIN CONTENT -->
         <main>
-            <section id="excerpt-section">
-                <h2 class="section-title poiret-one-regular">Latest Posts</h2>
+            <section id="excerpt-section" aria-labelledby="latest-posts-title">
+                <h2 id="latest-posts-title" class="section-title poiret-one-regular">Latest Posts</h2>
 
                 <div id="posts-container" class="posts-grid">
 
                     <a href="#" class="post-card">
                         <div class="post-image">
-                            <img src="./assets/post-1.jpg" alt="Chasing Shadows in the Congo Basin">
+                            <img src="./assets/responsive_tree.jpg" alt="Chasing Shadows in the Congo Basin">
                             <div class="post-title-overlay">
                                 <h3>Chasing Shadows in the Congo Basin</h3>
                             </div>
@@ -81,7 +97,7 @@
 
                     <a href="#" class="post-card">
                         <div class="post-image">
-                            <img src="./assets/post-2.jpg" alt="My First Responsive Lab Notebook">
+                            <img src="./assets/responsive_tree.jpg" alt="My First Responsive Lab Notebook">
                             <div class="post-title-overlay">
                                 <h3>My First Responsive Lab Notebook</h3>
                             </div>
@@ -90,7 +106,7 @@
 
                     <a href="#" class="post-card">
                         <div class="post-image">
-                            <img src="./assets/post-3.jpg" alt="5 Books That Changed How I Think About AI">
+                            <img src="./assets/responsive_tree.jpg" alt="5 Books That Changed How I Think About AI">
                             <div class="post-title-overlay">
                                 <h3>5 Books That Changed How I Think About AI</h3>
                             </div>
@@ -99,7 +115,7 @@
 
                     <a href="#" class="post-card">
                         <div class="post-image">
-                            <img src="./assets/post-4.jpg" alt="Turning Legends Into Data">
+                            <img src="./assets/responsive_tree.jpg" alt="Turning Legends Into Data">
                             <div class="post-title-overlay">
                                 <h3>From Myth to Model</h3>
                             </div>
@@ -110,22 +126,142 @@
 
                 <!-- Loader -->
                 <div id="infinite-loader" class="loader" aria-hidden="true">
-                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
                 </div>
-
             </section>
         </main>
 
-        <footer></footer>
-    </div>
+        <!-- FOOTER -->
+        <footer class="site-footer" role="contentinfo" aria-label="Footer">
+            <div class="footer-inner">
+                <small>
+                    © <time id="footer-year" datetime="">2025</time>
+                    <span aria-hidden="true">·</span>
+                    Rajil Vembe
+                    <span aria-hidden="true">·</span>
+                    <a href="https://rajil.me" target="_blank" rel="noopener noreferrer">Website</a>
+                </small>
 
+                <nav aria-label="Footer links">
+                    <ul class="footer-links">
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Readings</a></li>
+                        <li><a href="#">Labs</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </footer>
+    </div>
     <script>
-        // SIMPLE HAMBURGER TOGGLE
-        document.getElementById("menu-toggle").onclick = function () {
-            document.getElementById("main-nav").classList.toggle("open");
-        };
+        class TextScramble {
+            constructor(el) {
+                this.el = el;
+                this.chars = "!<>-_\\/[]{}—=+*^?#________";
+                this.update = this.update.bind(this);
+            }
+
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise(resolve => this.resolve = resolve);
+                this.queue = [];
+
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || "";
+                    const to = newText[i] || "";
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end, char: null });
+                }
+
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+
+            update() {
+                let output = "";
+                let complete = 0;
+
+                for (let i = 0; i < this.queue.length; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+
+                    if (this.frame >= end) {
+                        complete++;
+                        output += to;
+                    } else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.randomChar();
+                            this.queue[i].char = char;
+                        }
+                        output += `<span class="dud">${char}</span>`;
+                    } else {
+                        output += from;
+                    }
+                }
+
+                this.el.innerHTML = output;
+
+                if (complete === this.queue.length) {
+                    this.resolve();
+                } else {
+                    this.frameRequest = requestAnimationFrame(this.update);
+                    this.frame++;
+                }
+            }
+
+            randomChar() {
+                return this.chars[Math.floor(Math.random() * this.chars.length)];
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const phrases = ["Software Engineer", "AI Engineer"];
+            const el = document.getElementById("scramble-role");
+
+            if (!el) return; // safety check if id is missing
+
+            const fx = new TextScramble(el);
+            let counter = 0;
+
+            function next() {
+                fx.setText(phrases[counter]).then(() => {
+                    setTimeout(next, 3000); // wait 3s before switching again
+                });
+                counter = (counter + 1) % phrases.length;
+            }
+
+            next();
+        });
     </script>
 
+
+
+    <script>
+        // Init UI after DOM is ready
+        document.addEventListener('DOMContentLoaded', function () {
+            // Hamburger toggle
+            var toggle = document.getElementById('menu-toggle');
+            var nav = document.getElementById('main-nav');
+            if (toggle && nav) {
+                toggle.addEventListener('click', function () {
+                    nav.classList.toggle('open');
+                });
+            }
+
+            // Dynamic footer year
+            var yearEl = document.getElementById('footer-year');
+            if (yearEl) {
+                var year = new Date().getFullYear();
+                yearEl.textContent = year;
+                yearEl.setAttribute('datetime', String(year));
+            }
+        });
+    </script>
 </body>
 
 </html>
