@@ -13,7 +13,7 @@ GLOBAL RESET & BASE
 box-sizing: border-box;
 }
 .redly{
-    border: 1px red solid;
+    /*border: 1px red solid;*/
 }
 
 html,
