@@ -1,0 +1,285 @@
+/* ===============================
+GLOBAL TYPOGRAPHY & RESET
+=============================== */
+
+:root {
+--font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+--font-heading: "Poiret One", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+box-sizing: border-box;
+}
+
+html, body {
+margin: 0;
+padding: 0;
+font-family: var(--font-base);
+font-size: 16px;
+line-height: 1.6;
+background-color: #fff;
+border-top: 1px solid #8d7f78;
+color: #594a42;
+}
+
+/* Wrapper */
+#wrapper {
+max-width: 960px;
+width: 100%;
+margin: 0 auto;
+min-height: 100vh;
+background: #fff;
+padding: 1rem;
+}
+
+/* Utility (kept, but not used for red border) */
+.redly {
+color: red;
+min-height: 50px;
+}
+
+/* Fonts */
+.poiret-one-regular {
+font-family: var(--font-heading);
+font-weight: 400;
+font-style: normal;
+}
+
+h1, h2, h3, h4 {
+line-height: 1.25;
+margin-top: 0;
+color: #3e332e;
+}
+
+/* ================================
+NAVIGATION (same style as original)
+================================ */
+
+nav {
+padding: 0.5rem 0 1rem;
+}
+
+nav ul {
+list-style: none;
+padding: 0;
+margin: 0;
+
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+gap: 0.75rem 1.5rem;
+}
+
+nav a {
+color: #594a42;
+font-family: 'proxima-nova', sans-serif;
+font-size: 12px;
+text-decoration: none;
+text-transform: uppercase;
+letter-spacing: 1px;
+margin-right: 20px;
+display: block;
+padding: 0.4rem 0.8rem;
+}
+
+nav li:last-child a {
+margin-right: 0;
+}
+
+nav a:hover {
+text-decoration: underline;
+}
+
+/* ================================
+HEADER SECTION
+================================ */
+
+header {
+padding: 0.5rem 0 1rem;
+}
+
+/* profile left, description right */
+.header-main {
+display: flex;
+flex-wrap: wrap;
+align-items: center;
+gap: 1.5rem;
+}
+
+/* Profile picture */
+#profile-pic-container {
+flex: 0 0 auto;
+}
+
+#profile-pic-container img {
+width: min(60vw, 260px);   /* larger profile image */
+aspect-ratio: 1 / 1;
+object-fit: cover;
+border-radius: 50%;
+border: #f4f4f4 5px solid;
+}
+
+/* Blog description */
+#blog-desc {
+flex: 1;
+text-align: left;
+padding: 0.5rem 0 1rem;
+font-size: clamp(1.2rem, 3vw, 1.6rem);
+line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+.header-main {
+flex-direction: column;
+text-align: center;
+}
+
+#blog-desc {
+text-align: center;
+}
+}
+
+/* ================================
+QUOTE SECTION
+================================ */
+
+.quote-section {
+margin: 1.5rem 0 2rem;
+padding: 1rem 1.2rem;
+border-left: 4px solid #8d7f78;
+background: #f9f5f3;
+}
+
+.quote-section blockquote {
+margin: 0 0 0.4rem;
+font-style: italic;
+line-height: 1.5;
+}
+
+.quote-section .quote-author {
+margin: 0;
+font-size: 0.9rem;
+color: #7b6b63;
+text-align: right;
+}
+
+/* ================================
+BLOG / EXCERPT SECTION
+================================ */
+
+#excerpt-section {
+padding: 1.5rem 0 2.5rem;
+}
+
+.section-title {
+text-align: center;
+font-family: var(--font-heading);
+font-size: clamp(1.5rem, 3vw, 2.2rem);
+margin-bottom: 1.5rem;
+line-height: 1.3;
+}
+
+/* Posts container: one post on top of another */
+.posts-grid {
+display: flex;
+flex-direction: column;
+gap: 2rem;
+}
+
+/* ===============================
+POST CARDS — BIG RESPONSIVE IMAGES
+=============================== */
+
+.post-card {
+display: block;
+position: relative;
+text-decoration: none;
+color: inherit;
+overflow: hidden;
+}
+
+/* Image container with responsive height */
+.post-image {
+position: relative;
+width: 100%;
+height: 300px;   /* mobile default */
+overflow: hidden;
+}
+
+/* Tablet */
+@media (min-width: 600px) {
+.post-image {
+height: 400px;
+}
+}
+
+/* Desktop */
+@media (min-width: 1000px) {
+.post-image {
+height: 480px;
+}
+}
+
+/* Actual image */
+.post-image img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+display: block;
+border: none;
+}
+
+/* Title overlay */
+.post-title-overlay {
+position: absolute;
+bottom: 0;
+left: 0;
+width: 100%;
+padding: 12px 16px;
+background: rgba(0, 0, 0, 0.55);
+color: #fff;
+line-height: 1.3;
+}
+
+.post-title-overlay h3 {
+margin: 0;
+font-size: 1.2em;
+font-family: var(--font-base);
+font-weight: 600;
+}
+
+/* Optional hover effect on overlay */
+.post-card:hover .post-title-overlay {
+background: rgba(0, 0, 0, 0.75);
+}
+
+/* ===============================
+Loader Animation
+=============================== */
+
+.loader {
+margin-top: 2rem;
+margin-bottom: 2rem;
+text-align: center;
+}
+
+.loader .dot {
+display: inline-block;
+height: 10px;
+width: 10px;
+margin: 0 4px;
+border-radius: 50%;
+background: #b3a49e;
+animation: blink 1.4s infinite both;
+}
+
+.loader .dot:nth-child(2) { animation-delay: 0.2s; }
+.loader .dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+0%   { opacity: .2; transform: scale(1); }
+50%  { opacity: 1;  transform: scale(1.4); }
+100% { opacity: .2; transform: scale(1); }
+}

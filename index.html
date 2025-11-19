@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>My Blog</title>
+    <meta name="description" content="Personal blog about Mokele Mbembe, readings, labs and more.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div id="wrapper">
+
+        <!-- HAMBURGER MENU BUTTON -->
+        <button id="menu-toggle" aria-label="Open navigation menu">
+            ☰
+        </button>
+
+        <!-- NAVIGATION (Hidden under hamburger on mobile) -->
+        <nav id="main-nav" aria-label="Main navigation">
+            <ul>
+                <li><a href="#">About Me</a></li>
+                <li><a href="#">My Readings</a></li>
+                <li><a href="#">My Labs</a></li>
+                <li><a href="#">Other stuffs</a></li>
+            </ul>
+        </nav>
+
+        <!-- HEADER -->
+        <header>
+            <div class="header-main">
+                <div id="profile-pic-container">
+                    <img id="profile-pic" src="./assets/profile-pic.jpeg" alt="Profile picture of the blog author">
+                </div>
+
+                <div id="blog-desc" class="poiret-one-regular">
+                    <p>
+                        This blog is for those like me who believe in the legend of the last living dinosaurs —
+                        <em>Mokele Mbembe</em>. Learn more:
+                        <a href="https://www.youtube.com/watch?v=N-zq-AgUmEw" target="_blank" rel="noopener noreferrer">
+                            Watch the video
+                        </a>.
+                    </p>
+                </div>
+            </div>
+        </header>
+
+        <!-- QUOTE SECTION -->
+        <section id="quote-section" class="quote-section">
+            <blockquote>
+                “Somewhere between science and legend, we find the stories that make us curious enough to keep
+                exploring.”
+            </blockquote>
+            <p class="quote-author">— Rajil, Keeper of Dinosaurs</p>
+        </section>
+
+        <!-- MAIN CONTENT -->
+        <main>
+            <section id="excerpt-section">
+                <h2 class="section-title poiret-one-regular">Latest Posts</h2>
+
+                <div id="posts-container" class="posts-grid">
+
+                    <a href="#" class="post-card">
+                        <div class="post-image">
+                            <img src="./assets/post-1.jpg" alt="Chasing Shadows in the Congo Basin">
+                            <div class="post-title-overlay">
+                                <h3>Chasing Shadows in the Congo Basin</h3>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="#" class="post-card">
+                        <div class="post-image">
+                            <img src="./assets/post-2.jpg" alt="My First Responsive Lab Notebook">
+                            <div class="post-title-overlay">
+                                <h3>My First Responsive Lab Notebook</h3>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="#" class="post-card">
+                        <div class="post-image">
+                            <img src="./assets/post-3.jpg" alt="5 Books That Changed How I Think About AI">
+                            <div class="post-title-overlay">
+                                <h3>5 Books That Changed How I Think About AI</h3>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="#" class="post-card">
+                        <div class="post-image">
+                            <img src="./assets/post-4.jpg" alt="Turning Legends Into Data">
+                            <div class="post-title-overlay">
+                                <h3>From Myth to Model</h3>
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+
+                <!-- Loader -->
+                <div id="infinite-loader" class="loader" aria-hidden="true">
+                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                </div>
+
+            </section>
+        </main>
+
+        <footer></footer>
+    </div>
+
+    <script>
+        // SIMPLE HAMBURGER TOGGLE
+        document.getElementById("menu-toggle").onclick = function () {
+            document.getElementById("main-nav").classList.toggle("open");
+        };
+    </script>
+
+</body>
+
+</html>
