@@ -1,4 +1,4 @@
-const blogPosts = [
+window.blogPosts = [
     {
         id: 1,
         title: "Chasing Shadows in the Congo Basin",
@@ -402,7 +402,7 @@ const blogPosts = [
 ];
 
 // Content for full articles (mapping by ID)
-const blogContents = {
+window.blogContents = {
     1: "Full content for Chasing Shadows in the Congo Basin... Searching for Mokele Mbembe requires patience and high-res satellite imagery. I've spent weeks analyzing pixel shifts in the Likouala region. Is it a dinosaur or just a trick of the light?",
     2: "Full content for My First Responsive Lab Notebook... Building a mobile-first digital notebook for fieldwork in the jungle was a challenge. High humidity means paper gets soggy, so a rugged tablet is a must. Here's how I optimized the CSS for sunlight readability.",
     // ... and so on. I will provide a few more for demonstration and assume the rest can be generated or have placeholders.
