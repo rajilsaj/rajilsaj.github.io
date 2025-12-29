@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Post Title · Rajil Vembe</title>
+    <meta name="description" content="A generic blog post page.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div id="wrapper">
+
+        <!-- HAMBURGER MENU BUTTON -->
+        <button id="menu-toggle" aria-label="Toggle navigation menu">
+            ☰
+        </button>
+
+        <!-- NAVIGATION -->
+        <nav id="main-nav" aria-label="Main navigation" class="">
+            <ul>
+                <li><a href="index.html">Back to Home</a></li>
+                <li><a href="#">About Me</a></li>
+                <li><a href="#">My Readings</a></li>
+                <li><a href="#">My Labs</a></li>
+            </ul>
+        </nav>
+
+        <!-- HEADER -->
+        <header class="site-header" role="banner" style="min-height: auto; padding-bottom: 2rem;">
+            <div class="header-main">
+                <div class="intro">
+                    <h1 class="author-name poiret-one-regular">Post Title Placeholder</h1>
+                    <p class="author-role">Published on <time datetime="2025-01-01">January 1, 2025</time></p>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main>
+            <article class="post-content" style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+                <img src="./assets/responsive_tree.jpg" alt="Post Hero Image" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 2rem;">
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </p>
+                <p>
+                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+                <div style="margin-top: 3rem;">
+                    <a href="index.html" class="button">← Back to Home</a>
+                </div>
+            </article>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="site-footer" role="contentinfo" aria-label="Footer">
+            <div class="footer-inner">
+                <small>
+                    © <time id="footer-year" datetime="">2025</time>
+                    <span aria-hidden="true">·</span>
+                    Rajil Vembe
+                </small>
+            </div>
+        </footer>
+    </div>
+    <script>
+        // Init UI
+        document.addEventListener('DOMContentLoaded', function () {
+            var toggle = document.getElementById('menu-toggle');
+            var nav = document.getElementById('main-nav');
+            if (toggle && nav) {
+                toggle.addEventListener('click', function () {
+                    nav.classList.toggle('open');
+                });
+            }
+            var yearEl = document.getElementById('footer-year');
+            if (yearEl) {
+                var year = new Date().getFullYear();
+                yearEl.textContent = year;
+            }
+        });
+    </script>
+</body>
+
+</html>
