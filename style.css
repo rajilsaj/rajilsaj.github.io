@@ -147,7 +147,6 @@ HEADER
 
 /* Name Section */
 .header-top-row {
-    grid-column: 1 / -1;
     margin-bottom: 0.5rem;
 }
 
