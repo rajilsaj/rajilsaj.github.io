@@ -144,18 +144,33 @@ HEADER
     padding: 0 1rem;
     display: flex;
     justify-content: flex-end;
-    gap: 1.5rem;
+    gap: 0;
+    /* Removing gap to let separators handle spacing */
 }
 
 .imdb-nav-inner a {
     color: #cccccc;
     text-decoration: none;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
 }
 
 .imdb-nav-inner a:hover {
     color: #ffffff;
     text-decoration: underline;
+}
+
+.imdb-nav-inner a:not(:last-child)::after {
+    content: "";
+    display: inline-block;
+    width: 1px;
+    height: 12px;
+    background-color: #666;
+    margin-left: 0.75rem;
+    /* Matches the gap */
+    opacity: 0.5;
 }
 
 .header-main {
