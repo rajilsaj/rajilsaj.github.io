@@ -176,7 +176,7 @@ HEADER
     aspect-ratio: 1;
     object-fit: cover;
     border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    box-shadow: none;
     border: none;
     /* Removed the previous thick border */
 }
@@ -287,24 +287,7 @@ HEADER
 QUOTE SECTION
 =============================== */
 
-.quote-section {
-    margin: 1.5rem 0 2rem;
-    padding: 1rem 1.2rem;
-    background: #f9f5f3;
-    border-left: 4px solid #8d7f78;
-}
-
-.quote-section blockquote {
-    font-style: italic;
-    margin: 0 0 0.4rem;
-}
-
-.quote-section .quote-author {
-    text-align: right;
-    margin: 0;
-    font-size: 0.9rem;
-    color: #7b6b63;
-}
+/* Quote section removed */
 
 /* ===============================
 POSTS
