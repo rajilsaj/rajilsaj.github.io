@@ -1,45 +1,214 @@
-/* ===============================
-GLOBAL RESET & BASE
-=============================== */
-
+/* ================================
+   Root Variables & Base Setup
+   ================================ */
 :root {
-    --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    font-size: 16px;
+
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-muted: #6b7280;
+
+    --border-muted: #e5e7eb;
+    --accent: #2563eb;
+
+    --bg-code: #f9fafb;
+
     --font-heading: "Poiret One", sans-serif;
 }
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
+/* ================================
+   Global Resets & Body
+   ================================ */
+html {
+    scroll-behavior: smooth;
 }
 
-.redly {
-    /*border: 1px red solid;*/
-}
-
-html,
 body {
     margin: 0;
-    padding: 0;
-    font-family: var(--font-base);
-    font-size: 16px;
-    line-height: 1.6;
-    background: #fff;
-    color: #594a42;
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-primary);
+    background-color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
-#wrapper {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 1rem;
-}
-
+/* ================================
+   Headings
+   ================================ */
 h1,
 h2,
-h3 {
-    margin: 0;
-    color: #3e332e;
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 600;
     line-height: 1.25;
+    letter-spacing: -0.02em;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.625rem;
+}
+
+h4 {
+    font-size: 1.375rem;
+    letter-spacing: -0.01em;
+}
+
+h5 {
+    font-size: 1.125rem;
+}
+
+h6 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+}
+
+/* ================================
+   Paragraphs & Inline Text
+   ================================ */
+p {
+    margin-bottom: 1.25rem;
+}
+
+strong {
+    font-weight: 600;
+}
+
+em {
+    font-style: italic;
+}
+
+small {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+/* ================================
+   Links
+   ================================ */
+a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+a:hover {
+    border-bottom-color: currentColor;
+}
+
+/* ================================
+   Lists
+   ================================ */
+ul,
+ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+li {
+    margin-bottom: 0.5rem;
+}
+
+/* ================================
+   Blockquotes
+   ================================ */
+blockquote {
+    margin: 2rem 0;
+    padding-left: 1.25rem;
+    border-left: 4px solid var(--border-muted);
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* ================================
+   Code & Preformatted Text
+   ================================ */
+code {
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+    font-size: 0.875rem;
+    background: var(--bg-code);
+    padding: 0.15em 0.35em;
+    border-radius: 4px;
+}
+
+pre {
+    background: var(--bg-code);
+    padding: 1.25rem;
+    overflow-x: auto;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+}
+
+/* ================================
+   Tables
+   ================================ */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+    font-size: 0.9375rem;
+}
+
+th,
+td {
+    border-bottom: 1px solid var(--border-muted);
+    padding: 0.75rem;
+    text-align: left;
+}
+
+th {
+    font-weight: 600;
+}
+
+/* ================================
+   Images & Figures
+   ================================ */
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin: 2rem 0;
+}
+
+figcaption {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: -1rem;
+}
+
+/* ================================
+   Horizontal Rule
+   ================================ */
+hr {
+    border: none;
+    border-top: 1px solid var(--border-muted);
+    margin: 3rem 0;
 }
 
 .poiret-one-regular {
@@ -47,6 +216,7 @@ h3 {
     font-weight: 400;
     font-style: normal;
 }
+
 
 /* ===============================
 HAMBURGER MENU & NAV

@@ -12,7 +12,8 @@
     <!-- Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poiret+One&display=swap"
+        rel="stylesheet">
 
     <!-- Styles -->
     <link rel="stylesheet" href="./style.css">
@@ -74,47 +75,7 @@
                 <h2 id="latest-posts-title" class="section-title poiret-one-regular">Latest Posts</h2>
 
                 <div id="posts-container" class="posts-grid">
-
-                    <a href="post.html" class="post-card">
-                        <div class="post-image">
-                            <img src="./assets/responsive_tree.jpg" alt="Chasing Shadows in the Congo Basin">
-                            <div class="arrow-icon">↗</div>
-                            <div class="post-title-overlay">
-                                <h3>Chasing Shadows in the Congo Basin</h3>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="post.html" class="post-card">
-                        <div class="post-image">
-                            <img src="./assets/responsive_tree.jpg" alt="My First Responsive Lab Notebook">
-                            <div class="arrow-icon">↗</div>
-                            <div class="post-title-overlay">
-                                <h3>My First Responsive Lab Notebook</h3>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="post.html" class="post-card">
-                        <div class="post-image">
-                            <img src="./assets/responsive_tree.jpg" alt="5 Books That Changed How I Think About AI">
-                            <div class="arrow-icon">↗</div>
-                            <div class="post-title-overlay">
-                                <h3>5 Books That Changed How I Think About AI</h3>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="post.html" class="post-card">
-                        <div class="post-image">
-                            <img src="./assets/responsive_tree.jpg" alt="Turning Legends Into Data">
-                            <div class="arrow-icon">↗</div>
-                            <div class="post-title-overlay">
-                                <h3>From Myth to Model</h3>
-                            </div>
-                        </div>
-                    </a>
-
+                    <!-- Dynamic posts will be loaded here -->
                 </div>
 
                 <!-- Loader -->
@@ -236,6 +197,8 @@
             }
         });
     </script>
+    <script src="blog-data.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>

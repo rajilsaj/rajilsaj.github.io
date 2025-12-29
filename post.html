@@ -11,7 +11,8 @@
     <!-- Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poiret+One&display=swap"
+        rel="stylesheet">
 
     <!-- Styles -->
     <link rel="stylesheet" href="./style.css">
@@ -48,20 +49,13 @@
         <!-- MAIN CONTENT -->
         <main>
             <article class="post-content" style="max-width: 800px; margin: 0 auto; padding: 2rem;">
-                <img src="./assets/responsive_tree.jpg" alt="Post Hero Image"
+                <img id="post-hero-image" src="./assets/responsive_tree.jpg" alt="Post Hero Image"
                     style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 2rem;">
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua.
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                    consequat.
-                </p>
-                <p>
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-                    pariatur.
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-                    est laborum.
-                </p>
+
+                <div id="post-body">
+                    <p>Loading post content...</p>
+                </div>
+
                 <div style="margin-top: 3rem;">
                     <a href="index.html" class="button">← Back to Home</a>
                 </div>
@@ -69,16 +63,15 @@
                 <!-- DISQUS COMMENTS -->
                 <div id="disqus_thread" style="margin-top: 4rem; border-top: 1px solid #ddd; padding-top: 2rem;"></div>
                 <script>
-                    <script>
                     /**
                         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
                         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
-                        var disqus_config = function () {
-                            this.page.url = window.location.href;  // Replace PAGE_URL with your page's canonical URL variable
-                        this.page.identifier = window.location.pathname; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                    var disqus_config = function () {
+                        this.page.url = window.location.href;  // Replace PAGE_URL with your page's canonical URL variable
+                        this.page.identifier = window.location.search; // Use query string as unique identifier
                     };
 
-                        (function () { // DON'T EDIT BELOW THIS LINE
+                    (function () { // DON'T EDIT BELOW THIS LINE
                         var d = document, s = d.createElement('script');
                         s.src = 'https://EXAMPLE.disqus.com/embed.js'; // IMPORTANT: Replace EXAMPLE with your forum shortname!
                         s.setAttribute('data-timestamp', +new Date());
@@ -90,31 +83,40 @@
             </article>
         </main>
 
-        <!-- FOOTER -->
-        <footer class="site-footer" role="contentinfo" aria-label="Footer">
-            <div class="footer-inner">
-                <small>
-                    © <time id="footer-year" datetime="">2025</time>
-                    <span aria-hidden="true">·</span>
-                    Rajil Vembe
-                </small>
-            </div>
-        </footer>
+
     </div>
+    <script src="blog-data.js"></script>
     <script>
-                    // Init UI
-                    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function () {
+            // Hamburger toggle
             var toggle = document.getElementById('menu-toggle');
-                    var nav = document.getElementById('main-nav');
-                    if (toggle && nav) {
-                        toggle.addEventListener('click', function () {
-                            nav.classList.toggle('open');
-                        });
+            var nav = document.getElementById('main-nav');
+            if (toggle && nav) {
+                toggle.addEventListener('click', function () {
+                    nav.classList.toggle('open');
+                });
             }
-                    var yearEl = document.getElementById('footer-year');
-                    if (yearEl) {
-                var year = new Date().getFullYear();
-                    yearEl.textContent = year;
+
+            // Load Post Data
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = parseInt(urlParams.get('id'));
+
+            if (postId && window.blogPosts) {
+                const post = window.blogPosts.find(p => p.id === postId);
+                if (post) {
+                    document.title = `${post.title} · Rajil Vembe`;
+                    document.querySelector('.author-name').textContent = post.title;
+                    document.querySelector('.author-role time').textContent = post.date;
+                    document.querySelector('.author-role time').setAttribute('datetime', post.date);
+                    document.getElementById('post-hero-image').src = post.image;
+                    document.getElementById('post-hero-image').alt = post.title;
+
+                    const content = window.blogContents && window.blogContents[postId]
+                        ? window.blogContents[postId]
+                        : `This is the full article for "${post.title}". ${post.excerpt} Lorem ipsum dolor sit amet, consectetur adipiscing elit.`;
+
+                    document.getElementById('post-body').innerHTML = `<p>${content}</p>`;
+                }
             }
         });
     </script>
