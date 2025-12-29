@@ -507,3 +507,7 @@ FLIPPING TEXT ANIMATIONS
     color: #00aa33;
     /* slightly dimmer green */
 }
+
+#header-text-name {
+    font-size: 60px;
+}
