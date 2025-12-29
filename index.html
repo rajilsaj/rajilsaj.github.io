@@ -21,12 +21,12 @@
 <body>
     <div id="wrapper">
 
-        <!-- HAMBURGER MENU BUTTON -->
+        <!-- HAMBURGER MENU BUTTON (HIDDEN FOR NEW HEADER)
         <button id="menu-toggle" aria-label="Toggle navigation menu">
             ☰
-        </button>
+        </button> -->
 
-        <!-- NAVIGATION (hidden under hamburger on mobile) -->
+        <!-- NAVIGATION (hidden under hamburger on mobile)
         <nav id="main-nav" aria-label="Main navigation" class="">
             <ul>
                 <li><a href="#">About Me</a></li>
@@ -34,39 +34,66 @@
                 <li><a href="#">My Labs</a></li>
                 <li><a href="#">Other stuffs</a></li>
             </ul>
-        </nav>
+        </nav> -->
 
         <!-- HEADER -->
-        <header class=" site-header" role="banner">
-            <div class="header-main ">
-                <div id="profile-pic-container">
-                    <img id="profile-pic" src="./assets/profile-pic.jpeg" alt="Profile picture of Rajil Vembe"
-                        loading="lazy">
+        <header class="site-header" role="banner">
+            <!-- Top Nav Bar -->
+            <div class="imdb-nav-bar">
+                <div class="imdb-nav-inner">
+                    <a href="#">Biography</a>
+                    <a href="#">Awards</a>
+                    <a href="#">FAQ</a>
+                    <a href="#">IMDbPro</a>
+                    <a href="#">All topics</a>
+                    <a href="#">Share</a>
+                </div>
+            </div>
+
+            <div class="header-main">
+                <!-- Name Row -->
+                <div class="header-top-row">
+                    <h1 class="author-name poiret-one-regular">Rajil Vembe</h1>
+                    <div class="author-role">
+                        Producer · Writer · <span id="scramble-role">Software Engineer</span>
+                    </div>
                 </div>
 
-                <div class="intro ">
-                    <h1 class="author-name poiret-one-regular">Hello world ! I am Rajil Vembe</h1>
-                    <p class="author-role">
-                        I'm a US-based
-                        <span id="scramble-role">Software Engineer</span>
+                <!-- Column 1: Poster Image -->
+                <div id="profile-pic-container">
+                    <img id="profile-pic" src="./assets/profile-pic.jpeg" alt="Rajil Vembe" loading="lazy">
+                </div>
+
+                <!-- Column 2: Bio/Intro -->
+                <div class="intro">
+                    <p class="personal-note">
+                        "Somewhere between science and legend, we find the stories that make us curious enough to keep
+                        exploring."
+                        <br><br>
+                        Rajil Vembe is a US-based Software Engineer known for chasing Mokele Mbembe and leaving side
+                        projects unfinished.
                     </p>
 
-                    <p class="personal-note ">
-                        I like my coffee strong, my pastries French, my side projects unfinished,
-                        and my photos sharp.
-                    </p>
-
-                    <div id="blog-desc " class="blog-desc poiret-one-regular">
+                    <div class="blog-desc poiret-one-regular">
                         <p>
-                            This blog is for those like me who believe in the legend of the last living dinosaurs —
-                            <em>Mokele Mbembe</em>. Learn more:
+                            This blog is for those who believe in the legend of the last living dinosaurs.
                             <a href="https://www.youtube.com/watch?v=N-zq-AgUmEw" target="_blank"
-                                rel="noopener noreferrer">
-                                Watch the video
-                            </a>.
+                                rel="noopener noreferrer">Watch video ›</a>
                         </p>
                     </div>
                 </div>
+
+                <!-- Column 3: Stats/Sidebar -->
+                <aside class="header-sidebar">
+                    <div class="born-info">
+                        <span class="born-label">Born</span>
+                        <span class="born-date">August 17, 1994</span>
+                        <span class="born-date" style="display:block; font-size: 0.85em; margin-top:0.2rem;">San Mateo,
+                            California, USA</span>
+                    </div>
+
+                    <a href="#" class="imdb-btn">+ Add to list</a>
+                </aside>
             </div>
         </header>
 

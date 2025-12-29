@@ -116,65 +116,190 @@ gap: 1.5rem;
 HEADER
 =============================== */
 
+/* ===============================
+   IMDB-STYLE HEADER
+   =============================== */
+
 .site-header {
-padding: 0.5rem 0 1.5rem;
+    background: #1f1f1f;
+    color: #ffffff;
+    padding: 0 0 2rem;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%); /* Break out of wrapper to full width */
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.imdb-nav-bar {
+    background-color: #121212;
+    padding: 0.75rem 0;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    font-family: var(--font-base);
+}
+
+.imdb-nav-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1.5rem;
+}
+
+.imdb-nav-inner a {
+    color: #cccccc;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.imdb-nav-inner a:hover {
+    color: #ffffff;
+    text-decoration: underline;
 }
 
 .header-main {
-display: flex;
-align-items: flex-start;
-gap: 1.5rem;
-flex-wrap: wrap;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 230px 1fr 280px; /* Poster, Content, Sidebar */
+    gap: 2rem;
+    align-items: start;
 }
 
-/* Profile picture */
-#profile-pic-container img {
-width: min(60vw, 260px);
-aspect-ratio: 1 / 1;
-object-fit: cover;
-border-radius: 50%;
-border: #f4f4f4 5px solid;
-}
-
-/* Intro block */
-.intro {
-flex: 1;
-margin-top: 35px;
+/* Name Section */
+.header-top-row {
+    grid-column: 1 / -1;
+    margin-bottom: 0.5rem;
 }
 
 .author-name {
-margin-bottom: 0.25rem;
+    font-size: 2.5rem;
+    font-weight: 400;
+    margin: 0;
+    color: #ffffff;
 }
 
 .author-role {
-margin: 0 0 0.5rem;
-color: #7b6b63;
-font-size: 0.95rem;
+    color: #a5a5a5;
+    font-size: 1rem;
+    margin: 0.25rem 0 1rem;
+}
+
+/* Profile Picture (Poster style) */
+#profile-pic-container {
+    width: 100%;
+}
+
+#profile-pic-container img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2/3;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    border: none; /* Removed the previous thick border */
+}
+
+/* Intro/Bio Block */
+.intro {
+    padding-top: 0;
+    color: #ffffff;
 }
 
 .personal-note {
-margin: 0 0 0.75rem;
-color: #594a42;
-font-size: 0.95rem;
-}
-
-.blog-desc {
-font-size: clamp(1rem, 1.6vw, 1.1rem);
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    color: #e0e0e0;
 }
 
 .blog-desc p {
-margin: 0;
+    color: #cccccc;
+}
+
+.blog-desc a {
+    color: #5799ef;
+}
+
+/* Sidebar (Born info, button) */
+.header-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.born-info {
+    font-size: 0.95rem;
+}
+
+.born-label {
+    display: block;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 0.2rem;
+}
+
+.born-date {
+    color: #a5a5a5;
+}
+
+.imdb-btn {
+    display: inline-block;
+    background-color: #f5c518; /* IMDb yellow */
+    color: #000000;
+    font-weight: 700;
+    text-align: center;
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.imdb-btn:hover {
+    background-color: #eeb917;
+}
+
+/* Responsive adjustments */
+@media (max-width: 850px) {
+    .header-main {
+        grid-template-columns: 180px 1fr;
+    }
+    .header-sidebar {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        align-items: center;
+    }
 }
 
 @media (max-width: 600px) {
-.header-main {
-flex-direction: column;
-text-align: center;
-}
+    .header-main {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .author-name {
+        text-align: center;
+    }
+    
+    .author-role {
+        text-align: center;
+    }
 
-.intro {
-text-align: center;
-}
+    #profile-pic-container {
+        width: 180px;
+        margin: 0 auto;
+    }
+    
+    .header-sidebar {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .imdb-nav-inner {
+        justify-content: center;
+    }
 }
 
 /* ===============================
