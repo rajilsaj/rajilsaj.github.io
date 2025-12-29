@@ -26,7 +26,6 @@ body {
     line-height: 1.6;
     background: #fff;
     color: #594a42;
-    border-top: 1px solid #8d7f78;
 }
 
 #wrapper {
@@ -122,9 +121,12 @@ HEADER
    =============================== */
 
 .site-header {
-    background: #f4f4f4;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: flex-end;
+    padding-top: 60px;
+    padding-bottom: 60px;
     color: #333333;
-    padding: 0 0 2rem;
     width: 100%;
     margin-bottom: 2rem;
     box-shadow: none;
@@ -171,9 +173,9 @@ HEADER
 #profile-pic-container img {
     width: 100%;
     height: auto;
-    aspect-ratio: 2/3;
+    aspect-ratio: 1;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 50%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     border: none;
     /* Removed the previous thick border */
