@@ -122,56 +122,15 @@ HEADER
    =============================== */
 
 .site-header {
-    background: #1f1f1f;
-    color: #ffffff;
+    background: #f4f4f4;
+    color: #333333;
     padding: 0 0 2rem;
     width: 100%;
     margin-bottom: 2rem;
     box-shadow: none;
 }
 
-.imdb-nav-bar {
-    background-color: #121212;
-    padding: 0.75rem 0;
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
-    font-family: var(--font-base);
-}
 
-.imdb-nav-inner {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 1rem;
-    display: flex;
-    justify-content: flex-end;
-    gap: 0;
-    /* Removing gap to let separators handle spacing */
-}
-
-.imdb-nav-inner a {
-    color: #cccccc;
-    text-decoration: none;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    padding: 0 0.75rem;
-}
-
-.imdb-nav-inner a:hover {
-    color: #ffffff;
-    text-decoration: underline;
-}
-
-.imdb-nav-inner a:not(:last-child)::after {
-    content: "";
-    display: inline-block;
-    width: 1px;
-    height: 12px;
-    background-color: #666;
-    margin-left: 0.75rem;
-    /* Matches the gap */
-    opacity: 0.5;
-}
 
 .header-main {
     max-width: 960px;
@@ -194,11 +153,11 @@ HEADER
     font-size: 2.5rem;
     font-weight: 400;
     margin: 0;
-    color: #ffffff;
+    color: #000000;
 }
 
 .author-role {
-    color: #a5a5a5;
+    color: #555555;
     font-size: 1rem;
     margin: 0;
     vertical-align: middle;
@@ -223,18 +182,18 @@ HEADER
 /* Intro/Bio Block */
 .intro {
     padding-top: 0;
-    color: #ffffff;
+    color: #333333;
 }
 
 .personal-note {
     font-size: 1.1rem;
     line-height: 1.5;
     margin-bottom: 1.5rem;
-    color: #e0e0e0;
+    color: #444444;
 }
 
 .blog-desc p {
-    color: #cccccc;
+    color: #666666;
 }
 
 .blog-desc a {
@@ -255,12 +214,12 @@ HEADER
 .born-label {
     display: block;
     font-weight: bold;
-    color: #ffffff;
+    color: #222222;
     margin-bottom: 0.2rem;
 }
 
 .born-date {
-    color: #a5a5a5;
+    color: #555555;
 }
 
 .imdb-btn {
