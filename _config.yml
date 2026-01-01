@@ -27,16 +27,13 @@ url: "http://localhost:4000"
 twitter_username: rajilsaj
 github_username:  rajilsaj
 
-# Build settings
-markdown: kramdown
-kramdown:
-  input: GFM
-  syntax_highlighter: rouge
-  math_engine: mathjax # We will use KaTeX via CDN, but this enables Jekyll's math processing
+# Disqus
+disqus_shortname: rajilsaj-github-io # Assuming this is the shortname based on repo name, or placeholder
 
+# Build settings
+theme: minima
 plugins:
   - jekyll-feed
-  - jekyll-seo-tag
 
 # Exclude from processing.
 # The following items will not be processed, by default.

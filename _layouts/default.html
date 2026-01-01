@@ -1,69 +1,44 @@
 <!DOCTYPE html>
-<html lang="{{ page.lang | default: site.lang | default: 'en' }}">
+<html lang="{{ page.lang | default: site.lang | default: " en" }}">
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {%- seo -%}
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Outfit:wght@400;600;700&display=swap"
         rel="stylesheet">
-
-    <link rel="stylesheet" href="{{ " /assets/css/main.css" | relative_url }}">
-
-    <!-- KaTeX for Math -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
-        onload="renderMathInElement(document.body);"></script>
-
-    <!-- Dark Mode Script -->
-    <script>
-        (function () {
-            const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            document.documentElement.setAttribute('data-theme', theme);
-        })();
-    </script>
+    <link rel="stylesheet" href="{{ " /assets/css/custom.css" | relative_url }}">
+    {%- feed_meta -%}
 </head>
 
 <body>
-    <div class="site-container">
-        {% include sidebar.html %}
+    {% include header.html %}
 
-        <main class="main-content">
-            <div class="inner-wrapper">
-                {{ content }}
-            </div>
+    <div class="site-content">
+        <main class="main-wrapper" aria-label="Content">
+            {{ content }}
+
+            {% if page.layout == "post" or page.layout == "minima-post" %}
+            {% include disqus.html %}
+            {% endif %}
         </main>
     </div>
 
-    <!-- Theme Toggle Logic -->
+    {% include footer.html %}
+
+    {%- if site.google_analytics -%}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const themeToggle = document.getElementById('theme-toggle');
-            const themeIcon = themeToggle.querySelector('.theme-icon');
-            const themeText = themeToggle.querySelector('.theme-text');
-
-            const updateUI = (theme) => {
-                themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
-                themeText.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
-            };
-
-            updateUI(document.documentElement.getAttribute('data-theme'));
-
-            themeToggle.addEventListener('click', () => {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                updateUI(newTheme);
-            });
-        });
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', '{{ site.google_analytics }}');
     </script>
+    {%- endif -%}
 </body>
 
 </html>
