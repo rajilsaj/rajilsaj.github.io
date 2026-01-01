@@ -1,0 +1,20 @@
+---
+layout: post
+title: "The Future of Programming Part 36"
+date: 2025-11-26 08:02:59 +0000
+categories: programming
+image: /assets/images/mock-36.jpg
+---
+
+This is a mock post numbered 36 about Programming. 
+
+![Mock Image 36](/assets/images/mock-36.jpg)
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+### Key Points
+- Point A for Programming
+- Point B for Programming
+- Point C for Programming
+
+Stay tuned for more!
