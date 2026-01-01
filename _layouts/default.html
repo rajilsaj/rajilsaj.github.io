@@ -6,21 +6,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {%- seo -%}
-    <link rel="stylesheet" href="{{ " /assets/main.css" | relative_url }}">
-    <link rel="stylesheet" href="{{ " /assets/css/sidebar.css" | relative_url }}">
+    <link rel="stylesheet" href="{{ " /assets/css/custom.css" | relative_url }}">
     {%- feed_meta -%}
 </head>
 
 <body>
-    <div class="site-container">
-        {% include sidebar.html %}
+    {% include header.html %}
 
-        <main class="main-content" aria-label="Content">
-            <div class="wrapper">
-                {{ content }}
-            </div>
+    <div class="site-content">
+        <main class="main-wrapper" aria-label="Content">
+            {{ content }}
         </main>
     </div>
+
+    {% include footer.html %}
 
     {%- if site.google_analytics -%}
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
