@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Rajil Vembe · Blog</title>
+    <meta name="description"
+        content="Personal blog by Rajil Vembe about Mokele Mbembe, readings, labs, and side projects.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poiret+One&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header class="site-header" role="banner">
+        <!-- Top Nav Bar -->
+
+
+
+        <div class="header-main">
+            <!-- Column 1: Poster Image -->
+            <div id="profile-pic-container">
+                <img id="profile-pic" src="./assets/profile-pic.jpeg" alt="Rajil Vembe" loading="lazy">
+            </div>
+
+            <!-- Column 2: Content (Name + Bio) -->
+            <div class="header-content">
+                <div class="header-top-row">
+                    <h1 id="header-text-name" class="author-name poiret-one-regular"
+                        style="display:inline-block; margin-right: 1rem;">Rajil Vembe
+                    </h1>
+                    <div class="author-role" style="display:inline-block;">
+                        <span id="scramble-role">Software Engineer</span>
+                    </div>
+                </div>
+
+                <div class="intro">
+                    <p class="personal-note">
+                        I'm Rajil Vembe from Republic of Congo. I created this blog because I want to be noticed by Big
+                        Tech
+                        companies and end up working in ML / AI Research labs.
+                    </p>
+
+                    <div class="blog-desc poiret-one-regular">
+                        <p>
+                            🎯 2026 Goal set : become an AI/ML expert
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </header>
+
+    <div id="wrapper">
+
+
+
+        <!-- QUOTE SECTION -->
+
+
+        <!-- MAIN CONTENT -->
+        <main>
+            <section id="excerpt-section" aria-labelledby="latest-posts-title">
+                <h2 id="latest-posts-title" class="section-title poiret-one-regular">Latest Posts</h2>
+
+                <div id="posts-container" class="posts-grid">
+                    <!-- Dynamic posts will be loaded here -->
+                </div>
+
+                <!-- Loader -->
+                <div id="infinite-loader" class="loader" aria-hidden="true">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+
+    </div>
+    <script>
+        class TextScramble {
+            constructor(el) {
+                this.el = el;
+                this.chars = "!<>-_\\/[]{}—=+*^?#________";
+                this.update = this.update.bind(this);
+            }
+
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise(resolve => this.resolve = resolve);
+                this.queue = [];
+
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || "";
+                    const to = newText[i] || "";
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end, char: null });
+                }
+
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+
+            update() {
+                let output = "";
+                let complete = 0;
+
+                for (let i = 0; i < this.queue.length; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+
+                    if (this.frame >= end) {
+                        complete++;
+                        output += to;
+                    } else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.randomChar();
+                            this.queue[i].char = char;
+                        }
+                        output += `<span class="dud">${char}</span>`;
+                    } else {
+                        output += from;
+                    }
+                }
+
+                this.el.innerHTML = output;
+
+                if (complete === this.queue.length) {
+                    this.resolve();
+                } else {
+                    this.frameRequest = requestAnimationFrame(this.update);
+                    this.frame++;
+                }
+            }
+
+            randomChar() {
+                return this.chars[Math.floor(Math.random() * this.chars.length)];
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const phrases = ['Software Engineer', 'AI Engineer', 'Builder', 'Student', 'hacker'];
+            const el = document.getElementById("scramble-role");
+
+            if (!el) return; // safety check if id is missing
+
+            const fx = new TextScramble(el);
+            let counter = 0;
+
+            function next() {
+                fx.setText(phrases[counter]).then(() => {
+                    setTimeout(next, 3000); // wait 3s before switching again
+                });
+                counter = (counter + 1) % phrases.length;
+            }
+
+            next();
+        });
+    </script>
+
+
+
+    <script>
+        // Init UI after DOM is ready
+        document.addEventListener('DOMContentLoaded', function () {
+            // Hamburger toggle
+            var toggle = document.getElementById('menu-toggle');
+            var nav = document.getElementById('main-nav');
+            if (toggle && nav) {
+                toggle.addEventListener('click', function () {
+                    nav.classList.toggle('open');
+                });
+            }
+
+            // Dynamic footer year
+            var yearEl = document.getElementById('footer-year');
+            if (yearEl) {
+                var year = new Date().getFullYear();
+                yearEl.textContent = year;
+                yearEl.setAttribute('datetime', String(year));
+            }
+        });
+    </script>
+    <script src="blog-data.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

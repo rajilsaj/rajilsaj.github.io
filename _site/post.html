@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Post Title · Rajil Vembe</title>
+    <meta name="description" content="A generic blog post page.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poiret+One&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div id="wrapper">
+
+        <!-- HAMBURGER MENU BUTTON -->
+        <button id="menu-toggle" aria-label="Toggle navigation menu">
+            ☰
+        </button>
+
+        <!-- NAVIGATION -->
+        <nav id="main-nav" aria-label="Main navigation" class="">
+            <ul>
+                <li><a href="index.html">Back to Home</a></li>
+                <li><a href="#">About Me</a></li>
+                <li><a href="#">My Readings</a></li>
+                <li><a href="#">My Labs</a></li>
+            </ul>
+        </nav>
+
+        <!-- HEADER -->
+        <header class="site-header" role="banner" style="min-height: auto; padding-bottom: 2rem;">
+            <div class="header-main">
+                <div class="intro">
+                    <h1 class="author-name poiret-one-regular">Post Title Placeholder</h1>
+                    <p class="author-role">Published on <time datetime="2025-01-01">January 1, 2025</time></p>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main>
+            <article class="post-content" style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+                <img id="post-hero-image" src="./assets/responsive_tree.jpg" alt="Post Hero Image"
+                    style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 2rem;">
+
+                <div id="post-body">
+                    <p>Loading post content...</p>
+                </div>
+
+                <div style="margin-top: 3rem;">
+                    <a href="index.html" class="button">← Back to Home</a>
+                </div>
+
+                <!-- DISQUS COMMENTS -->
+                <div id="disqus_thread" style="margin-top: 4rem; border-top: 1px solid #ddd; padding-top: 2rem;"></div>
+                <script>
+                    /**
+                        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+                    var disqus_config = function () {
+                        this.page.url = window.location.href;  // Replace PAGE_URL with your page's canonical URL variable
+                        this.page.identifier = window.location.search; // Use query string as unique identifier
+                    };
+
+                    (function () { // DON'T EDIT BELOW THIS LINE
+                        var d = document, s = d.createElement('script');
+                        s.src = 'https://EXAMPLE.disqus.com/embed.js'; // IMPORTANT: Replace EXAMPLE with your forum shortname!
+                        s.setAttribute('data-timestamp', +new Date());
+                        (d.head || d.body).appendChild(s);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments
+                        powered by Disqus.</a></noscript>
+            </article>
+        </main>
+
+
+    </div>
+    <script src="blog-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Hamburger toggle
+            var toggle = document.getElementById('menu-toggle');
+            var nav = document.getElementById('main-nav');
+            if (toggle && nav) {
+                toggle.addEventListener('click', function () {
+                    nav.classList.toggle('open');
+                });
+            }
+
+            // Load Post Data
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = parseInt(urlParams.get('id'));
+
+            if (postId && window.blogPosts) {
+                const post = window.blogPosts.find(p => p.id === postId);
+                if (post) {
+                    document.title = `${post.title} · Rajil Vembe`;
+                    document.querySelector('.author-name').textContent = post.title;
+                    document.querySelector('.author-role time').textContent = post.date;
+                    document.querySelector('.author-role time').setAttribute('datetime', post.date);
+                    document.getElementById('post-hero-image').src = post.image;
+                    document.getElementById('post-hero-image').alt = post.title;
+
+                    const content = window.blogContents && window.blogContents[postId]
+                        ? window.blogContents[postId]
+                        : `This is the full article for "${post.title}". ${post.excerpt} Lorem ipsum dolor sit amet, consectetur adipiscing elit.`;
+
+                    document.getElementById('post-body').innerHTML = `<p>${content}</p>`;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

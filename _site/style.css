@@ -1,0 +1,713 @@
+/* ================================
+   Root Variables & Base Setup
+   ================================ */
+:root {
+    font-size: 16px;
+
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-muted: #6b7280;
+
+    --border-muted: #e5e7eb;
+    --accent: #2563eb;
+
+    --bg-code: #f9fafb;
+
+    --font-heading: "Poiret One", sans-serif;
+}
+
+/* ================================
+   Global Resets & Body
+   ================================ */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-primary);
+    background-color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* ================================
+   Headings
+   ================================ */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.625rem;
+}
+
+h4 {
+    font-size: 1.375rem;
+    letter-spacing: -0.01em;
+}
+
+h5 {
+    font-size: 1.125rem;
+}
+
+h6 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+}
+
+/* ================================
+   Paragraphs & Inline Text
+   ================================ */
+p {
+    margin-bottom: 1.25rem;
+}
+
+strong {
+    font-weight: 600;
+}
+
+em {
+    font-style: italic;
+}
+
+small {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+/* ================================
+   Links
+   ================================ */
+a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+a:hover {
+    border-bottom-color: currentColor;
+}
+
+/* ================================
+   Lists
+   ================================ */
+ul,
+ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+li {
+    margin-bottom: 0.5rem;
+}
+
+/* ================================
+   Blockquotes
+   ================================ */
+blockquote {
+    margin: 2rem 0;
+    padding-left: 1.25rem;
+    border-left: 4px solid var(--border-muted);
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* ================================
+   Code & Preformatted Text
+   ================================ */
+code {
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+    font-size: 0.875rem;
+    background: var(--bg-code);
+    padding: 0.15em 0.35em;
+    border-radius: 4px;
+}
+
+pre {
+    background: var(--bg-code);
+    padding: 1.25rem;
+    overflow-x: auto;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+}
+
+/* ================================
+   Tables
+   ================================ */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+    font-size: 0.9375rem;
+}
+
+th,
+td {
+    border-bottom: 1px solid var(--border-muted);
+    padding: 0.75rem;
+    text-align: left;
+}
+
+th {
+    font-weight: 600;
+}
+
+/* ================================
+   Images & Figures
+   ================================ */
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin: 2rem 0;
+}
+
+figcaption {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: -1rem;
+}
+
+/* ================================
+   Horizontal Rule
+   ================================ */
+hr {
+    border: none;
+    border-top: 1px solid var(--border-muted);
+    margin: 3rem 0;
+}
+
+.poiret-one-regular {
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+/* ===============================
+HAMBURGER MENU & NAV
+=============================== */
+
+#menu-toggle {
+    font-size: 32px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto 1rem;
+    color: #594a42;
+}
+
+/* Nav hidden by default on small screens */
+#main-nav {
+    display: none;
+    text-align: center;
+}
+
+#main-nav.open {
+    display: block;
+}
+
+#main-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+#main-nav a {
+    color: #594a42;
+    font-family: 'proxima-nova', sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 1px;
+    padding: 0.5rem 0;
+}
+
+#main-nav a:hover {
+    text-decoration: underline;
+}
+
+/* Desktop nav layout */
+@media (min-width: 700px) {
+    #menu-toggle {
+        display: none;
+    }
+
+    #main-nav {
+        display: block;
+    }
+
+    #main-nav ul {
+        flex-direction: row;
+        justify-content: center;
+        gap: 1.5rem;
+    }
+}
+
+/* ===============================
+HEADER
+=============================== */
+
+/* ===============================
+   IMDB-STYLE HEADER
+   =============================== */
+
+.site-header {
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: flex-end;
+    padding-top: 60px;
+    padding-bottom: 60px;
+    color: #333333;
+    width: 100%;
+    margin-bottom: 2rem;
+    box-shadow: none;
+}
+
+
+
+.header-main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    /* Poster, Content */
+    gap: 2rem;
+    align-items: start;
+}
+
+/* Name Section */
+.header-top-row {
+    margin-bottom: 0.5rem;
+}
+
+.author-name {
+    font-size: 2.5rem;
+    font-weight: 400;
+    margin: 0;
+    color: #000000;
+}
+
+.author-role {
+    color: #555555;
+    font-size: 1rem;
+    margin: 0;
+    vertical-align: middle;
+}
+
+/* Profile Picture (Poster style) */
+#profile-pic-container {
+    width: 100%;
+}
+
+#profile-pic-container img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: none;
+    border: none;
+    /* Removed the previous thick border */
+}
+
+/* Intro/Bio Block */
+.intro {
+    padding-top: 0;
+    color: #333333;
+}
+
+.personal-note {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    color: #444444;
+}
+
+.blog-desc p {
+    color: #666666;
+}
+
+.blog-desc a {
+    color: #5799ef;
+}
+
+/* Sidebar (Born info, button) */
+.header-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.born-info {
+    font-size: 0.95rem;
+}
+
+.born-label {
+    display: block;
+    font-weight: bold;
+    color: #222222;
+    margin-bottom: 0.2rem;
+}
+
+.born-date {
+    color: #555555;
+}
+
+.imdb-btn {
+    display: inline-block;
+    background-color: #f5c518;
+    /* IMDb yellow */
+    color: #000000;
+    font-weight: 700;
+    text-align: center;
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.imdb-btn:hover {
+    background-color: #eeb917;
+}
+
+/* Responsive adjustments */
+@media (max-width: 850px) {
+    .header-main {
+        grid-template-columns: 180px 1fr;
+    }
+
+    .header-sidebar {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .header-main {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .author-name {
+        text-align: center;
+    }
+
+    .author-role {
+        text-align: center;
+    }
+
+    #profile-pic-container {
+        width: 180px;
+        margin: 0 auto;
+    }
+
+    .header-sidebar {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .imdb-nav-inner {
+        justify-content: center;
+    }
+}
+
+/* ===============================
+QUOTE SECTION
+=============================== */
+
+/* Quote section removed */
+
+/* ===============================
+POSTS
+=============================== */
+
+#excerpt-section {
+    padding: 1.5rem 0 2.5rem;
+}
+
+.section-title {
+    text-align: center;
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    margin-bottom: 1.5rem;
+}
+
+/* Single-column posts */
+.posts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Post card */
+.post-card {
+    display: block;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Image container */
+/* Image container */
+.post-image {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    background-color: #00e0a6;
+    /* Green background */
+}
+
+@media (min-width: 600px) {
+    .post-image {
+        height: 400px;
+    }
+}
+
+@media (min-width: 1000px) {
+    .post-image {
+        height: 480px;
+    }
+}
+
+.post-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+}
+
+.post-card:hover .post-image img {
+    opacity: 0;
+}
+
+/* Title overlay */
+.post-title-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.post-card:hover .post-title-overlay {
+    background: transparent;
+    color: #000;
+}
+
+.post-title-overlay h3 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+/* Arrow Icon */
+.arrow-icon {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    color: #000;
+    font-size: 2rem;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.post-card:hover .arrow-icon {
+    opacity: 1;
+}
+
+/* ===============================
+LOADER
+=============================== */
+
+.loader {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin: 0 4px;
+    background: #b3a49e;
+    border-radius: 50%;
+    animation: blink 1.4s infinite both;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 0.2;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.4);
+    }
+
+    100% {
+        opacity: 0.2;
+        transform: scale(1);
+    }
+}
+
+/* ===============================
+FOOTER
+=============================== */
+
+.site-footer {
+    border-top: 1px solid #e0d4cd;
+    margin-top: 2rem;
+    padding: 1rem 0;
+    font-size: 0.95rem;
+    color: #594a42;
+}
+
+.footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    text-align: center;
+}
+
+.footer-inner a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.footer-inner a:hover {
+    text-decoration: underline;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.footer-links a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .footer-inner {
+        flex-direction: column;
+    }
+}
+
+/* ===============================
+FLIPPING TEXT ANIMATIONS
+=============================== */
+#flipping-role {
+    display: inline-block;
+    animation: flipText 4s infinite;
+    transform-origin: center;
+}
+
+@keyframes flipText {
+    0% {
+        opacity: 1;
+        transform: rotateX(0deg);
+    }
+
+    40% {
+        opacity: 0;
+        transform: rotateX(90deg);
+    }
+
+    50% {
+        opacity: 0;
+        transform: rotateX(90deg);
+    }
+
+    60% {
+        opacity: 1;
+        transform: rotateX(0deg);
+    }
+}
+
+/* Matrix-style scramble area */
+/* Matrix-style scramble area */
+#scramble-role {
+    display: inline-block;
+    white-space: nowrap;
+    background: #000000;
+    /* black background behind the role */
+    color: #00ff41;
+    /* bright Matrix green for final text */
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+/* Scrambling characters (temporary encrypted letters) */
+#scramble-role .dud {
+    color: #00aa33;
+    /* slightly dimmer green */
+}
+
+#header-text-name {
+    font-size: 60px;
+}
