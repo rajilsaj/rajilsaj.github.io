@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang=" en">
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
@@ -23,54 +23,103 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2025-12-23T03:02:59-05:00","datePublished":"2025-12-23T03:02:59-05:00","description":"This is a mock post numbered 9 about AI.","headline":"A Guide to AI Part 9","image":"http://localhost:4000/assets/images/mock-9.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/ai/2025/12/23/mock-post-9.html"},"url":"http://localhost:4000/ai/2025/12/23/mock-post-9.html"}</script>
 <!-- End Jekyll SEO tag -->
-<link rel="stylesheet" href="/%20/assets/css/custom.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Rajil Vembe&apos;s New Blog" /></head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/%20/assets/css/main.css">
+
+    <!-- KaTeX for Math -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body);"></script>
+
+    <!-- Dark Mode Script -->
+    <script>
+        (function () {
+            const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+</head>
 
 <body>
-    <header class="top-nav">
-    <div class="nav-wrapper">
-        <div class="nav-left">
-            <a href="/" class="nav-icon" title="Home">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                    <polyline points="9 22 9 12 15 12 15 22" />
-                </svg>
-            </a>
-        </div>
-        <div class="nav-right">
-            <a href="/about/" class="nav-link">About</a>
-            <span class="nav-divider">|</span>
-            <button class="theme-toggle" aria-label="Toggle theme">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5" />
-                    <line x1="12" y1="1" x2="12" y2="3" />
-                    <line x1="12" y1="21" x2="12" y2="23" />
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                    <line x1="1" y1="12" x2="3" y2="12" />
-                    <line x1="21" y1="12" x2="23" y2="12" />
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                </svg>
-            </button>
-        </div>
+    <div class="site-container">
+        <div class="sidebar">
+    <div class="sidebar-header">
+        <a href="/" class="sidebar-title">Rajil Vembe&#39;s New Blog</a>
     </div>
-</header>
 
-    <div class="site-content">
-        <main class="main-wrapper" aria-label="Content">
-            <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search posts..." autocomplete="off">
+        <ul id="results-container"></ul>
+    </div>
 
-  <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">A Guide to AI Part 9</h1>
-    <p class="post-meta">
-      <time class="dt-published" datetime="2025-12-23T03:02:59-05:00" itemprop="datePublished">Dec 23, 2025
-      </time></p>
-  </header>
+    <nav class="sidebar-nav">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="/" class="nav-link ">Home</a>
+            </li>
+            <li class="nav-item">
+                <a href="/about/"
+                    class="nav-link ">About</a>
+            </li>
+        </ul>
+    </nav>
 
-  <div class="post-content e-content" itemprop="articleBody">
-    <p>This is a mock post numbered 9 about AI.</p>
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark mode">
+        <span class="theme-icon">🌙</span>
+        <span class="theme-text">Dark Mode</span>
+    </button>
+</div>
+
+<!-- Simple-Jekyll-Search -->
+<script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
+<script>
+    window.addEventListener('load', function () {
+        SimpleJekyllSearch({
+            searchInput: document.getElementById('search-input'),
+            resultsContainer: document.getElementById('results-container'),
+            json: '/search.json',
+            searchResultTemplate: '<li><a href="{url}">{title}</a></li>',
+            noResultsText: '<li><a href="#">No results found</a></li>',
+            limit: 10,
+            fuzzy: false
+        });
+
+        const input = document.getElementById('search-input');
+        const results = document.getElementById('results-container');
+
+        if (input && results) {
+            input.addEventListener('input', () => {
+                results.style.display = input.value ? 'block' : 'none';
+            });
+
+            // Close search on click outside
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !results.contains(e.target)) {
+                    results.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+
+        <main class="main-content">
+            <div class="inner-wrapper">
+                <article class="post">
+    <header class="post-header">
+        <h1 class="post-title">A Guide to AI Part 9</h1>
+        <p class="post-meta">
+            <time datetime="2025-12-23T03:02:59-05:00">December 23, 2025</time>
+        </p>
+    </header>
+
+    <div class="post-content">
+        <p>This is a mock post numbered 9 about AI.</p>
 
 <p><img src="/assets/images/mock-9.jpg" alt="Mock Image 9" /></p>
 
@@ -85,38 +134,35 @@
 
 <p>Stay tuned for more!</p>
 
-  </div><a class="u-url" href="/ai/2025/12/23/mock-post-9.html" hidden></a>
+    </div>
 </article>
-
+            </div>
         </main>
     </div>
 
-    <footer class="site-footer">
-    <div class="social-links">
-        <a href="https://twitter.com/rajilsaj" target="_blank" class="social-icon" title="Twitter">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path
-                    d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-            </svg>
-        </a>
-        <a href="https://github.com/rajilsaj" target="_blank" class="social-icon" title="GitHub">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path
-                    d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-            </svg>
-        </a>
-        <a href="/%20/feed.xml" class="social-icon" title="RSS">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 11a9 9 0 0 1 9 9" />
-                <path d="M4 4a16 16 0 0 1 16 16" />
-                <circle cx="5" cy="19" r="1" />
-            </svg>
-        </a>
-    </div>
-    <p class="copyright">© 2026 Rajil Vembe.</p>
-</footer></body>
+    <!-- Theme Toggle Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = themeToggle.querySelector('.theme-icon');
+            const themeText = themeToggle.querySelector('.theme-text');
+
+            const updateUI = (theme) => {
+                themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+                themeText.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
+            };
+
+            updateUI(document.documentElement.getAttribute('data-theme'));
+
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateUI(newTheme);
+            });
+        });
+    </script>
+</body>
 
 </html>

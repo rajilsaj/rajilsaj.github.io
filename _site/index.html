@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang=" en">
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
@@ -20,335 +20,487 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebSite","description":"A collection of my thoughts on AI, ML, and programming.","headline":"Rajil Vembe’s New Blog","name":"Rajil Vembe’s New Blog","url":"http://localhost:4000/"}</script>
 <!-- End Jekyll SEO tag -->
-<link rel="stylesheet" href="/%20/assets/css/custom.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Rajil Vembe&apos;s New Blog" /></head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/%20/assets/css/main.css">
+
+    <!-- KaTeX for Math -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body);"></script>
+
+    <!-- Dark Mode Script -->
+    <script>
+        (function () {
+            const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+</head>
 
 <body>
-    <header class="top-nav">
-    <div class="nav-wrapper">
-        <div class="nav-left">
-            <a href="/" class="nav-icon" title="Home">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                    <polyline points="9 22 9 12 15 12 15 22" />
-                </svg>
-            </a>
-        </div>
-        <div class="nav-right">
-            <a href="/about/" class="nav-link">About</a>
-            <span class="nav-divider">|</span>
-            <button class="theme-toggle" aria-label="Toggle theme">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5" />
-                    <line x1="12" y1="1" x2="12" y2="3" />
-                    <line x1="12" y1="21" x2="12" y2="23" />
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                    <line x1="1" y1="12" x2="3" y2="12" />
-                    <line x1="21" y1="12" x2="23" y2="12" />
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                </svg>
-            </button>
-        </div>
+    <div class="site-container">
+        <div class="sidebar">
+    <div class="sidebar-header">
+        <a href="/" class="sidebar-title">Rajil Vembe&#39;s New Blog</a>
     </div>
-</header>
 
-    <div class="site-content">
-        <main class="main-wrapper" aria-label="Content">
-            <div class="home">
-    <section class="profile-header">
-    <div class="profile-avatar">
-        <img src="/%20/assets/profile-pic.jpeg" alt="Rajil Vembe" class="avatar-img">
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search posts..." autocomplete="off">
+        <ul id="results-container"></ul>
     </div>
-    <h1 class="profile-name">Rajil Vembe</h1>
-    <p class="profile-tagline">Software Engineer · AI/ML Researcher · Technology Enthusiast</p>
-</section><ul class="post-list"><li class="post-item">
-            <a class="post-link" href="/jekyll/update/2026/01/01/welcome-to-jekyll.html">
-                <span class="post-title">Welcome to Jekyll!</span>
-                <span class="post-date">1 Jan 2026</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/programming/2025/12/31/mock-post-1.html">
-                <span class="post-title">Understanding Programming Part 1</span>
-                <span class="post-date">31 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/living/2025/12/30/mock-post-2.html">
-                <span class="post-title">The Future of Living Part 2</span>
-                <span class="post-date">30 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/technology/2025/12/29/mock-post-3.html">
-                <span class="post-title">Exploring Technology Part 3</span>
-                <span class="post-date">29 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/productivity/2025/12/28/mock-post-4.html">
-                <span class="post-title">Mastering Productivity Part 4</span>
-                <span class="post-date">28 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/technology/2025/12/27/mock-post-5.html">
-                <span class="post-title">The Future of Technology Part 5</span>
-                <span class="post-date">27 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/programming/2025/12/26/mock-post-6.html">
-                <span class="post-title">The Future of Programming Part 6</span>
-                <span class="post-date">26 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/programming/2025/12/25/mock-post-7.html">
-                <span class="post-title">Mastering Programming Part 7</span>
-                <span class="post-date">25 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/productivity/2025/12/24/mock-post-8.html">
-                <span class="post-title">How to Use Productivity Part 8</span>
-                <span class="post-date">24 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/ai/2025/12/23/mock-post-9.html">
-                <span class="post-title">A Guide to AI Part 9</span>
-                <span class="post-date">23 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/technology/2025/12/22/mock-post-10.html">
-                <span class="post-title">Mastering Technology Part 10</span>
-                <span class="post-date">22 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/cooking/2025/12/21/mock-post-11.html">
-                <span class="post-title">A Guide to Cooking Part 11</span>
-                <span class="post-date">21 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/programming/2025/12/20/mock-post-12.html">
-                <span class="post-title">Exploring Programming Part 12</span>
-                <span class="post-date">20 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/productivity/2025/12/19/mock-post-13.html">
-                <span class="post-title">The Future of Productivity Part 13</span>
-                <span class="post-date">19 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/cooking/2025/12/18/mock-post-14.html">
-                <span class="post-title">How to Use Cooking Part 14</span>
-                <span class="post-date">18 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/cooking/2025/12/17/mock-post-15.html">
-                <span class="post-title">Exploring Cooking Part 15</span>
-                <span class="post-date">17 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/technology/2025/12/16/mock-post-16.html">
-                <span class="post-title">How to Use Technology Part 16</span>
-                <span class="post-date">16 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/travel/2025/12/15/mock-post-17.html">
-                <span class="post-title">A Guide to Travel Part 17</span>
-                <span class="post-date">15 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/travel/2025/12/14/mock-post-18.html">
-                <span class="post-title">A Guide to Travel Part 18</span>
-                <span class="post-date">14 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/living/2025/12/13/mock-post-19.html">
-                <span class="post-title">A Guide to Living Part 19</span>
-                <span class="post-date">13 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/productivity/2025/12/12/mock-post-20.html">
-                <span class="post-title">Understanding Productivity Part 20</span>
-                <span class="post-date">12 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/living/2025/12/11/mock-post-21.html">
-                <span class="post-title">A Guide to Living Part 21</span>
-                <span class="post-date">11 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/living/2025/12/10/mock-post-22.html">
-                <span class="post-title">Exploring Living Part 22</span>
-                <span class="post-date">10 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/cooking/2025/12/09/mock-post-23.html">
-                <span class="post-title">Understanding Cooking Part 23</span>
-                <span class="post-date">9 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/cooking/2025/12/08/mock-post-24.html">
-                <span class="post-title">Mastering Cooking Part 24</span>
-                <span class="post-date">8 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/productivity/2025/12/07/mock-post-25.html">
-                <span class="post-title">The Future of Productivity Part 25</span>
-                <span class="post-date">7 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/travel/2025/12/06/mock-post-26.html">
-                <span class="post-title">Exploring Travel Part 26</span>
-                <span class="post-date">6 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/technology/2025/12/05/mock-post-27.html">
-                <span class="post-title">Exploring Technology Part 27</span>
-                <span class="post-date">5 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/ai/2025/12/04/mock-post-28.html">
-                <span class="post-title">Understanding AI Part 28</span>
-                <span class="post-date">4 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/technology/2025/12/03/mock-post-29.html">
-                <span class="post-title">Exploring Technology Part 29</span>
-                <span class="post-date">3 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/cooking/2025/12/02/mock-post-30.html">
-                <span class="post-title">A Guide to Cooking Part 30</span>
-                <span class="post-date">2 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/travel/2025/12/01/mock-post-31.html">
-                <span class="post-title">A Guide to Travel Part 31</span>
-                <span class="post-date">1 Dec 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/technology/2025/11/30/mock-post-32.html">
-                <span class="post-title">A Guide to Technology Part 32</span>
-                <span class="post-date">30 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/ai/2025/11/29/mock-post-33.html">
-                <span class="post-title">Understanding AI Part 33</span>
-                <span class="post-date">29 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/ai/2025/11/28/mock-post-34.html">
-                <span class="post-title">How to Use AI Part 34</span>
-                <span class="post-date">28 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/cooking/2025/11/27/mock-post-35.html">
-                <span class="post-title">A Guide to Cooking Part 35</span>
-                <span class="post-date">27 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/programming/2025/11/26/mock-post-36.html">
-                <span class="post-title">The Future of Programming Part 36</span>
-                <span class="post-date">26 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/cooking/2025/11/25/mock-post-37.html">
-                <span class="post-title">A Guide to Cooking Part 37</span>
-                <span class="post-date">25 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/living/2025/11/24/mock-post-38.html">
-                <span class="post-title">Understanding Living Part 38</span>
-                <span class="post-date">24 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/living/2025/11/23/mock-post-39.html">
-                <span class="post-title">A Guide to Living Part 39</span>
-                <span class="post-date">23 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/cooking/2025/11/22/mock-post-40.html">
-                <span class="post-title">Exploring Cooking Part 40</span>
-                <span class="post-date">22 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/programming/2025/11/21/mock-post-41.html">
-                <span class="post-title">How to Use Programming Part 41</span>
-                <span class="post-date">21 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/ai/2025/11/20/mock-post-42.html">
-                <span class="post-title">Exploring AI Part 42</span>
-                <span class="post-date">20 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/technology/2025/11/19/mock-post-43.html">
-                <span class="post-title">How to Use Technology Part 43</span>
-                <span class="post-date">19 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/technology/2025/11/18/mock-post-44.html">
-                <span class="post-title">Exploring Technology Part 44</span>
-                <span class="post-date">18 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/programming/2025/11/17/mock-post-45.html">
-                <span class="post-title">The Future of Programming Part 45</span>
-                <span class="post-date">17 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/programming/2025/11/16/mock-post-46.html">
-                <span class="post-title">Mastering Programming Part 46</span>
-                <span class="post-date">16 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/ai/2025/11/15/mock-post-47.html">
-                <span class="post-title">Exploring AI Part 47</span>
-                <span class="post-date">15 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/technology/2025/11/14/mock-post-48.html">
-                <span class="post-title">Mastering Technology Part 48</span>
-                <span class="post-date">14 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/living/2025/11/13/mock-post-49.html">
-                <span class="post-title">A Guide to Living Part 49</span>
-                <span class="post-date">13 Nov 2025</span>
-            </a>
-        </li><li class="post-item">
-            <a class="post-link" href="/programming/2025/11/12/mock-post-50.html">
-                <span class="post-title">A Guide to Programming Part 50</span>
-                <span class="post-date">12 Nov 2025</span>
-            </a>
-        </li></ul></div>
+
+    <nav class="sidebar-nav">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="/" class="nav-link active">Home</a>
+            </li>
+            <li class="nav-item">
+                <a href="/about/"
+                    class="nav-link ">About</a>
+            </li>
+        </ul>
+    </nav>
+
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark mode">
+        <span class="theme-icon">🌙</span>
+        <span class="theme-text">Dark Mode</span>
+    </button>
+</div>
+
+<!-- Simple-Jekyll-Search -->
+<script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
+<script>
+    window.addEventListener('load', function () {
+        SimpleJekyllSearch({
+            searchInput: document.getElementById('search-input'),
+            resultsContainer: document.getElementById('results-container'),
+            json: '/search.json',
+            searchResultTemplate: '<li><a href="{url}">{title}</a></li>',
+            noResultsText: '<li><a href="#">No results found</a></li>',
+            limit: 10,
+            fuzzy: false
+        });
+
+        const input = document.getElementById('search-input');
+        const results = document.getElementById('results-container');
+
+        if (input && results) {
+            input.addEventListener('input', () => {
+                results.style.display = input.value ? 'block' : 'none';
+            });
+
+            // Close search on click outside
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !results.contains(e.target)) {
+                    results.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+
+        <main class="main-content">
+            <div class="inner-wrapper">
+                <ul class="post-list" style="list-style: none; padding: 0;">
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/jekyll/update/2026/01/01/welcome-to-jekyll.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Welcome to Jekyll!</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">January 01, 2026</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/2026/01/01/test-post.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Testing Math and Syntax Highlighting</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">January 01, 2026</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/programming/2025/12/31/mock-post-1.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Understanding Programming Part 1</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 31, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/living/2025/12/30/mock-post-2.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">The Future of Living Part 2</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 30, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/technology/2025/12/29/mock-post-3.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Exploring Technology Part 3</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 29, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/productivity/2025/12/28/mock-post-4.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Mastering Productivity Part 4</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 28, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/technology/2025/12/27/mock-post-5.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">The Future of Technology Part 5</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 27, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/programming/2025/12/26/mock-post-6.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">The Future of Programming Part 6</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 26, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/programming/2025/12/25/mock-post-7.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Mastering Programming Part 7</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 25, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/productivity/2025/12/24/mock-post-8.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">How to Use Productivity Part 8</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 24, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/ai/2025/12/23/mock-post-9.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">A Guide to AI Part 9</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 23, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/technology/2025/12/22/mock-post-10.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Mastering Technology Part 10</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 22, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/cooking/2025/12/21/mock-post-11.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">A Guide to Cooking Part 11</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 21, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/programming/2025/12/20/mock-post-12.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Exploring Programming Part 12</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 20, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/productivity/2025/12/19/mock-post-13.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">The Future of Productivity Part 13</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 19, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/cooking/2025/12/18/mock-post-14.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">How to Use Cooking Part 14</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 18, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/cooking/2025/12/17/mock-post-15.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Exploring Cooking Part 15</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 17, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/technology/2025/12/16/mock-post-16.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">How to Use Technology Part 16</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 16, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/travel/2025/12/15/mock-post-17.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">A Guide to Travel Part 17</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 15, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/travel/2025/12/14/mock-post-18.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">A Guide to Travel Part 18</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 14, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/living/2025/12/13/mock-post-19.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">A Guide to Living Part 19</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 13, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/productivity/2025/12/12/mock-post-20.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Understanding Productivity Part 20</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 12, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/living/2025/12/11/mock-post-21.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">A Guide to Living Part 21</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 11, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/living/2025/12/10/mock-post-22.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Exploring Living Part 22</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 10, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/cooking/2025/12/09/mock-post-23.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Understanding Cooking Part 23</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 09, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/cooking/2025/12/08/mock-post-24.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Mastering Cooking Part 24</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 08, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/productivity/2025/12/07/mock-post-25.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">The Future of Productivity Part 25</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 07, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/travel/2025/12/06/mock-post-26.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Exploring Travel Part 26</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 06, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/technology/2025/12/05/mock-post-27.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Exploring Technology Part 27</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 05, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/ai/2025/12/04/mock-post-28.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Understanding AI Part 28</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 04, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/technology/2025/12/03/mock-post-29.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Exploring Technology Part 29</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 03, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/cooking/2025/12/02/mock-post-30.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">A Guide to Cooking Part 30</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 02, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/travel/2025/12/01/mock-post-31.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">A Guide to Travel Part 31</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">December 01, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/technology/2025/11/30/mock-post-32.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">A Guide to Technology Part 32</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 30, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/ai/2025/11/29/mock-post-33.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Understanding AI Part 33</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 29, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/ai/2025/11/28/mock-post-34.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">How to Use AI Part 34</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 28, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/cooking/2025/11/27/mock-post-35.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">A Guide to Cooking Part 35</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 27, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/programming/2025/11/26/mock-post-36.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">The Future of Programming Part 36</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 26, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/cooking/2025/11/25/mock-post-37.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">A Guide to Cooking Part 37</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 25, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/living/2025/11/24/mock-post-38.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Understanding Living Part 38</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 24, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/living/2025/11/23/mock-post-39.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">A Guide to Living Part 39</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 23, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/cooking/2025/11/22/mock-post-40.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Exploring Cooking Part 40</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 22, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/programming/2025/11/21/mock-post-41.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">How to Use Programming Part 41</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 21, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/ai/2025/11/20/mock-post-42.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Exploring AI Part 42</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 20, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/technology/2025/11/19/mock-post-43.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">How to Use Technology Part 43</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 19, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/technology/2025/11/18/mock-post-44.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Exploring Technology Part 44</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 18, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/programming/2025/11/17/mock-post-45.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">The Future of Programming Part 45</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 17, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/programming/2025/11/16/mock-post-46.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Mastering Programming Part 46</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 16, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/ai/2025/11/15/mock-post-47.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Exploring AI Part 47</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 15, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/technology/2025/11/14/mock-post-48.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">Mastering Technology Part 48</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 14, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/living/2025/11/13/mock-post-49.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">A Guide to Living Part 49</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 13, 2025</time>
+        </a>
+    </li>
+    
+    <li style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <a href="/programming/2025/11/12/mock-post-50.html" style="text-decoration: none;">
+            <h2 style="margin: 0; font-size: 1.5rem;">A Guide to Programming Part 50</h2>
+            <time style="font-size: 0.875rem; color: var(--text-muted);">November 12, 2025</time>
+        </a>
+    </li>
+    
+</ul>
+            </div>
         </main>
     </div>
 
-    <footer class="site-footer">
-    <div class="social-links">
-        <a href="https://twitter.com/rajilsaj" target="_blank" class="social-icon" title="Twitter">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path
-                    d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-            </svg>
-        </a>
-        <a href="https://github.com/rajilsaj" target="_blank" class="social-icon" title="GitHub">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path
-                    d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-            </svg>
-        </a>
-        <a href="/%20/feed.xml" class="social-icon" title="RSS">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 11a9 9 0 0 1 9 9" />
-                <path d="M4 4a16 16 0 0 1 16 16" />
-                <circle cx="5" cy="19" r="1" />
-            </svg>
-        </a>
-    </div>
-    <p class="copyright">© 2026 Rajil Vembe.</p>
-</footer></body>
+    <!-- Theme Toggle Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = themeToggle.querySelector('.theme-icon');
+            const themeText = themeToggle.querySelector('.theme-text');
+
+            const updateUI = (theme) => {
+                themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+                themeText.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
+            };
+
+            updateUI(document.documentElement.getAttribute('data-theme'));
+
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateUI(newTheme);
+            });
+        });
+    </script>
+</body>
 
 </html>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2026-01-01T08:29:54-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Rajil Vembe’s New Blog</title><subtitle>A collection of my thoughts on AI, ML, and programming.</subtitle><entry><title type="html">Welcome to Jekyll!</title><link href="http://localhost:4000/jekyll/update/2026/01/01/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2026-01-01T07:55:50-05:00</published><updated>2026-01-01T07:55:50-05:00</updated><id>http://localhost:4000/jekyll/update/2026/01/01/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/jekyll/update/2026/01/01/welcome-to-jekyll.html"><![CDATA[<p>You’ll find this post in your <code class="language-plaintext highlighter-rouge">_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code class="language-plaintext highlighter-rouge">jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2026-01-01T16:20:48-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Rajil Vembe’s New Blog</title><subtitle>A collection of my thoughts on AI, ML, and programming.</subtitle><entry><title type="html">Welcome to Jekyll!</title><link href="http://localhost:4000/jekyll/update/2026/01/01/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2026-01-01T07:55:50-05:00</published><updated>2026-01-01T07:55:50-05:00</updated><id>http://localhost:4000/jekyll/update/2026/01/01/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/jekyll/update/2026/01/01/welcome-to-jekyll.html"><![CDATA[<p>You’ll find this post in your <code class="language-plaintext highlighter-rouge">_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code class="language-plaintext highlighter-rouge">jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p>
 
 <p>Jekyll requires blog post files to be named according to the following format:</p>
 
@@ -14,7 +14,25 @@
 <span class="n">print_hi</span><span class="p">(</span><span class="s1">'Tom'</span><span class="p">)</span>
 <span class="c1">#=&gt; prints 'Hi, Tom' to STDOUT.</span></code></pre></figure>
 
-<p>Check out the <a href="https://jekyllrb.com/docs/home">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href="https://github.com/jekyll/jekyll">Jekyll’s GitHub repo</a>. If you have questions, you can ask them on <a href="https://talk.jekyllrb.com/">Jekyll Talk</a>.</p>]]></content><author><name></name></author><category term="jekyll" /><category term="update" /><summary type="html"><![CDATA[You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated.]]></summary></entry><entry><title type="html">Understanding Programming Part 1</title><link href="http://localhost:4000/programming/2025/12/31/mock-post-1.html" rel="alternate" type="text/html" title="Understanding Programming Part 1" /><published>2025-12-31T03:02:59-05:00</published><updated>2025-12-31T03:02:59-05:00</updated><id>http://localhost:4000/programming/2025/12/31/mock-post-1</id><content type="html" xml:base="http://localhost:4000/programming/2025/12/31/mock-post-1.html"><![CDATA[<p>This is a mock post numbered 1 about Programming.</p>
+<p>Check out the <a href="https://jekyllrb.com/docs/home">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href="https://github.com/jekyll/jekyll">Jekyll’s GitHub repo</a>. If you have questions, you can ask them on <a href="https://talk.jekyllrb.com/">Jekyll Talk</a>.</p>]]></content><author><name></name></author><category term="jekyll" /><category term="update" /><summary type="html"><![CDATA[You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated.]]></summary></entry><entry><title type="html">Testing Math and Syntax Highlighting</title><link href="http://localhost:4000/2026/01/01/test-post.html" rel="alternate" type="text/html" title="Testing Math and Syntax Highlighting" /><published>2026-01-01T00:00:00-05:00</published><updated>2026-01-01T00:00:00-05:00</updated><id>http://localhost:4000/2026/01/01/test-post</id><content type="html" xml:base="http://localhost:4000/2026/01/01/test-post.html"><![CDATA[<h2 id="math-rendering">Math Rendering</h2>
+
+<p>Here is an inline math example: $E = mc^2$.</p>
+
+<p>And a block math example:</p>
+
+\[\int_{a}^{b} x^2 \, dx = \frac{b^3 - a^3}{3}\]
+
+<h2 id="syntax-highlighting">Syntax Highlighting</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Hello, Minimalist World!</span><span class="sh">"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">True</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">toggleDarkMode</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nf">toggle</span><span class="p">(</span><span class="dl">'</span><span class="s1">dark-mode</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>]]></content><author><name></name></author><summary type="html"><![CDATA[Math Rendering]]></summary></entry><entry><title type="html">Understanding Programming Part 1</title><link href="http://localhost:4000/programming/2025/12/31/mock-post-1.html" rel="alternate" type="text/html" title="Understanding Programming Part 1" /><published>2025-12-31T03:02:59-05:00</published><updated>2025-12-31T03:02:59-05:00</updated><id>http://localhost:4000/programming/2025/12/31/mock-post-1</id><content type="html" xml:base="http://localhost:4000/programming/2025/12/31/mock-post-1.html"><![CDATA[<p>This is a mock post numbered 1 about Programming.</p>
 
 <p><img src="/assets/images/mock-1.jpg" alt="Mock Image 1" /></p>
 
@@ -118,17 +136,4 @@
   <li>Point C for Productivity</li>
 </ul>
 
-<p>Stay tuned for more!</p>]]></content><author><name></name></author><category term="productivity" /><summary type="html"><![CDATA[This is a mock post numbered 8 about Productivity.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/mock-8.jpg" /><media:content medium="image" url="http://localhost:4000/assets/images/mock-8.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">A Guide to AI Part 9</title><link href="http://localhost:4000/ai/2025/12/23/mock-post-9.html" rel="alternate" type="text/html" title="A Guide to AI Part 9" /><published>2025-12-23T03:02:59-05:00</published><updated>2025-12-23T03:02:59-05:00</updated><id>http://localhost:4000/ai/2025/12/23/mock-post-9</id><content type="html" xml:base="http://localhost:4000/ai/2025/12/23/mock-post-9.html"><![CDATA[<p>This is a mock post numbered 9 about AI.</p>
-
-<p><img src="/assets/images/mock-9.jpg" alt="Mock Image 9" /></p>
-
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-
-<h3 id="key-points">Key Points</h3>
-<ul>
-  <li>Point A for AI</li>
-  <li>Point B for AI</li>
-  <li>Point C for AI</li>
-</ul>
-
-<p>Stay tuned for more!</p>]]></content><author><name></name></author><category term="ai" /><summary type="html"><![CDATA[This is a mock post numbered 9 about AI.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/mock-9.jpg" /><media:content medium="image" url="http://localhost:4000/assets/images/mock-9.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+<p>Stay tuned for more!</p>]]></content><author><name></name></author><category term="productivity" /><summary type="html"><![CDATA[This is a mock post numbered 8 about Productivity.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/mock-8.jpg" /><media:content medium="image" url="http://localhost:4000/assets/images/mock-8.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

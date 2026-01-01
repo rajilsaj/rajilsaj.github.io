@@ -3,12 +3,10 @@
     --text-color: #1a1a1a;
     --text-muted: #666666;
     --accent-color: #2563eb;
-    /* A nice deep blue */
     --accent-soft: #eff6ff;
     --border-color: #f1f5f9;
     --hover-bg: #f8fafc;
     --max-width: 720px;
-    /* Slimmer for better readability */
     --font-main: 'Inter', sans-serif;
     --font-title: 'Outfit', sans-serif;
 }
@@ -21,6 +19,8 @@ body {
     color: var(--text-color);
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
+    text-align: center;
+    /* Center text by default */
 }
 
 a {
@@ -33,15 +33,25 @@ a {
 .top-nav {
     padding: 1.5rem 0;
     margin-bottom: 3rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .nav-wrapper {
     max-width: var(--max-width);
     margin: 0 auto;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    /* Center the entire nav */
     align-items: center;
     padding: 0 1.5rem;
+    gap: 2rem;
+}
+
+.nav-left,
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
 }
 
 .nav-icon {
@@ -52,12 +62,6 @@ a {
 
 .nav-icon:hover {
     color: var(--accent-color);
-}
-
-.nav-right {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
 }
 
 .nav-link {
@@ -74,6 +78,7 @@ a {
 
 .nav-divider {
     color: var(--border-color);
+    font-weight: 300;
 }
 
 .theme-toggle {
@@ -144,30 +149,32 @@ a {
 }
 
 .post-item {
-    margin-bottom: 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.post-item:first-child {
+    border-top: 1px solid var(--border-color);
 }
 
 .post-link {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    /* Stack for centering */
     align-items: center;
-    padding: 1.25rem 0.5rem;
-    border-bottom: 1px solid var(--border-color);
-    border-radius: 8px;
-    /* Subtle shape */
+    padding: 1.5rem 1rem;
+    transition: background-color 0.2s;
 }
 
 .post-link:hover {
     background-color: var(--hover-bg);
-    padding-left: 1rem;
-    padding-right: 1rem;
 }
 
 .post-title {
     font-family: var(--font-title);
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     color: var(--text-color);
+    margin-bottom: 0.25rem;
 }
 
 .post-date {
@@ -189,7 +196,7 @@ a {
     margin-bottom: 1.5rem;
     display: flex;
     justify-content: center;
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
 .social-icon {
@@ -211,5 +218,9 @@ a {
 @media (max-width: 600px) {
     .profile-name {
         font-size: 1.8rem;
+    }
+
+    .nav-wrapper {
+        gap: 1rem;
     }
 }
