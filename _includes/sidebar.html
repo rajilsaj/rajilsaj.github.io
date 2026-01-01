@@ -1,0 +1,24 @@
+<div class="sidebar">
+    <div class="sidebar-header">
+        <a href="{{ '/' | relative_url }}" class="sidebar-title">{{ site.title | escape }}</a>
+    </div>
+
+    <nav class="sidebar-nav">
+        <ul class="nav-list">
+            <li><a href="{{ '/' | relative_url }}">Home</a></li>
+            <li><a href="{{ '/about/' | relative_url }}">About</a></li>
+            <li class="nav-divider"></li>
+            <li class="nav-header">Categories</li>
+            {% assign categories = site.categories | sort %}
+            {% for category in categories %}
+            {% assign category_name = category | first %}
+            <li><a href="{{ '/categories/' | append: category_name | relative_url }}">{{ category_name | capitalize
+                    }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+        <p>&copy; {{ site.time | date: '%Y' }} {{ site.title }}</p>
+    </div>
+</div>
