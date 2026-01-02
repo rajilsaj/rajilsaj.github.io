@@ -1,0 +1,1142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+ <title>Rajil Vembe's Blog</title>
+ <link href="http://localhost:4000/atom.xml" rel="self"/>
+ <link href="http://localhost:4000/"/>
+ <updated>2026-01-01T23:53:59-05:00</updated>
+ <id>http://localhost:4000</id>
+ <author>
+   <name>Rajil Vembe</name>
+   <email>rajil@example.com</email>
+ </author>
+
+ 
+ <entry>
+   <title>Welcome to Jekyll!</title>
+   <link href="http://localhost:4000/2026/01/01/welcome-to-jekyll"/>
+   <updated>2026-01-01T07:55:50-05:00</updated>
+   <id>http://localhost:4000/2026/01/01/welcome-to-jekyll</id>
+   <content type="html">&lt;p&gt;You’ll find this post in your &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
+
+&lt;p&gt;Jekyll requires blog post files to be named according to the following format:&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;YEAR-MONTH-DAY-title.MARKUP&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Where &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;YEAR&lt;/code&gt; is a four-digit number, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MONTH&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DAY&lt;/code&gt; are both two-digit numbers, and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MARKUP&lt;/code&gt; is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works.&lt;/p&gt;
+
+&lt;p&gt;Jekyll also offers powerful support for code snippets:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Hi, &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&apos;Tom&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#=&amp;gt; prints &apos;Hi, Tom&apos; to STDOUT.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Check out the &lt;a href=&quot;https://jekyllrb.com/docs/home&quot;&gt;Jekyll docs&lt;/a&gt; for more info on how to get the most out of Jekyll. File all bugs/feature requests at &lt;a href=&quot;https://github.com/jekyll/jekyll&quot;&gt;Jekyll’s GitHub repo&lt;/a&gt;. If you have questions, you can ask them on &lt;a href=&quot;https://talk.jekyllrb.com/&quot;&gt;Jekyll Talk&lt;/a&gt;.&lt;/p&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Understanding Programming Part 1</title>
+   <link href="http://localhost:4000/2025/12/31/mock-post-1"/>
+   <updated>2025-12-31T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/31/mock-post-1</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 1 about Programming.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-1.jpg&quot; alt=&quot;Mock Image 1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Programming&lt;/li&gt;
+  &lt;li&gt;Point B for Programming&lt;/li&gt;
+  &lt;li&gt;Point C for Programming&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>The Future of Living Part 2</title>
+   <link href="http://localhost:4000/2025/12/30/mock-post-2"/>
+   <updated>2025-12-30T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/30/mock-post-2</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 2 about Living.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-2.jpg&quot; alt=&quot;Mock Image 2&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Living&lt;/li&gt;
+  &lt;li&gt;Point B for Living&lt;/li&gt;
+  &lt;li&gt;Point C for Living&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Exploring Technology Part 3</title>
+   <link href="http://localhost:4000/2025/12/29/mock-post-3"/>
+   <updated>2025-12-29T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/29/mock-post-3</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 3 about Technology.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-3.jpg&quot; alt=&quot;Mock Image 3&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Technology&lt;/li&gt;
+  &lt;li&gt;Point B for Technology&lt;/li&gt;
+  &lt;li&gt;Point C for Technology&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Mastering Productivity Part 4</title>
+   <link href="http://localhost:4000/2025/12/28/mock-post-4"/>
+   <updated>2025-12-28T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/28/mock-post-4</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 4 about Productivity.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-4.jpg&quot; alt=&quot;Mock Image 4&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Productivity&lt;/li&gt;
+  &lt;li&gt;Point B for Productivity&lt;/li&gt;
+  &lt;li&gt;Point C for Productivity&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>The Future of Technology Part 5</title>
+   <link href="http://localhost:4000/2025/12/27/mock-post-5"/>
+   <updated>2025-12-27T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/27/mock-post-5</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 5 about Technology.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-5.jpg&quot; alt=&quot;Mock Image 5&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Technology&lt;/li&gt;
+  &lt;li&gt;Point B for Technology&lt;/li&gt;
+  &lt;li&gt;Point C for Technology&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>The Future of Programming Part 6</title>
+   <link href="http://localhost:4000/2025/12/26/mock-post-6"/>
+   <updated>2025-12-26T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/26/mock-post-6</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 6 about Programming.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-6.jpg&quot; alt=&quot;Mock Image 6&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Programming&lt;/li&gt;
+  &lt;li&gt;Point B for Programming&lt;/li&gt;
+  &lt;li&gt;Point C for Programming&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Mastering Programming Part 7</title>
+   <link href="http://localhost:4000/2025/12/25/mock-post-7"/>
+   <updated>2025-12-25T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/25/mock-post-7</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 7 about Programming.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-7.jpg&quot; alt=&quot;Mock Image 7&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Programming&lt;/li&gt;
+  &lt;li&gt;Point B for Programming&lt;/li&gt;
+  &lt;li&gt;Point C for Programming&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>How to Use Productivity Part 8</title>
+   <link href="http://localhost:4000/2025/12/24/mock-post-8"/>
+   <updated>2025-12-24T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/24/mock-post-8</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 8 about Productivity.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-8.jpg&quot; alt=&quot;Mock Image 8&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Productivity&lt;/li&gt;
+  &lt;li&gt;Point B for Productivity&lt;/li&gt;
+  &lt;li&gt;Point C for Productivity&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>A Guide to AI Part 9</title>
+   <link href="http://localhost:4000/2025/12/23/mock-post-9"/>
+   <updated>2025-12-23T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/23/mock-post-9</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 9 about AI.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-9.jpg&quot; alt=&quot;Mock Image 9&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for AI&lt;/li&gt;
+  &lt;li&gt;Point B for AI&lt;/li&gt;
+  &lt;li&gt;Point C for AI&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Mastering Technology Part 10</title>
+   <link href="http://localhost:4000/2025/12/22/mock-post-10"/>
+   <updated>2025-12-22T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/22/mock-post-10</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 10 about Technology.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-10.jpg&quot; alt=&quot;Mock Image 10&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Technology&lt;/li&gt;
+  &lt;li&gt;Point B for Technology&lt;/li&gt;
+  &lt;li&gt;Point C for Technology&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>A Guide to Cooking Part 11</title>
+   <link href="http://localhost:4000/2025/12/21/mock-post-11"/>
+   <updated>2025-12-21T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/21/mock-post-11</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 11 about Cooking.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-11.jpg&quot; alt=&quot;Mock Image 11&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Cooking&lt;/li&gt;
+  &lt;li&gt;Point B for Cooking&lt;/li&gt;
+  &lt;li&gt;Point C for Cooking&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Exploring Programming Part 12</title>
+   <link href="http://localhost:4000/2025/12/20/mock-post-12"/>
+   <updated>2025-12-20T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/20/mock-post-12</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 12 about Programming.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-12.jpg&quot; alt=&quot;Mock Image 12&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Programming&lt;/li&gt;
+  &lt;li&gt;Point B for Programming&lt;/li&gt;
+  &lt;li&gt;Point C for Programming&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>The Future of Productivity Part 13</title>
+   <link href="http://localhost:4000/2025/12/19/mock-post-13"/>
+   <updated>2025-12-19T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/19/mock-post-13</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 13 about Productivity.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-13.jpg&quot; alt=&quot;Mock Image 13&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Productivity&lt;/li&gt;
+  &lt;li&gt;Point B for Productivity&lt;/li&gt;
+  &lt;li&gt;Point C for Productivity&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>How to Use Cooking Part 14</title>
+   <link href="http://localhost:4000/2025/12/18/mock-post-14"/>
+   <updated>2025-12-18T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/18/mock-post-14</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 14 about Cooking.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-14.jpg&quot; alt=&quot;Mock Image 14&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Cooking&lt;/li&gt;
+  &lt;li&gt;Point B for Cooking&lt;/li&gt;
+  &lt;li&gt;Point C for Cooking&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Exploring Cooking Part 15</title>
+   <link href="http://localhost:4000/2025/12/17/mock-post-15"/>
+   <updated>2025-12-17T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/17/mock-post-15</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 15 about Cooking.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-15.jpg&quot; alt=&quot;Mock Image 15&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Cooking&lt;/li&gt;
+  &lt;li&gt;Point B for Cooking&lt;/li&gt;
+  &lt;li&gt;Point C for Cooking&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>How to Use Technology Part 16</title>
+   <link href="http://localhost:4000/2025/12/16/mock-post-16"/>
+   <updated>2025-12-16T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/16/mock-post-16</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 16 about Technology.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-16.jpg&quot; alt=&quot;Mock Image 16&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Technology&lt;/li&gt;
+  &lt;li&gt;Point B for Technology&lt;/li&gt;
+  &lt;li&gt;Point C for Technology&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>A Guide to Travel Part 17</title>
+   <link href="http://localhost:4000/2025/12/15/mock-post-17"/>
+   <updated>2025-12-15T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/15/mock-post-17</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 17 about Travel.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-17.jpg&quot; alt=&quot;Mock Image 17&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Travel&lt;/li&gt;
+  &lt;li&gt;Point B for Travel&lt;/li&gt;
+  &lt;li&gt;Point C for Travel&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>A Guide to Travel Part 18</title>
+   <link href="http://localhost:4000/2025/12/14/mock-post-18"/>
+   <updated>2025-12-14T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/14/mock-post-18</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 18 about Travel.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-18.jpg&quot; alt=&quot;Mock Image 18&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Travel&lt;/li&gt;
+  &lt;li&gt;Point B for Travel&lt;/li&gt;
+  &lt;li&gt;Point C for Travel&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>A Guide to Living Part 19</title>
+   <link href="http://localhost:4000/2025/12/13/mock-post-19"/>
+   <updated>2025-12-13T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/13/mock-post-19</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 19 about Living.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-19.jpg&quot; alt=&quot;Mock Image 19&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Living&lt;/li&gt;
+  &lt;li&gt;Point B for Living&lt;/li&gt;
+  &lt;li&gt;Point C for Living&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Understanding Productivity Part 20</title>
+   <link href="http://localhost:4000/2025/12/12/mock-post-20"/>
+   <updated>2025-12-12T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/12/mock-post-20</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 20 about Productivity.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-20.jpg&quot; alt=&quot;Mock Image 20&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Productivity&lt;/li&gt;
+  &lt;li&gt;Point B for Productivity&lt;/li&gt;
+  &lt;li&gt;Point C for Productivity&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>A Guide to Living Part 21</title>
+   <link href="http://localhost:4000/2025/12/11/mock-post-21"/>
+   <updated>2025-12-11T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/11/mock-post-21</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 21 about Living.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-21.jpg&quot; alt=&quot;Mock Image 21&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Living&lt;/li&gt;
+  &lt;li&gt;Point B for Living&lt;/li&gt;
+  &lt;li&gt;Point C for Living&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Exploring Living Part 22</title>
+   <link href="http://localhost:4000/2025/12/10/mock-post-22"/>
+   <updated>2025-12-10T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/10/mock-post-22</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 22 about Living.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-22.jpg&quot; alt=&quot;Mock Image 22&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Living&lt;/li&gt;
+  &lt;li&gt;Point B for Living&lt;/li&gt;
+  &lt;li&gt;Point C for Living&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Understanding Cooking Part 23</title>
+   <link href="http://localhost:4000/2025/12/09/mock-post-23"/>
+   <updated>2025-12-09T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/09/mock-post-23</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 23 about Cooking.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-23.jpg&quot; alt=&quot;Mock Image 23&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Cooking&lt;/li&gt;
+  &lt;li&gt;Point B for Cooking&lt;/li&gt;
+  &lt;li&gt;Point C for Cooking&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Mastering Cooking Part 24</title>
+   <link href="http://localhost:4000/2025/12/08/mock-post-24"/>
+   <updated>2025-12-08T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/08/mock-post-24</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 24 about Cooking.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-24.jpg&quot; alt=&quot;Mock Image 24&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Cooking&lt;/li&gt;
+  &lt;li&gt;Point B for Cooking&lt;/li&gt;
+  &lt;li&gt;Point C for Cooking&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>The Future of Productivity Part 25</title>
+   <link href="http://localhost:4000/2025/12/07/mock-post-25"/>
+   <updated>2025-12-07T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/07/mock-post-25</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 25 about Productivity.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-25.jpg&quot; alt=&quot;Mock Image 25&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Productivity&lt;/li&gt;
+  &lt;li&gt;Point B for Productivity&lt;/li&gt;
+  &lt;li&gt;Point C for Productivity&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Exploring Travel Part 26</title>
+   <link href="http://localhost:4000/2025/12/06/mock-post-26"/>
+   <updated>2025-12-06T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/06/mock-post-26</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 26 about Travel.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-26.jpg&quot; alt=&quot;Mock Image 26&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Travel&lt;/li&gt;
+  &lt;li&gt;Point B for Travel&lt;/li&gt;
+  &lt;li&gt;Point C for Travel&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Exploring Technology Part 27</title>
+   <link href="http://localhost:4000/2025/12/05/mock-post-27"/>
+   <updated>2025-12-05T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/05/mock-post-27</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 27 about Technology.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-27.jpg&quot; alt=&quot;Mock Image 27&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Technology&lt;/li&gt;
+  &lt;li&gt;Point B for Technology&lt;/li&gt;
+  &lt;li&gt;Point C for Technology&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Understanding AI Part 28</title>
+   <link href="http://localhost:4000/2025/12/04/mock-post-28"/>
+   <updated>2025-12-04T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/04/mock-post-28</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 28 about AI.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-28.jpg&quot; alt=&quot;Mock Image 28&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for AI&lt;/li&gt;
+  &lt;li&gt;Point B for AI&lt;/li&gt;
+  &lt;li&gt;Point C for AI&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Exploring Technology Part 29</title>
+   <link href="http://localhost:4000/2025/12/03/mock-post-29"/>
+   <updated>2025-12-03T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/03/mock-post-29</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 29 about Technology.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-29.jpg&quot; alt=&quot;Mock Image 29&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Technology&lt;/li&gt;
+  &lt;li&gt;Point B for Technology&lt;/li&gt;
+  &lt;li&gt;Point C for Technology&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>A Guide to Cooking Part 30</title>
+   <link href="http://localhost:4000/2025/12/02/mock-post-30"/>
+   <updated>2025-12-02T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/02/mock-post-30</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 30 about Cooking.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-30.jpg&quot; alt=&quot;Mock Image 30&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Cooking&lt;/li&gt;
+  &lt;li&gt;Point B for Cooking&lt;/li&gt;
+  &lt;li&gt;Point C for Cooking&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>A Guide to Travel Part 31</title>
+   <link href="http://localhost:4000/2025/12/01/mock-post-31"/>
+   <updated>2025-12-01T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/12/01/mock-post-31</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 31 about Travel.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-31.jpg&quot; alt=&quot;Mock Image 31&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Travel&lt;/li&gt;
+  &lt;li&gt;Point B for Travel&lt;/li&gt;
+  &lt;li&gt;Point C for Travel&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>A Guide to Technology Part 32</title>
+   <link href="http://localhost:4000/2025/11/30/mock-post-32"/>
+   <updated>2025-11-30T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/30/mock-post-32</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 32 about Technology.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-32.jpg&quot; alt=&quot;Mock Image 32&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Technology&lt;/li&gt;
+  &lt;li&gt;Point B for Technology&lt;/li&gt;
+  &lt;li&gt;Point C for Technology&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Understanding AI Part 33</title>
+   <link href="http://localhost:4000/2025/11/29/mock-post-33"/>
+   <updated>2025-11-29T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/29/mock-post-33</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 33 about AI.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-33.jpg&quot; alt=&quot;Mock Image 33&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for AI&lt;/li&gt;
+  &lt;li&gt;Point B for AI&lt;/li&gt;
+  &lt;li&gt;Point C for AI&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>How to Use AI Part 34</title>
+   <link href="http://localhost:4000/2025/11/28/mock-post-34"/>
+   <updated>2025-11-28T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/28/mock-post-34</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 34 about AI.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-34.jpg&quot; alt=&quot;Mock Image 34&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for AI&lt;/li&gt;
+  &lt;li&gt;Point B for AI&lt;/li&gt;
+  &lt;li&gt;Point C for AI&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>A Guide to Cooking Part 35</title>
+   <link href="http://localhost:4000/2025/11/27/mock-post-35"/>
+   <updated>2025-11-27T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/27/mock-post-35</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 35 about Cooking.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-35.jpg&quot; alt=&quot;Mock Image 35&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Cooking&lt;/li&gt;
+  &lt;li&gt;Point B for Cooking&lt;/li&gt;
+  &lt;li&gt;Point C for Cooking&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>The Future of Programming Part 36</title>
+   <link href="http://localhost:4000/2025/11/26/mock-post-36"/>
+   <updated>2025-11-26T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/26/mock-post-36</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 36 about Programming.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-36.jpg&quot; alt=&quot;Mock Image 36&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Programming&lt;/li&gt;
+  &lt;li&gt;Point B for Programming&lt;/li&gt;
+  &lt;li&gt;Point C for Programming&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>A Guide to Cooking Part 37</title>
+   <link href="http://localhost:4000/2025/11/25/mock-post-37"/>
+   <updated>2025-11-25T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/25/mock-post-37</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 37 about Cooking.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-37.jpg&quot; alt=&quot;Mock Image 37&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Cooking&lt;/li&gt;
+  &lt;li&gt;Point B for Cooking&lt;/li&gt;
+  &lt;li&gt;Point C for Cooking&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Understanding Living Part 38</title>
+   <link href="http://localhost:4000/2025/11/24/mock-post-38"/>
+   <updated>2025-11-24T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/24/mock-post-38</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 38 about Living.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-38.jpg&quot; alt=&quot;Mock Image 38&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Living&lt;/li&gt;
+  &lt;li&gt;Point B for Living&lt;/li&gt;
+  &lt;li&gt;Point C for Living&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>A Guide to Living Part 39</title>
+   <link href="http://localhost:4000/2025/11/23/mock-post-39"/>
+   <updated>2025-11-23T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/23/mock-post-39</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 39 about Living.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-39.jpg&quot; alt=&quot;Mock Image 39&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Living&lt;/li&gt;
+  &lt;li&gt;Point B for Living&lt;/li&gt;
+  &lt;li&gt;Point C for Living&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Exploring Cooking Part 40</title>
+   <link href="http://localhost:4000/2025/11/22/mock-post-40"/>
+   <updated>2025-11-22T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/22/mock-post-40</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 40 about Cooking.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-40.jpg&quot; alt=&quot;Mock Image 40&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Cooking&lt;/li&gt;
+  &lt;li&gt;Point B for Cooking&lt;/li&gt;
+  &lt;li&gt;Point C for Cooking&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>How to Use Programming Part 41</title>
+   <link href="http://localhost:4000/2025/11/21/mock-post-41"/>
+   <updated>2025-11-21T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/21/mock-post-41</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 41 about Programming.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-41.jpg&quot; alt=&quot;Mock Image 41&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Programming&lt;/li&gt;
+  &lt;li&gt;Point B for Programming&lt;/li&gt;
+  &lt;li&gt;Point C for Programming&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Exploring AI Part 42</title>
+   <link href="http://localhost:4000/2025/11/20/mock-post-42"/>
+   <updated>2025-11-20T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/20/mock-post-42</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 42 about AI.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-42.jpg&quot; alt=&quot;Mock Image 42&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for AI&lt;/li&gt;
+  &lt;li&gt;Point B for AI&lt;/li&gt;
+  &lt;li&gt;Point C for AI&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>How to Use Technology Part 43</title>
+   <link href="http://localhost:4000/2025/11/19/mock-post-43"/>
+   <updated>2025-11-19T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/19/mock-post-43</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 43 about Technology.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-43.jpg&quot; alt=&quot;Mock Image 43&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Technology&lt;/li&gt;
+  &lt;li&gt;Point B for Technology&lt;/li&gt;
+  &lt;li&gt;Point C for Technology&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Exploring Technology Part 44</title>
+   <link href="http://localhost:4000/2025/11/18/mock-post-44"/>
+   <updated>2025-11-18T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/18/mock-post-44</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 44 about Technology.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-44.jpg&quot; alt=&quot;Mock Image 44&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Technology&lt;/li&gt;
+  &lt;li&gt;Point B for Technology&lt;/li&gt;
+  &lt;li&gt;Point C for Technology&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>The Future of Programming Part 45</title>
+   <link href="http://localhost:4000/2025/11/17/mock-post-45"/>
+   <updated>2025-11-17T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/17/mock-post-45</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 45 about Programming.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-45.jpg&quot; alt=&quot;Mock Image 45&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Programming&lt;/li&gt;
+  &lt;li&gt;Point B for Programming&lt;/li&gt;
+  &lt;li&gt;Point C for Programming&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Mastering Programming Part 46</title>
+   <link href="http://localhost:4000/2025/11/16/mock-post-46"/>
+   <updated>2025-11-16T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/16/mock-post-46</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 46 about Programming.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-46.jpg&quot; alt=&quot;Mock Image 46&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Programming&lt;/li&gt;
+  &lt;li&gt;Point B for Programming&lt;/li&gt;
+  &lt;li&gt;Point C for Programming&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Exploring AI Part 47</title>
+   <link href="http://localhost:4000/2025/11/15/mock-post-47"/>
+   <updated>2025-11-15T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/15/mock-post-47</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 47 about AI.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-47.jpg&quot; alt=&quot;Mock Image 47&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for AI&lt;/li&gt;
+  &lt;li&gt;Point B for AI&lt;/li&gt;
+  &lt;li&gt;Point C for AI&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Mastering Technology Part 48</title>
+   <link href="http://localhost:4000/2025/11/14/mock-post-48"/>
+   <updated>2025-11-14T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/14/mock-post-48</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 48 about Technology.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-48.jpg&quot; alt=&quot;Mock Image 48&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Technology&lt;/li&gt;
+  &lt;li&gt;Point B for Technology&lt;/li&gt;
+  &lt;li&gt;Point C for Technology&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>A Guide to Living Part 49</title>
+   <link href="http://localhost:4000/2025/11/13/mock-post-49"/>
+   <updated>2025-11-13T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/13/mock-post-49</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 49 about Living.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-49.jpg&quot; alt=&quot;Mock Image 49&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Living&lt;/li&gt;
+  &lt;li&gt;Point B for Living&lt;/li&gt;
+  &lt;li&gt;Point C for Living&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>A Guide to Programming Part 50</title>
+   <link href="http://localhost:4000/2025/11/12/mock-post-50"/>
+   <updated>2025-11-12T03:02:59-05:00</updated>
+   <id>http://localhost:4000/2025/11/12/mock-post-50</id>
+   <content type="html">&lt;p&gt;This is a mock post numbered 50 about Programming.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/mock-50.jpg&quot; alt=&quot;Mock Image 50&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-points&quot;&gt;Key Points&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Point A for Programming&lt;/li&gt;
+  &lt;li&gt;Point B for Programming&lt;/li&gt;
+  &lt;li&gt;Point C for Programming&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Stay tuned for more!&lt;/p&gt;
+</content>
+ </entry>
+ 
+
+</feed>

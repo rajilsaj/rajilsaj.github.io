@@ -1,0 +1,884 @@
+{
+    "version": "https://jsonfeed.org/version/1",
+    "title": "Rajil Vembe&apos;s Blog",
+    "home_page_url": "http://localhost:4000/",
+    "feed_url": "http://localhost:4000/feed.json",
+    "description": "A collection of my thoughts on AI, ML, and programming.",
+    "icon": "http://localhost:4000/apple-touch-icon.png",
+    "favicon": "http://localhost:4000/favicon.ico",
+    "expired": false,
+    
+    "author":  {
+        "name": "Rajil Vembe",
+        "url": null,
+        "avatar": null
+    },
+    
+"items": [
+    
+        {
+            "id": "http://localhost:4000/2026/01/01/welcome-to-jekyll",
+            "title": "Welcome to Jekyll!",
+            "summary": null,
+            "content_text": "You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated.Jekyll requires blog post files to be named according to the following format:YEAR-MONTH-DAY-title.MARKUPWhere YEAR is a four-digit number, MONTH and DAY are both two-digit numbers, and MARKUP is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works.Jekyll also offers powerful support for code snippets:def print_hi(name)  puts \"Hi, #{name}\"endprint_hi('Tom')#=&gt; prints 'Hi, Tom' to STDOUT.Check out the Jekyll docs for more info on how to get the most out of Jekyll. File all bugs/feature requests at Jekyll’s GitHub repo. If you have questions, you can ask them on Jekyll Talk.",
+            "content_html": "<p>You’ll find this post in your <code class=\"language-plaintext highlighter-rouge\">_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code class=\"language-plaintext highlighter-rouge\">jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p><p>Jekyll requires blog post files to be named according to the following format:</p><p><code class=\"language-plaintext highlighter-rouge\">YEAR-MONTH-DAY-title.MARKUP</code></p><p>Where <code class=\"language-plaintext highlighter-rouge\">YEAR</code> is a four-digit number, <code class=\"language-plaintext highlighter-rouge\">MONTH</code> and <code class=\"language-plaintext highlighter-rouge\">DAY</code> are both two-digit numbers, and <code class=\"language-plaintext highlighter-rouge\">MARKUP</code> is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works.</p><p>Jekyll also offers powerful support for code snippets:</p><figure class=\"highlight\"><pre><code class=\"language-ruby\" data-lang=\"ruby\"><span class=\"k\">def</span> <span class=\"nf\">print_hi</span><span class=\"p\">(</span><span class=\"nb\">name</span><span class=\"p\">)</span>  <span class=\"nb\">puts</span> <span class=\"s2\">\"Hi, </span><span class=\"si\">#{</span><span class=\"nb\">name</span><span class=\"si\">}</span><span class=\"s2\">\"</span><span class=\"k\">end</span><span class=\"n\">print_hi</span><span class=\"p\">(</span><span class=\"s1\">'Tom'</span><span class=\"p\">)</span><span class=\"c1\">#=&gt; prints 'Hi, Tom' to STDOUT.</span></code></pre></figure><p>Check out the <a href=\"https://jekyllrb.com/docs/home\">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href=\"https://github.com/jekyll/jekyll\">Jekyll’s GitHub repo</a>. If you have questions, you can ask them on <a href=\"https://talk.jekyllrb.com/\">Jekyll Talk</a>.</p>",
+            "url": "http://localhost:4000/2026/01/01/welcome-to-jekyll",
+            
+            
+            
+            
+            
+            "date_published": "2026-01-01T07:55:50-05:00",
+            "date_modified": "2026-01-01T07:55:50-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/31/mock-post-1",
+            "title": "Understanding Programming Part 1",
+            "summary": null,
+            "content_text": "This is a mock post numbered 1 about Programming.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Programming  Point B for Programming  Point C for ProgrammingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 1 about Programming.</p><p><img src=\"/assets/images/mock-1.jpg\" alt=\"Mock Image 1\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Programming</li>  <li>Point B for Programming</li>  <li>Point C for Programming</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/31/mock-post-1",
+            "image": "/assets/images/mock-1.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-31T03:02:59-05:00",
+            "date_modified": "2025-12-31T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/30/mock-post-2",
+            "title": "The Future of Living Part 2",
+            "summary": null,
+            "content_text": "This is a mock post numbered 2 about Living.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Living  Point B for Living  Point C for LivingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 2 about Living.</p><p><img src=\"/assets/images/mock-2.jpg\" alt=\"Mock Image 2\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Living</li>  <li>Point B for Living</li>  <li>Point C for Living</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/30/mock-post-2",
+            "image": "/assets/images/mock-2.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-30T03:02:59-05:00",
+            "date_modified": "2025-12-30T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/29/mock-post-3",
+            "title": "Exploring Technology Part 3",
+            "summary": null,
+            "content_text": "This is a mock post numbered 3 about Technology.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Technology  Point B for Technology  Point C for TechnologyStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 3 about Technology.</p><p><img src=\"/assets/images/mock-3.jpg\" alt=\"Mock Image 3\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Technology</li>  <li>Point B for Technology</li>  <li>Point C for Technology</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/29/mock-post-3",
+            "image": "/assets/images/mock-3.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-29T03:02:59-05:00",
+            "date_modified": "2025-12-29T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/28/mock-post-4",
+            "title": "Mastering Productivity Part 4",
+            "summary": null,
+            "content_text": "This is a mock post numbered 4 about Productivity.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Productivity  Point B for Productivity  Point C for ProductivityStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 4 about Productivity.</p><p><img src=\"/assets/images/mock-4.jpg\" alt=\"Mock Image 4\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Productivity</li>  <li>Point B for Productivity</li>  <li>Point C for Productivity</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/28/mock-post-4",
+            "image": "/assets/images/mock-4.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-28T03:02:59-05:00",
+            "date_modified": "2025-12-28T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/27/mock-post-5",
+            "title": "The Future of Technology Part 5",
+            "summary": null,
+            "content_text": "This is a mock post numbered 5 about Technology.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Technology  Point B for Technology  Point C for TechnologyStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 5 about Technology.</p><p><img src=\"/assets/images/mock-5.jpg\" alt=\"Mock Image 5\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Technology</li>  <li>Point B for Technology</li>  <li>Point C for Technology</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/27/mock-post-5",
+            "image": "/assets/images/mock-5.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-27T03:02:59-05:00",
+            "date_modified": "2025-12-27T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/26/mock-post-6",
+            "title": "The Future of Programming Part 6",
+            "summary": null,
+            "content_text": "This is a mock post numbered 6 about Programming.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Programming  Point B for Programming  Point C for ProgrammingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 6 about Programming.</p><p><img src=\"/assets/images/mock-6.jpg\" alt=\"Mock Image 6\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Programming</li>  <li>Point B for Programming</li>  <li>Point C for Programming</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/26/mock-post-6",
+            "image": "/assets/images/mock-6.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-26T03:02:59-05:00",
+            "date_modified": "2025-12-26T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/25/mock-post-7",
+            "title": "Mastering Programming Part 7",
+            "summary": null,
+            "content_text": "This is a mock post numbered 7 about Programming.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Programming  Point B for Programming  Point C for ProgrammingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 7 about Programming.</p><p><img src=\"/assets/images/mock-7.jpg\" alt=\"Mock Image 7\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Programming</li>  <li>Point B for Programming</li>  <li>Point C for Programming</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/25/mock-post-7",
+            "image": "/assets/images/mock-7.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-25T03:02:59-05:00",
+            "date_modified": "2025-12-25T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/24/mock-post-8",
+            "title": "How to Use Productivity Part 8",
+            "summary": null,
+            "content_text": "This is a mock post numbered 8 about Productivity.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Productivity  Point B for Productivity  Point C for ProductivityStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 8 about Productivity.</p><p><img src=\"/assets/images/mock-8.jpg\" alt=\"Mock Image 8\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Productivity</li>  <li>Point B for Productivity</li>  <li>Point C for Productivity</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/24/mock-post-8",
+            "image": "/assets/images/mock-8.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-24T03:02:59-05:00",
+            "date_modified": "2025-12-24T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/23/mock-post-9",
+            "title": "A Guide to AI Part 9",
+            "summary": null,
+            "content_text": "This is a mock post numbered 9 about AI.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for AI  Point B for AI  Point C for AIStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 9 about AI.</p><p><img src=\"/assets/images/mock-9.jpg\" alt=\"Mock Image 9\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for AI</li>  <li>Point B for AI</li>  <li>Point C for AI</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/23/mock-post-9",
+            "image": "/assets/images/mock-9.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-23T03:02:59-05:00",
+            "date_modified": "2025-12-23T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/22/mock-post-10",
+            "title": "Mastering Technology Part 10",
+            "summary": null,
+            "content_text": "This is a mock post numbered 10 about Technology.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Technology  Point B for Technology  Point C for TechnologyStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 10 about Technology.</p><p><img src=\"/assets/images/mock-10.jpg\" alt=\"Mock Image 10\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Technology</li>  <li>Point B for Technology</li>  <li>Point C for Technology</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/22/mock-post-10",
+            "image": "/assets/images/mock-10.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-22T03:02:59-05:00",
+            "date_modified": "2025-12-22T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/21/mock-post-11",
+            "title": "A Guide to Cooking Part 11",
+            "summary": null,
+            "content_text": "This is a mock post numbered 11 about Cooking.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Cooking  Point B for Cooking  Point C for CookingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 11 about Cooking.</p><p><img src=\"/assets/images/mock-11.jpg\" alt=\"Mock Image 11\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Cooking</li>  <li>Point B for Cooking</li>  <li>Point C for Cooking</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/21/mock-post-11",
+            "image": "/assets/images/mock-11.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-21T03:02:59-05:00",
+            "date_modified": "2025-12-21T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/20/mock-post-12",
+            "title": "Exploring Programming Part 12",
+            "summary": null,
+            "content_text": "This is a mock post numbered 12 about Programming.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Programming  Point B for Programming  Point C for ProgrammingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 12 about Programming.</p><p><img src=\"/assets/images/mock-12.jpg\" alt=\"Mock Image 12\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Programming</li>  <li>Point B for Programming</li>  <li>Point C for Programming</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/20/mock-post-12",
+            "image": "/assets/images/mock-12.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-20T03:02:59-05:00",
+            "date_modified": "2025-12-20T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/19/mock-post-13",
+            "title": "The Future of Productivity Part 13",
+            "summary": null,
+            "content_text": "This is a mock post numbered 13 about Productivity.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Productivity  Point B for Productivity  Point C for ProductivityStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 13 about Productivity.</p><p><img src=\"/assets/images/mock-13.jpg\" alt=\"Mock Image 13\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Productivity</li>  <li>Point B for Productivity</li>  <li>Point C for Productivity</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/19/mock-post-13",
+            "image": "/assets/images/mock-13.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-19T03:02:59-05:00",
+            "date_modified": "2025-12-19T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/18/mock-post-14",
+            "title": "How to Use Cooking Part 14",
+            "summary": null,
+            "content_text": "This is a mock post numbered 14 about Cooking.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Cooking  Point B for Cooking  Point C for CookingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 14 about Cooking.</p><p><img src=\"/assets/images/mock-14.jpg\" alt=\"Mock Image 14\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Cooking</li>  <li>Point B for Cooking</li>  <li>Point C for Cooking</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/18/mock-post-14",
+            "image": "/assets/images/mock-14.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-18T03:02:59-05:00",
+            "date_modified": "2025-12-18T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/17/mock-post-15",
+            "title": "Exploring Cooking Part 15",
+            "summary": null,
+            "content_text": "This is a mock post numbered 15 about Cooking.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Cooking  Point B for Cooking  Point C for CookingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 15 about Cooking.</p><p><img src=\"/assets/images/mock-15.jpg\" alt=\"Mock Image 15\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Cooking</li>  <li>Point B for Cooking</li>  <li>Point C for Cooking</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/17/mock-post-15",
+            "image": "/assets/images/mock-15.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-17T03:02:59-05:00",
+            "date_modified": "2025-12-17T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/16/mock-post-16",
+            "title": "How to Use Technology Part 16",
+            "summary": null,
+            "content_text": "This is a mock post numbered 16 about Technology.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Technology  Point B for Technology  Point C for TechnologyStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 16 about Technology.</p><p><img src=\"/assets/images/mock-16.jpg\" alt=\"Mock Image 16\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Technology</li>  <li>Point B for Technology</li>  <li>Point C for Technology</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/16/mock-post-16",
+            "image": "/assets/images/mock-16.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-16T03:02:59-05:00",
+            "date_modified": "2025-12-16T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/15/mock-post-17",
+            "title": "A Guide to Travel Part 17",
+            "summary": null,
+            "content_text": "This is a mock post numbered 17 about Travel.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Travel  Point B for Travel  Point C for TravelStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 17 about Travel.</p><p><img src=\"/assets/images/mock-17.jpg\" alt=\"Mock Image 17\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Travel</li>  <li>Point B for Travel</li>  <li>Point C for Travel</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/15/mock-post-17",
+            "image": "/assets/images/mock-17.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-15T03:02:59-05:00",
+            "date_modified": "2025-12-15T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/14/mock-post-18",
+            "title": "A Guide to Travel Part 18",
+            "summary": null,
+            "content_text": "This is a mock post numbered 18 about Travel.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Travel  Point B for Travel  Point C for TravelStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 18 about Travel.</p><p><img src=\"/assets/images/mock-18.jpg\" alt=\"Mock Image 18\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Travel</li>  <li>Point B for Travel</li>  <li>Point C for Travel</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/14/mock-post-18",
+            "image": "/assets/images/mock-18.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-14T03:02:59-05:00",
+            "date_modified": "2025-12-14T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/13/mock-post-19",
+            "title": "A Guide to Living Part 19",
+            "summary": null,
+            "content_text": "This is a mock post numbered 19 about Living.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Living  Point B for Living  Point C for LivingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 19 about Living.</p><p><img src=\"/assets/images/mock-19.jpg\" alt=\"Mock Image 19\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Living</li>  <li>Point B for Living</li>  <li>Point C for Living</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/13/mock-post-19",
+            "image": "/assets/images/mock-19.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-13T03:02:59-05:00",
+            "date_modified": "2025-12-13T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/12/mock-post-20",
+            "title": "Understanding Productivity Part 20",
+            "summary": null,
+            "content_text": "This is a mock post numbered 20 about Productivity.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Productivity  Point B for Productivity  Point C for ProductivityStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 20 about Productivity.</p><p><img src=\"/assets/images/mock-20.jpg\" alt=\"Mock Image 20\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Productivity</li>  <li>Point B for Productivity</li>  <li>Point C for Productivity</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/12/mock-post-20",
+            "image": "/assets/images/mock-20.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-12T03:02:59-05:00",
+            "date_modified": "2025-12-12T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/11/mock-post-21",
+            "title": "A Guide to Living Part 21",
+            "summary": null,
+            "content_text": "This is a mock post numbered 21 about Living.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Living  Point B for Living  Point C for LivingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 21 about Living.</p><p><img src=\"/assets/images/mock-21.jpg\" alt=\"Mock Image 21\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Living</li>  <li>Point B for Living</li>  <li>Point C for Living</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/11/mock-post-21",
+            "image": "/assets/images/mock-21.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-11T03:02:59-05:00",
+            "date_modified": "2025-12-11T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/10/mock-post-22",
+            "title": "Exploring Living Part 22",
+            "summary": null,
+            "content_text": "This is a mock post numbered 22 about Living.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Living  Point B for Living  Point C for LivingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 22 about Living.</p><p><img src=\"/assets/images/mock-22.jpg\" alt=\"Mock Image 22\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Living</li>  <li>Point B for Living</li>  <li>Point C for Living</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/10/mock-post-22",
+            "image": "/assets/images/mock-22.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-10T03:02:59-05:00",
+            "date_modified": "2025-12-10T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/09/mock-post-23",
+            "title": "Understanding Cooking Part 23",
+            "summary": null,
+            "content_text": "This is a mock post numbered 23 about Cooking.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Cooking  Point B for Cooking  Point C for CookingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 23 about Cooking.</p><p><img src=\"/assets/images/mock-23.jpg\" alt=\"Mock Image 23\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Cooking</li>  <li>Point B for Cooking</li>  <li>Point C for Cooking</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/09/mock-post-23",
+            "image": "/assets/images/mock-23.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-09T03:02:59-05:00",
+            "date_modified": "2025-12-09T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/08/mock-post-24",
+            "title": "Mastering Cooking Part 24",
+            "summary": null,
+            "content_text": "This is a mock post numbered 24 about Cooking.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Cooking  Point B for Cooking  Point C for CookingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 24 about Cooking.</p><p><img src=\"/assets/images/mock-24.jpg\" alt=\"Mock Image 24\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Cooking</li>  <li>Point B for Cooking</li>  <li>Point C for Cooking</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/08/mock-post-24",
+            "image": "/assets/images/mock-24.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-08T03:02:59-05:00",
+            "date_modified": "2025-12-08T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/07/mock-post-25",
+            "title": "The Future of Productivity Part 25",
+            "summary": null,
+            "content_text": "This is a mock post numbered 25 about Productivity.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Productivity  Point B for Productivity  Point C for ProductivityStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 25 about Productivity.</p><p><img src=\"/assets/images/mock-25.jpg\" alt=\"Mock Image 25\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Productivity</li>  <li>Point B for Productivity</li>  <li>Point C for Productivity</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/07/mock-post-25",
+            "image": "/assets/images/mock-25.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-07T03:02:59-05:00",
+            "date_modified": "2025-12-07T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/06/mock-post-26",
+            "title": "Exploring Travel Part 26",
+            "summary": null,
+            "content_text": "This is a mock post numbered 26 about Travel.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Travel  Point B for Travel  Point C for TravelStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 26 about Travel.</p><p><img src=\"/assets/images/mock-26.jpg\" alt=\"Mock Image 26\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Travel</li>  <li>Point B for Travel</li>  <li>Point C for Travel</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/06/mock-post-26",
+            "image": "/assets/images/mock-26.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-06T03:02:59-05:00",
+            "date_modified": "2025-12-06T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/05/mock-post-27",
+            "title": "Exploring Technology Part 27",
+            "summary": null,
+            "content_text": "This is a mock post numbered 27 about Technology.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Technology  Point B for Technology  Point C for TechnologyStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 27 about Technology.</p><p><img src=\"/assets/images/mock-27.jpg\" alt=\"Mock Image 27\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Technology</li>  <li>Point B for Technology</li>  <li>Point C for Technology</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/05/mock-post-27",
+            "image": "/assets/images/mock-27.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-05T03:02:59-05:00",
+            "date_modified": "2025-12-05T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/04/mock-post-28",
+            "title": "Understanding AI Part 28",
+            "summary": null,
+            "content_text": "This is a mock post numbered 28 about AI.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for AI  Point B for AI  Point C for AIStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 28 about AI.</p><p><img src=\"/assets/images/mock-28.jpg\" alt=\"Mock Image 28\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for AI</li>  <li>Point B for AI</li>  <li>Point C for AI</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/04/mock-post-28",
+            "image": "/assets/images/mock-28.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-04T03:02:59-05:00",
+            "date_modified": "2025-12-04T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/03/mock-post-29",
+            "title": "Exploring Technology Part 29",
+            "summary": null,
+            "content_text": "This is a mock post numbered 29 about Technology.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Technology  Point B for Technology  Point C for TechnologyStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 29 about Technology.</p><p><img src=\"/assets/images/mock-29.jpg\" alt=\"Mock Image 29\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Technology</li>  <li>Point B for Technology</li>  <li>Point C for Technology</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/03/mock-post-29",
+            "image": "/assets/images/mock-29.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-03T03:02:59-05:00",
+            "date_modified": "2025-12-03T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/02/mock-post-30",
+            "title": "A Guide to Cooking Part 30",
+            "summary": null,
+            "content_text": "This is a mock post numbered 30 about Cooking.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Cooking  Point B for Cooking  Point C for CookingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 30 about Cooking.</p><p><img src=\"/assets/images/mock-30.jpg\" alt=\"Mock Image 30\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Cooking</li>  <li>Point B for Cooking</li>  <li>Point C for Cooking</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/02/mock-post-30",
+            "image": "/assets/images/mock-30.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-02T03:02:59-05:00",
+            "date_modified": "2025-12-02T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/12/01/mock-post-31",
+            "title": "A Guide to Travel Part 31",
+            "summary": null,
+            "content_text": "This is a mock post numbered 31 about Travel.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Travel  Point B for Travel  Point C for TravelStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 31 about Travel.</p><p><img src=\"/assets/images/mock-31.jpg\" alt=\"Mock Image 31\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Travel</li>  <li>Point B for Travel</li>  <li>Point C for Travel</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/12/01/mock-post-31",
+            "image": "/assets/images/mock-31.jpg",
+            
+            
+            
+            
+            "date_published": "2025-12-01T03:02:59-05:00",
+            "date_modified": "2025-12-01T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/11/30/mock-post-32",
+            "title": "A Guide to Technology Part 32",
+            "summary": null,
+            "content_text": "This is a mock post numbered 32 about Technology.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Technology  Point B for Technology  Point C for TechnologyStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 32 about Technology.</p><p><img src=\"/assets/images/mock-32.jpg\" alt=\"Mock Image 32\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Technology</li>  <li>Point B for Technology</li>  <li>Point C for Technology</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/11/30/mock-post-32",
+            "image": "/assets/images/mock-32.jpg",
+            
+            
+            
+            
+            "date_published": "2025-11-30T03:02:59-05:00",
+            "date_modified": "2025-11-30T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/11/29/mock-post-33",
+            "title": "Understanding AI Part 33",
+            "summary": null,
+            "content_text": "This is a mock post numbered 33 about AI.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for AI  Point B for AI  Point C for AIStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 33 about AI.</p><p><img src=\"/assets/images/mock-33.jpg\" alt=\"Mock Image 33\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for AI</li>  <li>Point B for AI</li>  <li>Point C for AI</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/11/29/mock-post-33",
+            "image": "/assets/images/mock-33.jpg",
+            
+            
+            
+            
+            "date_published": "2025-11-29T03:02:59-05:00",
+            "date_modified": "2025-11-29T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/11/28/mock-post-34",
+            "title": "How to Use AI Part 34",
+            "summary": null,
+            "content_text": "This is a mock post numbered 34 about AI.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for AI  Point B for AI  Point C for AIStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 34 about AI.</p><p><img src=\"/assets/images/mock-34.jpg\" alt=\"Mock Image 34\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for AI</li>  <li>Point B for AI</li>  <li>Point C for AI</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/11/28/mock-post-34",
+            "image": "/assets/images/mock-34.jpg",
+            
+            
+            
+            
+            "date_published": "2025-11-28T03:02:59-05:00",
+            "date_modified": "2025-11-28T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        },
+    
+        {
+            "id": "http://localhost:4000/2025/11/27/mock-post-35",
+            "title": "A Guide to Cooking Part 35",
+            "summary": null,
+            "content_text": "This is a mock post numbered 35 about Cooking.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Key Points  Point A for Cooking  Point B for Cooking  Point C for CookingStay tuned for more!",
+            "content_html": "<p>This is a mock post numbered 35 about Cooking.</p><p><img src=\"/assets/images/mock-35.jpg\" alt=\"Mock Image 35\" /></p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p><h3 id=\"key-points\">Key Points</h3><ul>  <li>Point A for Cooking</li>  <li>Point B for Cooking</li>  <li>Point C for Cooking</li></ul><p>Stay tuned for more!</p>",
+            "url": "http://localhost:4000/2025/11/27/mock-post-35",
+            "image": "/assets/images/mock-35.jpg",
+            
+            
+            
+            
+            "date_published": "2025-11-27T03:02:59-05:00",
+            "date_modified": "2025-11-27T03:02:59-05:00",
+            
+                "author":  {
+                "name": "Rajil Vembe",
+                "url": null,
+                "avatar": null
+                }
+                
+            
+        }
+    
+    ]
+}

@@ -10,11 +10,11 @@ layout: default
     </div>
     <div class="bio">
         <p>
-        {{ site.description }}.
+            {{ site.description }}.
         </p>
-        
+
         <p>
-        <a href="{{ site.url }}{{ site.baseurl }}/about"> » About me</a>
+            <a href="{{ '/about/' | relative_url }}"> » About me</a>
         </p>
     </div>
 
@@ -43,7 +43,7 @@ layout: default
     <ul>
         {% for post in site.posts %}
         <li>
-            <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a>
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
             <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %d, %Y" }}</time>
         </li>
         {% endfor %}
@@ -53,7 +53,6 @@ layout: default
 <section class="posts" id="Blog">
     <h2>ALL TAGS</h2>
     <ul>
-        <a href="{{ site.url }}{{ site.baseurl }}/tags">» Tags</a>
+        <a href="{{ '/tags/' | relative_url }}">» Tags</a>
     </ul>
 </section>
-
