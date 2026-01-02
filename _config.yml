@@ -12,28 +12,77 @@
 # https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
 # https://learnxinyminutes.com/docs/yaml/
 #
-# Site settings
-# These are used to personalize your new site. If you look in the HTML files,
-# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
-# You can create any custom variable you would like, and they will be accessible
-# in the templates via {{ site.myvariable }}.
+# Kusa Jekyll Settings
+site: Kusa
+title: Rajil Vembe's Blog
+description: A collection of my thoughts on AI, ML, and programming.
+greetings: Hi 👋
+data-theme: dark
+googlewebfonts: family=Play:wght@400;700&family=Source+Code+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,300;1,400;1,500;1,600;1,700;1,900
+lang: en-US
+timezone: America/New_York
+repo: https://github.com/rajilsaj/rajilsaj.github.io
 
-title: Rajil Vembe's New Blog
-email: rajil@example.com
-description: >-
-  A collection of my thoughts on AI, ML, and programming.
-baseurl: "" # set this if you are hosting in a subfolder
+author:
+  name: Rajil Vembe
+  bio: AI & ML Enthusiast
+  about_text: Hi there! I'm Rajil. I write about AI, Machine Learning, and Software Development.
+  username: rajilsaj
+  github: rajilsaj
+  twitter: rajilsaj
+  email: rajil@example.com
+
 url: "http://localhost:4000"
-twitter_username: rajilsaj
-github_username:  rajilsaj
+baseurl: ""
+permalink: /:year/:month/:day/:slug
+tag_page_layout: tag
+tag_page_dir: tag
 
 # Disqus
-disqus_shortname: rajilsaj-github-io # Assuming this is the shortname based on repo name, or placeholder
+disqus_shortname: rajilsaj-github-io
 
 # Build settings
-theme: minima
+markdown: kramdown
+kramdown:
+  syntax_highlighter: rouge
+
+sass:
+  sass_dir: _sass
+  style: compressed
+
 plugins:
   - jekyll-feed
+
+# paginate: 5
+# paginate_path: "/page:num/"
+
+collections:
+  pages:
+    output: true
+    permalink: /:name
+  posts:
+    output: true
+    permalink: /:year/:month/:day/:slug
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "page"
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+
+relative_links:
+  enabled: true
+  collections: false
 
 # Exclude from processing.
 # The following items will not be processed, by default.
