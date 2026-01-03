@@ -1,69 +1,102 @@
-# Welcome to Jekyll!
-#
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely edit after that. If you find
-# yourself editing this file very often, consider using Jekyll's data files
-# feature for the data you need to update frequently.
-#
-# For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
-#
-# If you need help with YAML syntax, here are some quick references for you:
-# https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
-# https://learnxinyminutes.com/docs/yaml/
-#
-# Kusa Jekyll Settings
-site: Kusa
+# --------------------------------------------------
+#  BASIC SITE INFO
+# --------------------------------------------------
 title: Rajil Vembe's Blog
-description: A collection of my thoughts on AI, ML, and programming.
-greetings: Hi 👋
-data-theme: dark
-googlewebfonts: family=Play:wght@400;700&family=Source+Code+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,300;1,400;1,500;1,600;1,700;1,900
-lang: en-US
-timezone: America/New_York
-repo: https://github.com/rajilsaj/rajilsaj.github.io
-
-author:
-  name: Rajil Vembe
-  bio: AI & ML Enthusiast
-  about_text: Hi there! I'm Rajil. I write about AI, Machine Learning, and Software Development.
-  username: rajilsaj
-  github: rajilsaj
-  twitter: rajilsaj
-  email: rajil@example.com
-
+tagline: A collection of my thoughts on AI, ML, and programming.
+description: Hi there! I'm Rajil. I write about AI, Machine Learning, and Software Development.
 url: "http://localhost:4000"
 baseurl: ""
-permalink: /:year/:month/:day/:slug
-tag_page_layout: tag
-tag_page_dir: tag
 
-# Disqus
-disqus_shortname: rajilsaj-github-io
+# --------------------------------------------------
+#  AUTHOR / PROFILE DATA
+# --------------------------------------------------
+owner:
+  name: Rajil Vembe
+  avatar: hanlin.jpg # Need to check if user has an avatar or use template as placeholder
+  email: rajil@example.com
+  twitter: rajilsaj
+  github: rajilsaj
+  linkedin: rajilsaj # Guessing based on username
 
-# Build settings
+# --------------------------------------------------
+#  TOP NAVIGATION BAR
+# --------------------------------------------------
+links:
+  - title: About Me
+    url: /
+  - title: Publications
+    url: /publications/
+  - title: Services
+    url: /services/
+  - title: Awards
+    url: /awards/
+  - title: Hobbies
+    url: /hobbies/
+  - title: Blogs
+    url: /blogs/
+
+# --------------------------------------------------
+#  BUILD & RENDERING OPTIONS
+# --------------------------------------------------
+timezone: America/New_York
+future: true
+highlighter: rouge
 markdown: kramdown
+
+# --------------------------------------------------
+#  PERMALINK STRUCTURE
+# --------------------------------------------------
+permalink: /:year/:month/:day/:slug
+
+# --------------------------------------------------
+#  KRAMDOWN SETTINGS
+# --------------------------------------------------
 kramdown:
+  auto_ids: true
+  footnote_nr: 1
+  entity_output: as_char
+  toc_levels: 1..6
+  enable_coderay: false
   syntax_highlighter: rouge
 
-sass:
-  sass_dir: _sass
-  style: compressed
+# --------------------------------------------------
+#  DISQUS COMMENT SYSTEM
+# --------------------------------------------------
+disqus:
+  shortname: rajilsaj-github-io
 
+# --------------------------------------------------
+#  INCLUDE / EXCLUDE Lists
+# --------------------------------------------------
+include: [".htaccess"]
+exclude:
+  - "lib"
+  - "config.rb"
+  - "Capfile"
+  - "config"
+  - "log"
+  - "Rakefile"
+  - "Rakefile.rb"
+  - "tmp"
+  - "less"
+  - "minimal-mistakes.sublime-project"
+  - "minimal-mistakes.sublime-workspace"
+  - "vendor"
+  - "Gemfile"
+  - "Gemfile.lock"
+  - "_backup_old_theme"
+
+# --------------------------------------------------
+#  PLUG-INS
+# --------------------------------------------------
 plugins:
-  - jekyll-feed
+#   - jekyll-feed
+#   - jekyll-sitemap
+#   - jekyll-seo-tag
 
-# paginate: 5
-# paginate_path: "/page:num/"
-
-collections:
-  pages:
-    output: true
-    permalink: /:name
-  posts:
-    output: true
-    permalink: /:year/:month/:day/:slug
-
+# --------------------------------------------------
+#  DEFAULTS
+# --------------------------------------------------
 defaults:
   - scope:
       path: ""
@@ -79,27 +112,3 @@ defaults:
       type: "posts"
     values:
       layout: "post"
-
-relative_links:
-  enabled: true
-  collections: false
-
-# Exclude from processing.
-# The following items will not be processed, by default.
-# Any item listed under the `exclude:` key here will be automatically added to
-# the internal "default list".
-#
-# Excluded items can be processed by explicitly listing the directories or
-# their entries' file path in the `include:` list.
-#
-# exclude:
-#   - .sass-cache/
-#   - .jekyll-cache/
-#   - gemfiles/
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules/
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
