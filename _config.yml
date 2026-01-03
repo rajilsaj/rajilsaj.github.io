@@ -14,9 +14,9 @@ owner:
   name: Rajil Vembe
   avatar: hanlin.jpg # Need to check if user has an avatar or use template as placeholder
   email: rajil@example.com
-  twitter: rajilsaj
-  github: rajilsaj
-  linkedin: rajilsaj # Guessing based on username
+  twitter: user_handle
+  github: user_handle
+  linkedin: user_handle # Guessing based on username
 
 # --------------------------------------------------
 #  TOP NAVIGATION BAR

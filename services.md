@@ -28,9 +28,9 @@ title: Services
 
 ## Teaching and Supervision
 
-- [Cambridge Undergraduate Part-IIB Project](https://teaching.eng.cam.ac.uk/content/part-iib-project-introduction)<br>Student: [Mr. Jon Tindal](https://www.linkedin.com/in/jon-tindal-a87668254/). Co-supervised with Prof. Ozgur Akan<br>Topic: Spectrum Sensing with Deep Learning for Cognitive Radio.
+- [Cambridge Undergraduate Part-IIB Project](#)<br>Student: [Mr. Jon Tindal](#). Co-supervised with Prof. Ozgur Akan<br>Topic: Spectrum Sensing with Deep Learning for Cognitive Radio.
 
-- [AAAI 2026 Conference: Undergraduate Consortium](https://aaai.org/conference/aaai/aaai-26/uc-call/)<br>Student: Ms. Jarin Tasneem (Bangladesh University of Engineering and Technology)<br>Topic: Byzantine Model Poisoning Attack against Vertical Federated Learning.
+- [AAAI 2026 Conference: Undergraduate Consortium](#)<br>Student: Ms. Jarin Tasneem (Bangladesh University of Engineering and Technology)<br>Topic: Byzantine Model Poisoning Attack against Vertical Federated Learning.
 
   <br>
 

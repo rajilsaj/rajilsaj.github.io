@@ -6,7 +6,7 @@ title: 蔡汉霖的个人主页
 
 ## 关于我
 
-<img src="https://caihanlin.com/backup/caihalin(2025).PNG" class="floatpic">
+<img src="/backup/caihalin(2025).PNG" class="floatpic">
 
 <br>首先感谢您的阅读。我是蔡汉霖，2002年生，福建泉州人。国家公派学者。
 
