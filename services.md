@@ -1,6 +1,6 @@
 ---
 layout: page
-permalink: /services/index.html
+permalink: /services/
 title: Services
 
 ---
