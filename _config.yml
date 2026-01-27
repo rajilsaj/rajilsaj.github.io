@@ -1,114 +1,55 @@
-# --------------------------------------------------
-#  BASIC SITE INFO
-# --------------------------------------------------
-title: Rajil Vembe's Blog
-tagline: A collection of my thoughts on AI, ML, and programming.
-description: Hi there! I'm Rajil. I write about AI, Machine Learning, and Software Development.
-url: "https://rajilsaj.github.io"
-baseurl: ""
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+#
+# If you need help with YAML syntax, here are some quick references for you:
+# https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
+# https://learnxinyminutes.com/docs/yaml/
+#
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
 
-# --------------------------------------------------
-#  AUTHOR / PROFILE DATA
-# --------------------------------------------------
-owner:
-  name: Rajil Vembe
-  avatar: hanlin.jpg # Need to check if user has an avatar or use template as placeholder
-  email: rajil@example.com
-  twitter: user_handle
-  github: user_handle
-  linkedin: user_handle # Guessing based on username
+title: Your awesome title
+email: your-email@example.com
+description: >- # this means to ignore newlines until "baseurl:"
+  Write an awesome description for your new site here. You can edit this
+  line in _config.yml. It will appear in your document head meta (for
+  Google search results) and in your feed.xml site description.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+twitter_username: jekyllrb
+github_username:  jekyll
 
-# --------------------------------------------------
-#  TOP NAVIGATION BAR
-# --------------------------------------------------
-links:
-  - title: About Me
-    url: /
-  - title: Publications
-    url: /publications/
-  - title: Services
-    url: /services/
-  - title: Awards
-    url: /awards/
-  - title: Hobbies
-    url: /hobbies/
-  - title: Blogs
-    url: /blogs/
-
-# --------------------------------------------------
-#  BUILD & RENDERING OPTIONS
-# --------------------------------------------------
-timezone: America/New_York
-future: true
-highlighter: rouge
-markdown: kramdown
-
-# --------------------------------------------------
-#  PERMALINK STRUCTURE
-# --------------------------------------------------
-permalink: /:year/:month/:day/:slug
-
-# --------------------------------------------------
-#  KRAMDOWN SETTINGS
-# --------------------------------------------------
-kramdown:
-  auto_ids: true
-  footnote_nr: 1
-  entity_output: as_char
-  toc_levels: 1..6
-  enable_coderay: false
-  syntax_highlighter: rouge
-
-# --------------------------------------------------
-#  DISQUS COMMENT SYSTEM
-# --------------------------------------------------
-disqus:
-  shortname: rajilsaj-github-io
-
-# --------------------------------------------------
-#  INCLUDE / EXCLUDE Lists
-# --------------------------------------------------
-include: [".htaccess"]
-exclude:
-  - "lib"
-  - "config.rb"
-  - "Capfile"
-  - "config"
-  - "log"
-  - "Rakefile"
-  - "Rakefile.rb"
-  - "tmp"
-  - "less"
-  - "minimal-mistakes.sublime-project"
-  - "minimal-mistakes.sublime-workspace"
-  - "vendor"
-  - "Gemfile"
-  - "Gemfile.lock"
-  - "_backup_old_theme"
-
-# --------------------------------------------------
-#  PLUG-INS
-# --------------------------------------------------
+# Build settings
+theme: minima
 plugins:
-#   - jekyll-feed
-#   - jekyll-sitemap
-#   - jekyll-seo-tag
+  - jekyll-feed
 
-# --------------------------------------------------
-#  DEFAULTS
-# --------------------------------------------------
-defaults:
-  - scope:
-      path: ""
-    values:
-      layout: "default"
-  - scope:
-      path: ""
-      type: "pages"
-    values:
-      layout: "page"
-  - scope:
-      path: ""
-      type: "posts"
-    values:
-      layout: "post"
+# Exclude from processing.
+# The following items will not be processed, by default.
+# Any item listed under the `exclude:` key here will be automatically added to
+# the internal "default list".
+#
+# Excluded items can be processed by explicitly listing the directories or
+# their entries' file path in the `include:` list.
+#
+# exclude:
+#   - .sass-cache/
+#   - .jekyll-cache/
+#   - gemfiles/
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules/
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/
