@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: " en" }}">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title | escape }} - {{ site.title | escape }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Work+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="p-8">
+      <!-- Logo/Brand -->
+      <div class="mb-10">
+        <h1 class="text-4xl font-bold text-white mb-2">Insight<br>Journal</h1>
+        <p class="text-gray-400 text-sm">Design, Tech & Creative Culture</p>
+        <div class="w-16 h-1 bg-gradient-to-r from-red-500 to-pink-500 mt-4"></div>
+      </div>
+
+      <!-- Search -->
+      <div class="mb-8">
+        <input type="text" placeholder="Search articles..."
+          class="search-input w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 transition-all">
+      </div>
+
+      <!-- Categories -->
+      <div class="mb-10">
+        <h3 class="text-white text-sm font-semibold mb-4 uppercase tracking-wider">Categories</h3>
+        <div class="space-y-2">
+          <button
+            class="category-badge w-full text-left px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all"
+            data-category="all">
+            All Articles
+          </button>
+          <button
+            class="category-badge w-full text-left px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 rounded-lg transition-all"
+            data-category="design">
+            Design
+          </button>
+          <button
+            class="category-badge w-full text-left px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 rounded-lg transition-all"
+            data-category="technology">
+            Technology
+          </button>
+          <button
+            class="category-badge w-full text-left px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 rounded-lg transition-all"
+            data-category="culture">
+            Culture
+          </button>
+          <button
+            class="category-badge w-full text-left px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 rounded-lg transition-all"
+            data-category="tutorial">
+            Tutorials
+          </button>
+        </div>
+      </div>
+
+      <!-- Popular Tags -->
+      <div class="mb-10">
+        <h3 class="text-white text-sm font-semibold mb-4 uppercase tracking-wider">Popular Tags</h3>
+        <div class="flex flex-wrap gap-2">
+          <span
+            class="px-3 py-1 bg-white/10 text-gray-300 text-xs rounded-full hover:bg-white/20 transition-all cursor-pointer">UI/UX</span>
+          <span
+            class="px-3 py-1 bg-white/10 text-gray-300 text-xs rounded-full hover:bg-white/20 transition-all cursor-pointer">React</span>
+          <span
+            class="px-3 py-1 bg-white/10 text-gray-300 text-xs rounded-full hover:bg-white/20 transition-all cursor-pointer">AI</span>
+          <span
+            class="px-3 py-1 bg-white/10 text-gray-300 text-xs rounded-full hover:bg-white/20 transition-all cursor-pointer">CSS</span>
+          <span
+            class="px-3 py-1 bg-white/10 text-gray-300 text-xs rounded-full hover:bg-white/20 transition-all cursor-pointer">JavaScript</span>
+          <span
+            class="px-3 py-1 bg-white/10 text-gray-300 text-xs rounded-full hover:bg-white/20 transition-all cursor-pointer">Figma</span>
+          <span
+            class="px-3 py-1 bg-white/10 text-gray-300 text-xs rounded-full hover:bg-white/20 transition-all cursor-pointer">WebDev</span>
+        </div>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="bg-gradient-to-br from-red-500 to-pink-500 rounded-xl p-6 mb-8">
+        <h3 class="text-white font-bold text-lg mb-2">Stay Updated</h3>
+        <p class="text-white/90 text-sm mb-4">Get the latest articles delivered to your inbox.</p>
+        <input type="email" placeholder="Your email" class="w-full px-4 py-2 rounded-lg mb-3 text-sm">
+        <button class="w-full bg-white text-red-500 font-semibold py-2 rounded-lg hover:bg-gray-100 transition-all">
+          Subscribe
+        </button>
+      </div>
+
+      <!-- Social Links -->
+      <div class="pt-6 border-t border-white/10">
+        <div class="flex gap-4 justify-center">
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z">
+              </path>
+            </svg>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"></path>
+              <circle cx="4" cy="4" r="2"></circle>
+            </svg>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z">
+              </path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="max-w-6xl mx-auto px-6 md:px-12 py-12">
+      {{ content }}
+    </div>
+  </main>
+</body>
+
+</html>
