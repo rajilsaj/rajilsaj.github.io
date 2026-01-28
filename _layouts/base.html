@@ -2,16 +2,185 @@
 <html lang="{{ page.lang | default: site.lang | default: " en" }}">
 
 <head>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ page.title | escape }} - {{ site.title | escape }}</title>
+  <title>Insight Journal - Design & Technology Blog</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Work+Sans:wght@300;400;500;600&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+  <!-- <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}"> -->
+  <style>
+    :root {
+      --primary: #1a1a2e;
+      --accent: #ff6b6b;
+      --secondary: #4ecdc4;
+      --bg: #f8f9fa;
+      --text: #2d3436;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Work Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: 'Playfair Display', serif;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #e85a5a;
+    }
+
+    /* Sidebar styling */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: 320px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      overflow-y: auto;
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    /* Main content area */
+    .main-content {
+      margin-left: 320px;
+      min-height: 100vh;
+    }
+
+    /* Article card animations */
+    .article-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .article-card:hover {
+      transform: translateX(8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .article-card:hover .article-image {
+      transform: scale(1.05);
+    }
+
+    .article-image {
+      transition: transform 0.5s ease;
+    }
+
+    /* Loading spinner */
+    .loader {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--accent);
+      border-bottom-color: transparent;
+      border-radius: 50%;
+      display: inline-block;
+      animation: rotation 1s linear infinite;
+    }
+
+    @keyframes rotation {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Category badges */
+    .category-badge {
+      transition: all 0.3s ease;
+    }
+
+    .category-badge:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    /* Search input */
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+    }
+
+    /* Read time badge */
+    .read-time {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Skeleton loading */
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s ease-in-out infinite;
+    }
+
+    @keyframes loading {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -126,9 +295,248 @@
   <!-- Main Content -->
   <main class="main-content">
     <div class="max-w-6xl mx-auto px-6 md:px-12 py-12">
-      {{ content }}
+
+      <!-- Header -->
+      <header class="mb-12">
+        <h2 class="text-5xl md:text-6xl font-bold mb-4 text-gray-900">Latest Articles</h2>
+        <p class="text-xl text-gray-600">Exploring the intersection of design, technology, and creativity</p>
+      </header>
+
+      <!-- Articles List -->
+      <div id="articlesContainer" class="space-y-6 mb-12">
+        <!-- Articles will be dynamically loaded here -->
+      </div>
+
+      <!-- Loading Indicator -->
+      <div id="loadingIndicator" class="text-center py-8 hidden">
+        <span class="loader"></span>
+        <p class="text-gray-500 mt-4">Loading more articles...</p>
+      </div>
+
+      <!-- End of articles message (hidden initially) -->
+      <div id="endMessage" class="text-center py-8 hidden">
+        <p class="text-gray-500">Loading more articles...</p>
+      </div>
     </div>
   </main>
+
+  <script>
+    // Sample article data
+    const articles = [
+      {
+        id: 1,
+        title: "The Future of Design Systems in 2026",
+        excerpt: "Exploring how design systems are evolving to meet the needs of modern product teams and cross-platform experiences.",
+        category: "design",
+        tags: ["UI/UX", "Design Systems"],
+        readTime: "8 min read",
+        date: "Jan 27, 2026",
+        image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80",
+        gradient: "from-purple-400 to-pink-400"
+      },
+      {
+        id: 2,
+        title: "Building Accessible Web Components",
+        excerpt: "A comprehensive guide to creating web components that work for everyone, including best practices for ARIA attributes.",
+        category: "technology",
+        tags: ["Accessibility", "WebDev"],
+        readTime: "12 min read",
+        date: "Jan 26, 2026",
+        image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80",
+        gradient: "from-blue-400 to-cyan-400"
+      },
+      {
+        id: 3,
+        title: "Minimalism in Modern UI Design",
+        excerpt: "Why less is more when it comes to user interface design, and how to achieve clarity through simplicity.",
+        category: "design",
+        tags: ["UI/UX", "Minimalism"],
+        readTime: "6 min read",
+        date: "Jan 25, 2026",
+        image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&q=80",
+        gradient: "from-green-400 to-emerald-400"
+      },
+      {
+        id: 4,
+        title: "React Server Components Explained",
+        excerpt: "Understanding the new paradigm of React Server Components and how they improve performance and developer experience.",
+        category: "tutorial",
+        tags: ["React", "JavaScript"],
+        readTime: "15 min read",
+        date: "Jan 24, 2026",
+        image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&q=80",
+        gradient: "from-orange-400 to-red-400"
+      },
+      {
+        id: 5,
+        title: "The Art of Micro-interactions",
+        excerpt: "Small details make big differences. Learn how to craft delightful micro-interactions that enhance user experience.",
+        category: "design",
+        tags: ["Animation", "UI/UX"],
+        readTime: "7 min read",
+        date: "Jan 23, 2026",
+        image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
+        gradient: "from-pink-400 to-rose-400"
+      },
+      {
+        id: 6,
+        title: "CSS Grid vs Flexbox: When to Use Each",
+        excerpt: "A practical guide to choosing the right CSS layout method for your specific design needs.",
+        category: "tutorial",
+        tags: ["CSS", "WebDev"],
+        readTime: "10 min read",
+        date: "Jan 22, 2026",
+        image: "https://images.unsplash.com/photo-1523437113738-bbd3cc89fb19?w=800&q=80",
+        gradient: "from-indigo-400 to-purple-400"
+      },
+      {
+        id: 7,
+        title: "AI in Creative Workflows",
+        excerpt: "How artificial intelligence is transforming the creative process and what it means for designers and developers.",
+        category: "culture",
+        tags: ["AI", "Creativity"],
+        readTime: "9 min read",
+        date: "Jan 21, 2026",
+        image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80",
+        gradient: "from-teal-400 to-blue-400"
+      },
+      {
+        id: 8,
+        title: "Typography Trends That Actually Work",
+        excerpt: "Beyond the hype: practical typography trends that improve readability and visual hierarchy in digital products.",
+        category: "design",
+        tags: ["Typography", "UI/UX"],
+        readTime: "8 min read",
+        date: "Jan 20, 2026",
+        image: "https://images.unsplash.com/photo-1509266272358-7701da638078?w=800&q=80",
+        gradient: "from-amber-400 to-orange-400"
+      }
+    ];
+
+    let currentIndex = 0;
+    let isLoading = false;
+    const articlesPerLoad = 4;
+    const container = document.getElementById('articlesContainer');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const endMessage = document.getElementById('endMessage');
+
+    // Function to create article card HTML
+    function createArticleCard(article, index) {
+      return `
+                <article class="article-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all" style="animation-delay: ${index * 0.1}s">
+                    <div class="flex flex-col md:flex-row">
+                        <!-- Image Section -->
+                        <div class="relative md:w-80 h-64 md:h-auto overflow-hidden bg-gradient-to-br ${article.gradient} flex-shrink-0">
+                            <img src="${article.image}" alt="${article.title}" class="article-image w-full h-full object-cover opacity-90">
+                            <div class="absolute top-4 left-4">
+                                <span class="px-3 py-1 bg-white/90 backdrop-blur-sm text-gray-800 text-xs font-semibold rounded-full uppercase tracking-wider">
+                                    ${article.category}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Content Section -->
+                        <div class="p-6 md:p-8 flex-1 flex flex-col">
+                            <div class="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                                <span>${article.date}</span>
+                                <span>•</span>
+                                <span class="read-time inline-flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    ${article.readTime}
+                                </span>
+                            </div>
+                            
+                            <h3 class="text-3xl font-bold mb-3 text-gray-900 hover:text-red-500 transition-colors cursor-pointer leading-tight">
+                                ${article.title}
+                            </h3>
+                            
+                            <p class="text-gray-600 mb-4 text-lg leading-relaxed flex-1">
+                                ${article.excerpt}
+                            </p>
+                            
+                            <div class="flex flex-wrap items-center justify-between gap-4 mt-auto">
+                                <div class="flex flex-wrap gap-2">
+                                    ${article.tags.map(tag => `
+                                        <span class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">${tag}</span>
+                                    `).join('')}
+                                </div>
+                                <a href="#" class="text-red-500 font-semibold inline-flex items-center hover:gap-2 transition-all group whitespace-nowrap">
+                                    Read More
+                                    <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            `;
+    }
+
+    // Function to load more articles
+    function loadArticles() {
+      if (isLoading) return;
+
+      isLoading = true;
+      loadingIndicator.classList.remove('hidden');
+
+      // Simulate loading delay
+      setTimeout(() => {
+        const articlesToLoad = [];
+
+        // Load next batch of articles (loop infinitely)
+        for (let i = 0; i < articlesPerLoad; i++) {
+          const article = articles[currentIndex % articles.length];
+          articlesToLoad.push(createArticleCard(article, i));
+          currentIndex++;
+        }
+
+        // Append articles to container
+        container.innerHTML += articlesToLoad.join('');
+
+        loadingIndicator.classList.add('hidden');
+        isLoading = false;
+      }, 800);
+    }
+
+    // Initial load
+    loadArticles();
+
+    // Infinite scroll
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const scrollPosition = window.innerHeight + window.scrollY;
+        const pageHeight = document.documentElement.scrollHeight;
+
+        // Load more when user is 300px from bottom
+        if (scrollPosition >= pageHeight - 300) {
+          loadArticles();
+        }
+      }, 100);
+    });
+
+    // Category filter functionality
+    const categoryButtons = document.querySelectorAll('.category-badge');
+    categoryButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Update active state
+        categoryButtons.forEach(btn => {
+          btn.classList.remove('bg-white/20', 'text-white');
+          btn.classList.add('bg-white/5', 'text-gray-300');
+        });
+        button.classList.remove('bg-white/5', 'text-gray-300');
+        button.classList.add('bg-white/20', 'text-white');
+
+        // Filter functionality would go here
+        const category = button.dataset.category;
+        console.log('Filter by:', category);
+      });
+    });
+  </script>
 </body>
 
 </html>
