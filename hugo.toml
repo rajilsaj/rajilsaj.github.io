@@ -2,6 +2,9 @@ baseURL = "https://rajilsaj.github.io/"
 languageCode = "en-us"
 title = "My New Hugo Site"
 enableRobotsTXT = true
+relativeURLs = true
+canonifyURLs = true
+
 
 [caches]
   [caches.images]
