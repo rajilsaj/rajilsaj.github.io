@@ -20,3 +20,16 @@ url = "/index.xml"
 [module]
 [[module.imports]]
 path = "github.com/hugo-sid/hugo-blog-awesome"
+
+[params.giscus]
+repo = "cdwilson/cdwilson.dev"
+repoID = "R_kgDOGzJrfg"
+category = "Articles"
+categoryID = "DIC_kwDOGzJrfs4CP2TM"
+mapping = "og:title"
+reactionsEnabled = "1"
+emitMetadata = "0"
+inputPosition = "bottom"
+theme = "light"
+lang = "en"
+loading = "lazy"
