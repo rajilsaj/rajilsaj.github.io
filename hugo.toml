@@ -1,39 +1,42 @@
-baseURL = 'https://rajilsaj.github.io/'
-languageCode = 'en-us'
-title = 'My New Hugo Site'
+baseURL = "https://rajilsaj.github.io/"
+languageCode = "en-us"
+title = "My New Hugo Site"
+theme = "hugo-blog-awesome"
+enableRobotsTXT = true
 
 [caches]
   [caches.images]
-    dir = ':cacheDir/images'
-
-[[params.socialIcons]]
-name = "github"
-url = "https://github.com/hugo-sid"
-
-[[params.socialIcons]]
-name = "twitter"
-url = "https://twitter.com"
-
-[[params.socialIcons]]
-name = "Rss"
-url = "/index.xml"
+    dir = ":cacheDir/images"
 
 [params]
   goToTop = true
 
-[module]
-[[module.imports]]
-path = "github.com/hugo-sid/hugo-blog-awesome"
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/hugo-sid"
+
+  [[params.socialIcons]]
+    name = "twitter"
+    url = "https://twitter.com"
+
+  [[params.socialIcons]]
+    name = "rss"
+    url = "/index.xml"
 
 [params.giscus]
-repo = "cdwilson/cdwilson.dev"
-repoID = "R_kgDOGzJrfg"
-category = "Articles"
-categoryID = "DIC_kwDOGzJrfs4CP2TM"
-mapping = "og:title"
-reactionsEnabled = "1"
-emitMetadata = "0"
-inputPosition = "bottom"
-theme = "light"
-lang = "en"
-loading = "lazy"
+  repo = "cdwilson/cdwilson.dev"
+  repoID = "R_kgDOGzJrfg"
+  category = "Articles"
+  categoryID = "DIC_kwDOGzJrfs4CP2TM"
+  mapping = "og:title"
+  reactionsEnabled = "1"
+  emitMetadata = "0"
+  inputPosition = "bottom"
+  theme = "light"
+  lang = "en"
+  loading = "lazy"
+
+[module]
+  [[module.imports]]
+    path = "github.com/hugo-sid/hugo-blog-awesome"
+
