@@ -4,12 +4,12 @@ const config: SiteConfig = {
   // Absolute URL to the root of your published site, used for generating links and sitemaps.
   site: 'https://rajil.me',
   // The name of your site, used in the title and for SEO.
-  title: 'Rajil',
+  title: 'Rajil Vembe',
   // The description of your site, used for SEO and RSS feed.
   description:
     'A coder-ready Astro blog theme with 59 of your favorite color schemes to choose from',
   // The author of the site, used in the footer, SEO, and RSS feed.
-  author: 'Katy Kookaburra',
+  author: 'Rajil Vembe',
   // Keywords for SEO, used in the meta tags.
   tags: ['Astro', 'Terminal', 'Theme', 'MultiTerm', 'stelcodes'],
   // Path to the image used for generating social media previews.
@@ -40,11 +40,11 @@ const config: SiteConfig = {
       name: 'Archive',
       url: '/posts',
     },
-    {
-      name: 'GitHub',
-      url: 'https://github.com/stelcodes/multiterm-astro',
-      external: true,
-    },
+    //{
+    // name: 'GitHub',
+    //  url: 'https://github.com/stelcodes/multiterm-astro',
+    //  external: true,
+    //},
   ],
   // The theming configuration for the site.
   themes: {
@@ -52,7 +52,7 @@ const config: SiteConfig = {
     mode: 'select',
     // The default theme identifier, used when themeMode is "select" or "light-dark-auto".
     // Make sure this is one of the themes listed in `themes` or "auto" for "light-dark-auto" mode.
-    default: 'catppuccin-mocha',
+    default: 'github-light',
     // Shiki themes to bundle with the site.
     // https://expressive-code.com/guides/themes/#using-bundled-themes
     // These will be used to theme the entire site along with syntax highlighting.
