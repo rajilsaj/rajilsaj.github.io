@@ -61,7 +61,7 @@ const postsHaveSeries = sortedPosts.some((post) => post.data.series)
   {
     sortedPosts.length > 0 && (
       <section>
-        <!--  <BlockHeader>Latest Posts</BlockHeader> -->
+        <BlockHeader>Latest Posts</BlockHeader>
         {sortedPosts
           .reverse()
           .slice(0, Math.floor(siteConfig.pageSize / 2))

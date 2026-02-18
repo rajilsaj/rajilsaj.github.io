@@ -4,14 +4,18 @@ const config: SiteConfig = {
   // Absolute URL to the root of your published site, used for generating links and sitemaps.
   site: 'https://rajil.me',
   // The name of your site, used in the title and for SEO.
-  title: 'Rajil Vembe',
+  title: 'Rajil Saj',
+
+  // My title line
+  titleLine: 'Software Engineer 🇺🇸🇨🇬',
+
   // The description of your site, used for SEO and RSS feed.
   description:
     'A coder-ready Astro blog theme with 59 of your favorite color schemes to choose from',
   // The author of the site, used in the footer, SEO, and RSS feed.
   author: 'Rajil Vembe',
   // Keywords for SEO, used in the meta tags.
-  tags: ['Astro', 'Terminal', 'Theme', 'MultiTerm', 'stelcodes'],
+  tags: ['Machine Learning', 'Automated System', 'AI', 'ML', 'Automation'],
   // Path to the image used for generating social media previews.
   // Needs to be a square JPEG file due to limitations of the social card generator.
   // Try https://squoosh.app/ to easily convert images to JPEG.
@@ -28,18 +32,23 @@ const config: SiteConfig = {
   trailingSlashes: false,
   // The navigation links to display in the header.
   navLinks: [
+    // {
+    //   name: 'Home',
+    //   url: '/',
+    // },
+
     {
-      name: 'Home',
-      url: '/',
+      name: 'Blog',
+      url: '/posts',
+    },
+    {
+      name: 'Portfolio',
+      url: '/portfolio',
     },
     {
       name: 'About',
       url: '/about',
-    },
-    {
-      name: 'Archive',
-      url: '/posts',
-    },
+    }
     //{
     // name: 'GitHub',
     //  url: 'https://github.com/stelcodes/multiterm-astro',

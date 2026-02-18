@@ -15,14 +15,13 @@ const selectTheme =
     <a
       id="logo"
       href="/"
-      class="block px-4 py-1.5 max-w-full no-underline items-center font-bold"
+      class="block px-4 py-1.5 max-w-full no-underline items-center font-bold text-2xl sm:text-3xl"
     >
       {siteConfig.title}
     </a>
     <div class="flex items-center gap-3 sm:mr-3">
-      <Search trailingSlashes={siteConfig.trailingSlashes} />
-      {lightDarkAutoTheme && <LightDarkAutoButton />}
-      {selectTheme && <SelectTheme />}
+      <!-- {lightDarkAutoTheme && <LightDarkAutoButton />} 
+      {selectTheme && <SelectTheme />}-->
       <nav aria-label="Menu" class="p-0 mt-4 ml-0.5 text-accent hidden sm:block">
         <ul class="flex flex-row text-accent">
           {
@@ -34,6 +33,7 @@ const selectTheme =
           }
         </ul>
       </nav>
+      <Search trailingSlashes={siteConfig.trailingSlashes} />
       <nav id="nav-mobile" aria-label="Menu" class="p-0 text-accent sm:hidden">
         <button
           id="nav-mobile-button"
@@ -57,6 +57,11 @@ const selectTheme =
           }
         </ul>
       </nav>
+    </div>
+  </div>
+  <div class="relative flex items-center justify-between">
+    <div class="px-4 text-gray-500 mt-1 text-sm">
+      {siteConfig.titleLine}
     </div>
   </div>
   <!-- <nav aria-label="Menu" class="p-0 mt-4 ml-0.5 text-accent hidden sm:block">

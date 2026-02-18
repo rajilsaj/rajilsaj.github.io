@@ -5,4 +5,7 @@ avatarImage:
 githubCalendar: 'stelcodes'
 ---
 
-Welcome to the example site. This site is meant to show off my custom Astro theme/template **MultiTerm** which creates a coder-ready blog complete with an interactive theme changer, RSS, sitemap, tagging, and markdown extensions.
+# Hey There
+
+Welcome to this new chapter of my life.
+Here, I’ll be sharing my side projects in machine learning, automated systems, and my ideas on how technology can help change the world.
