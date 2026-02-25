@@ -22,3 +22,20 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Ignore those old posts
+src/content/advanced-typescript-conditional-types.md
+src/content/posts/concurrency-in-go.md
+src/content/posts/error-handling-in-go.md
+src/content/posts/gos-interfaces-and-polymorphism.md
+src/content/posts/javascript-prototypal-inheritance.md
+src/content/posts/javascripts-event-loop-explained.md
+src/content/posts/mastering-async-await-in-javascript.md
+src/content/posts/python-decorators-demystified.md
+src/content/posts/pythons-context-managers-and-the-with-statement.md
+src/content/posts/pythons-generators-and-yield.md
+src/content/posts/pythons-list-comprehensions.md
+src/content/posts/typescript-generics-explained.md
+src/content/posts/typescript-utility-types.md
+src/content/posts/typescripts-keyof-and-mapped-types.md
+src/content/posts/understanding-closures-in-javascript.md
