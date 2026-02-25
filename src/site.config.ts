@@ -37,14 +37,14 @@ const config: SiteConfig = {
     //   url: '/',
     // },
 
-    {
-      name: 'Blog',
-      url: '/posts',
-    },
-    {
-      name: 'Portfolio',
-      url: '/portfolio',
-    },
+    // {
+    //   name: 'Blog',
+    //   url: '/posts',
+    // },
+    // {
+    //   name: 'Portfolio',
+    //   url: '/portfolio',
+    // },
     {
       name: 'About',
       url: '/about',
