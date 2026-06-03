@@ -327,27 +327,25 @@ export function mountTerminal(
   function renderSuggestions() {
     if (!sugEl) return
     sugEl.innerHTML = ''
-    const head = document.createElement('div')
-    head.className =
-      'mb-1.5 text-xs uppercase tracking-wider text-foreground/40 select-none'
-    head.textContent = 'where to next?'
-    sugEl.appendChild(head)
+    const wrap = document.createElement('div')
+    wrap.className = 'flex flex-wrap items-center gap-1.5'
+
+    const lead = document.createElement('span')
+    lead.className = 'mr-0.5 select-none text-xs text-foreground/35'
+    lead.textContent = 'go:'
+    wrap.appendChild(lead)
 
     for (const it of computeSuggestions()) {
       const btn = document.createElement('button')
       btn.type = 'button'
+      btn.title = it.cmd
       btn.className =
-        'term-suggestion group flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-accent/10 focus-visible:bg-accent/10'
-      btn.innerHTML =
-        `<span class="text-green transition-transform group-hover:translate-x-0.5">↳</span>` +
-        `<span class="truncate text-accent">${escapeHTML(it.label)}</span>` +
-        (it.desc
-          ? `<span class="shrink-0 text-foreground/40">${escapeHTML(it.desc)}</span>`
-          : '') +
-        `<code class="ml-auto shrink-0 text-xs text-foreground/30 opacity-0 transition-opacity group-hover:opacity-100">${escapeHTML(it.cmd)}</code>`
+        'max-w-[11rem] truncate rounded-full border border-accent/25 px-2.5 py-0.5 text-xs text-accent transition-colors hover:border-accent/60 hover:bg-accent/10 focus-visible:bg-accent/10'
+      btn.textContent = it.label
       btn.addEventListener('click', () => run(it.cmd))
-      sugEl.appendChild(btn)
+      wrap.appendChild(btn)
     }
+    sugEl.appendChild(wrap)
   }
 
   function run(raw: string) {
