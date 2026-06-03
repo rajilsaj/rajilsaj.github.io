@@ -22,9 +22,10 @@ const avatars = [
 ---
 
 <div class="my-6 md:mx-2">
-  <!-- Terminal-window card -->
+  <!-- Terminal-window card (interactive — navigate the whole site from here) -->
   <div
-    class="home-terminal relative overflow-hidden rounded-2xl border border-foreground/10 bg-foreground/[0.03] shadow-2xl backdrop-blur-sm"
+    id="home-terminal-card"
+    class="home-terminal relative overflow-hidden rounded-2xl border border-foreground/10 bg-foreground/[0.03] font-mono text-sm shadow-2xl backdrop-blur-sm"
   >
     <!-- Title bar -->
     <div
@@ -38,7 +39,7 @@ const avatars = [
 
     <!-- Body -->
     <div
-      class="flex flex-col items-center gap-6 px-6 py-8 sm:flex-row sm:items-center sm:gap-8 sm:px-9 sm:py-9"
+      class="flex flex-col items-center gap-6 px-6 py-8 sm:flex-row sm:items-start sm:gap-8 sm:px-9 sm:py-9"
     >
       <div class="avatar-glow relative shrink-0">
         <div
@@ -60,24 +61,55 @@ const avatars = [
         <div class="avatar-ring" aria-hidden="true"></div>
       </div>
 
-      <div class="min-w-0 flex-1">
-        <p class="mb-3 font-mono text-sm text-foreground/55">
-          <span class="text-green">❯</span>
-          <span class="text-accent">whoami</span>
-        </p>
-        <div class="prose max-w-full">
-          <slot />
+      <div class="flex min-w-0 flex-1 flex-col self-stretch">
+        <!-- Seeded session output; new command output is appended below -->
+        <div
+          data-term-output
+          class="max-h-72 flex-1 space-y-0.5 overflow-y-auto leading-relaxed text-foreground/90"
+        >
+          <div>
+            <span class="text-green">rajil@web:~$</span> whoami
+          </div>
+          <div class="prose mt-1 max-w-full">
+            <slot />
+          </div>
         </div>
-        <p class="mt-4 font-mono text-sm text-foreground/55">
-          <span class="text-green">❯</span>
-          <span class="cursor">█</span>
-        </p>
+
+        <!-- Live input line -->
+        <form data-term-form class="mt-4 flex items-center gap-2">
+          <span data-term-prompt class="shrink-0 whitespace-nowrap text-green">
+            rajil@web:~$
+          </span>
+          <input
+            data-term-input
+            type="text"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            aria-label="Terminal command input"
+            class="min-w-0 flex-1 border-none bg-transparent text-foreground outline-none"
+          />
+        </form>
+
+        <div data-term-hint class="mt-3 text-xs text-foreground/50"></div>
       </div>
     </div>
   </div>
 
   <!-- {githubCalendar && <GitHubActivityCalendar username={githubCalendar} />} -->
 </div>
+
+<script>
+  import { mountTerminal } from '../scripts/terminalEngine'
+
+  function initHomeTerminal() {
+    const card = document.getElementById('home-terminal-card')
+    if (card) mountTerminal(card)
+  }
+
+  initHomeTerminal()
+  document.addEventListener('astro:page-load', initHomeTerminal)
+</script>
 
 <style>
   /* --- Cycling avatar -------------------------------------------------- */
