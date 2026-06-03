@@ -270,6 +270,7 @@ export function mountTerminal(
   type Suggestion = { label: string; desc: string; cmd: string }
 
   function cap(s: string) {
+    if (s.length <= 2) return s.toUpperCase() // e.g. "cv" -> "CV"
     return s.charAt(0).toUpperCase() + s.slice(1)
   }
 

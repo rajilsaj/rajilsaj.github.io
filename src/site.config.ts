@@ -11,7 +11,7 @@ const config: SiteConfig = {
 
   // The description of your site, used for SEO and RSS feed.
   description:
-    'A coder-ready Astro blog theme with 59 of your favorite color schemes to choose from',
+    'Rajil Vembe — Software Engineer working on machine learning, automated systems, and AI. Research notes, projects, and writing.',
   // The author of the site, used in the footer, SEO, and RSS feed.
   author: 'Rajil Vembe',
   // Keywords for SEO, used in the meta tags.
@@ -32,28 +32,18 @@ const config: SiteConfig = {
   trailingSlashes: false,
   // The navigation links to display in the header.
   navLinks: [
-    // {
-    //   name: 'Home',
-    //   url: '/',
-    // },
-
-    // {
-    //   name: 'Blog',
-    //   url: '/posts',
-    // },
-    // {
-    //   name: 'Portfolio',
-    //   url: '/portfolio',
-    // },
+    {
+      name: 'Research',
+      url: '/research',
+    },
+    {
+      name: 'CV',
+      url: '/cv',
+    },
     {
       name: 'About',
       url: '/about',
-    }
-    //{
-    // name: 'GitHub',
-    //  url: 'https://github.com/stelcodes/multiterm-astro',
-    //  external: true,
-    //},
+    },
   ],
   // The theming configuration for the site.
   themes: {
@@ -61,7 +51,7 @@ const config: SiteConfig = {
     mode: 'select',
     // The default theme identifier, used when themeMode is "select" or "light-dark-auto".
     // Make sure this is one of the themes listed in `themes` or "auto" for "light-dark-auto" mode.
-    default: 'tokyo-night',
+    default: 'github-light',
     // Shiki themes to bundle with the site.
     // https://expressive-code.com/guides/themes/#using-bundled-themes
     // These will be used to theme the entire site along with syntax highlighting.
