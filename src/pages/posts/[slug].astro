@@ -64,6 +64,11 @@ if (postData.tags && postData.tags.length > 0) {
   const tagsGroup = await TagsGroup.build(sortedPosts)
   tags = tagsGroup.matchMany(postData.tags)
 }
+
+// Only show comments once Giscus is fully configured (real repo + category IDs)
+const commentsEnabled = Boolean(
+  siteConfig.giscus?.repoId && siteConfig.giscus?.categoryId,
+)
 ---
 
 <Layout
@@ -145,9 +150,9 @@ if (postData.tags && postData.tags.length > 0) {
     ) : null
   }
   {
-    siteConfig.giscus && (
-      <section>
-        <DividerText text="Comments" />
+    commentsEnabled && (
+      <section class="mt-16 border-t border-foreground/10 pt-10">
+        <h2 class="mb-6 text-xl font-semibold tracking-tight">Comments</h2>
         <GiscusLoader />
       </section>
     )

@@ -175,12 +175,17 @@ const config: SiteConfig = {
   // Take the values from the generated script tag at https://giscus.app and fill them in here.
   // IMPORTANT: Update giscus.json in the root of the project with your own website URL
   // If you don't want to use Giscus, set this to undefined.
+  // Comments via Giscus. Get these values from https://giscus.app after you:
+  //   1. enable Discussions on the repo below
+  //   2. install the Giscus GitHub app on it
+  // Paste the generated repoId and categoryId. Until both are filled in, the
+  // comments section is hidden automatically (see src/pages/posts/[slug].astro).
   giscus: {
-    repo: 'stelcodes/multiterm-astro',
-    repoId: 'R_kgDOPNnBig',
-    category: 'Giscus',
-    categoryId: 'DIC_kwDOPNnBis4CteOc',
-    reactionsEnabled: true, // Enable reactions on post itself
+    repo: 'rajilsaj/rajilsaj.github.io',
+    repoId: 'R_kgDOPIYnhA',
+    category: 'Announcements',
+    categoryId: 'DIC_kwDOPIYnhM4C-Z0Q',
+    reactionsEnabled: true, // Enable reactions on the post itself
   },
   // These are characters available for the character chat feature.
   // To add your own character, add an image file to the top-level `/public` directory
