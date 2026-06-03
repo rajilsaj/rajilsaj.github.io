@@ -23,6 +23,8 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
+CLAUDE.md
+
 # Ignore those old posts
 src/content/advanced-typescript-conditional-types.md
 src/content/posts/concurrency-in-go.md
