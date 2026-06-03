@@ -2,7 +2,6 @@
 import Layout from '~/layouts/Layout.astro'
 import { getSortedPosts } from '~/utils'
 import { getCollection, render } from 'astro:content'
-import Hero from '~/components/Hero.astro'
 import PostPreview from '~/components/PostPreview.astro'
 
 const home = await getCollection('home')
@@ -13,38 +12,31 @@ if (home.length > 0) {
 }
 
 const sortedPosts = await getSortedPosts()
-const recentPosts = sortedPosts.reverse().slice(0, 3)
+const recentPosts = sortedPosts.reverse().slice(0, 5)
 ---
 
-<Layout wide>
-  <div class="mx-auto w-full max-w-5xl px-5 py-14 sm:px-6 sm:py-20">
-    <Hero>
-      {HomeContent && <HomeContent />}
-    </Hero>
-
-    {
-      recentPosts.length > 0 && (
-        <section class="mt-20 sm:mt-28">
-          <div class="mb-6 flex items-end justify-between">
-            <h2 class="text-sm font-medium uppercase tracking-[0.2em] text-foreground/50">
-              Recent writing
-            </h2>
-            <a
-              href="/posts"
-              class="text-sm text-accent no-underline hover:underline"
-            >
-              All posts →
-            </a>
-          </div>
-          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {recentPosts.map((post) => (
-              <PostPreview post={post} />
-            ))}
-          </div>
-        </section>
-      )
-    }
+<Layout>
+  <div class="prose max-w-none">
+    {HomeContent && <HomeContent />}
   </div>
+
+  {
+    recentPosts.length > 0 && (
+      <section class="mt-12">
+        <h2 class="mb-4 text-lg font-semibold">Posts</h2>
+        <div class="flex flex-col">
+          {recentPosts.map((post) => (
+            <PostPreview post={post} />
+          ))}
+        </div>
+        <p class="mt-5 text-sm">
+          <a href="/posts" class="no-underline hover:underline decoration-dotted">
+            → all posts
+          </a>
+        </p>
+      </section>
+    )
+  }
 </Layout>
 
 <style is:global>

@@ -1,6 +1,5 @@
 ---
 import type { CollectionEntry } from 'astro:content'
-import { render } from 'astro:content'
 import { dateString } from '~/utils'
 
 interface Props {
@@ -8,52 +7,16 @@ interface Props {
 }
 
 const { post } = Astro.props
-const { remarkPluginFrontmatter } = await render(post)
-const description = remarkPluginFrontmatter.description || post.data.description
-const minutesRead = remarkPluginFrontmatter.minutesRead
 const href = `/posts/${post.id}`
 ---
 
-<article class="group h-full">
-  <a
-    href={href}
-    class="flex h-full flex-col rounded-2xl border border-foreground/10 p-5 no-underline transition-colors duration-200 hover:border-accent/50 hover:bg-foreground/[0.02]"
-  >
-    <div class="mb-2 flex items-center gap-2 text-xs text-foreground/50">
-      <time datetime={post.data.published.toISOString()}>
-        {dateString(post.data.published)}
-      </time>
-      {
-        minutesRead && (
-          <span class="before:mr-2 before:content-['·']">{minutesRead}</span>
-        )
-      }
-    </div>
-
-    <h3
-      class="text-lg font-semibold leading-snug tracking-tight text-foreground transition-colors group-hover:text-accent"
-    >
-      {post.data.title}
-    </h3>
-
-    {
-      description && (
-        <p class="mt-2 line-clamp-3 text-sm leading-relaxed text-foreground/65">
-          {description}
-        </p>
-      )
-    }
-
-    {
-      post.data.tags && post.data.tags.length > 0 && (
-        <div class="mt-4 flex flex-wrap gap-2">
-          {post.data.tags.map((t) => (
-            <span class="rounded-full bg-foreground/5 px-2.5 py-0.5 text-xs text-foreground/60">
-              {t}
-            </span>
-          ))}
-        </div>
-      )
-    }
+<div
+  class="grid grid-cols-1 gap-x-5 py-1.5 sm:grid-cols-[7.5rem_1fr] sm:items-baseline"
+>
+  <time datetime={post.data.published.toISOString()} class="text-sm text-foreground/45">
+    {dateString(post.data.published)}
+  </time>
+  <a href={href} class="no-underline hover:underline decoration-dotted">
+    {post.data.title}
   </a>
-</article>
+</div>

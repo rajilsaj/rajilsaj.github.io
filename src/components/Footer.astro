@@ -2,26 +2,6 @@
 import siteConfig from '~/site.config'
 ---
 
-<footer class="mt-auto border-t border-foreground/10">
-  <div
-    class="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-3 px-5 py-8 text-sm text-foreground/55 sm:flex-row sm:px-6"
-  >
-    <span>© {new Date().getFullYear()} {siteConfig.author}</span>
-    <nav aria-label="Footer">
-      <ul class="flex items-center gap-5">
-        {
-          siteConfig.navLinks.map((link) => (
-            <li>
-              <a
-                href={link.url}
-                class="no-underline transition-colors hover:text-accent"
-              >
-                {link.name}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
-  </div>
+<footer class="mt-16 border-t border-separator pt-6 text-center text-sm text-foreground/55">
+  <p>© {new Date().getFullYear()} {siteConfig.author}</p>
 </footer>

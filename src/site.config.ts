@@ -22,7 +22,7 @@ const config: SiteConfig = {
   socialCardAvatarImage: './src/content/avatar.jpg',
   // Font imported from @fontsource or elsewhere, used for the entire site.
   // To change this see src/styles/global.css and import a different font.
-  font: 'Inter Variable',
+  font: 'JetBrains Mono Variable',
   // For pagination, the number of posts to display per page.
   // The homepage will display half this number in the "Latest Posts" section.
   pageSize: 6,
@@ -130,11 +130,19 @@ const config: SiteConfig = {
     // Their values can be either a literal color (hex, rgb, hsl) or another theme key.
     // See themeKeys list in src/types.ts for available keys to override and reference.
     overrides: {
-      // Minimal portfolio palette: near-black ink on white with one indigo accent
+      // Shibui-style paper monochrome: near-black ink on near-white, no accent hue
       'github-light': {
-        accent: '#4f46e5',
-        link: '#4f46e5',
-        separator: '#e5e7eb',
+        background: '#fcfcfc',
+        foreground: '#1a1a1a',
+        accent: '#1a1a1a',
+        link: '#1a1a1a',
+        separator: '#e6e6e6',
+        heading1: '#1a1a1a',
+        heading2: '#1a1a1a',
+        heading3: '#1a1a1a',
+        heading4: '#1a1a1a',
+        heading5: '#1a1a1a',
+        heading6: '#1a1a1a',
       },
       // Improve readability for aurora-x theme
       // 'aurora-x': {
@@ -175,11 +183,8 @@ const config: SiteConfig = {
   // Take the values from the generated script tag at https://giscus.app and fill them in here.
   // IMPORTANT: Update giscus.json in the root of the project with your own website URL
   // If you don't want to use Giscus, set this to undefined.
-  // Comments via Giscus. Get these values from https://giscus.app after you:
-  //   1. enable Discussions on the repo below
-  //   2. install the Giscus GitHub app on it
-  // Paste the generated repoId and categoryId. Until both are filled in, the
-  // comments section is hidden automatically (see src/pages/posts/[slug].astro).
+  // Comments via Giscus (GitHub Discussions). Visitors sign in with GitHub.
+  // Discussions is enabled on the repo and the Giscus app is installed.
   giscus: {
     repo: 'rajilsaj/rajilsaj.github.io',
     repoId: 'R_kgDOPIYnhA',

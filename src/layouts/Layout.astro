@@ -13,11 +13,9 @@ interface Props {
   description?: string
   tags?: string[]
   author?: string
-  /** Full-bleed pages (like the home hero) opt out of the prose container */
-  wide?: boolean
 }
 
-const { title, description, tags, author, wide } = Astro.props
+const { title, description, tags, author } = Astro.props
 
 const pageUrl = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '') // Remove trailing slash for consistency
 const pageType = Astro.url.pathname.startsWith('/posts') ? 'article' : 'website'
@@ -158,18 +156,12 @@ let generatedCss: string = cssLines.join('\n')
     {themeMode === 'select' && <SelectThemeLoader />}
   </head>
   <body class="m-0 min-h-[100dvh] w-full bg-background text-foreground antialiased">
-    <div class="flex min-h-[100dvh] flex-col">
-      <SiteHeader />
+    <div
+      class="mx-auto flex min-h-[100dvh] w-full max-w-[72ch] flex-col px-5 py-8 sm:px-6 sm:py-12"
+    >
+      <SiteHeader title={title} />
       <main class="w-full flex-1">
-        {
-          wide ? (
-            <slot />
-          ) : (
-            <div class="mx-auto w-full max-w-3xl px-5 py-10 sm:px-6 sm:py-16">
-              <slot />
-            </div>
-          )
-        }
+        <slot />
       </main>
       <Footer />
     </div>
