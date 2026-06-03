@@ -26,13 +26,18 @@ export function mountTerminal(
   if (root.dataset.termReady === '1') return null
 
   const dataEl = document.getElementById('terminal-data')
-  const out = root.querySelector<HTMLElement>('[data-term-output]')
+  // The scrollable region. New command output is appended to the console
+  // element if present (so server-rendered page content above it is kept),
+  // otherwise straight into the scroll region.
+  const scrollEl = root.querySelector<HTMLElement>('[data-term-output]')
+  const consoleEl = root.querySelector<HTMLElement>('[data-term-console]')
+  const out = consoleEl || scrollEl
   const form = root.querySelector<HTMLFormElement>('[data-term-form]')
   const input = root.querySelector<HTMLInputElement>('[data-term-input]')
   const promptEl = root.querySelector<HTMLElement>('[data-term-prompt]')
   const hintEl = root.querySelector<HTMLElement>('[data-term-hint]')
   const sugEl = root.querySelector<HTMLElement>('[data-term-suggestions]')
-  if (!dataEl || !out || !form || !input || !promptEl) return null
+  if (!dataEl || !scrollEl || !out || !form || !input || !promptEl) return null
 
   root.dataset.termReady = '1'
 
@@ -60,7 +65,7 @@ export function mountTerminal(
   }
 
   function scrollDown() {
-    out!.scrollTop = out!.scrollHeight
+    scrollEl!.scrollTop = scrollEl!.scrollHeight
   }
 
   function print(text: string, cls = '') {
@@ -456,13 +461,8 @@ export function mountTerminal(
     }
   })
 
-  // Click anywhere in the terminal focuses the input
-  root.addEventListener('click', (e) => {
-    if ((e.target as HTMLElement).closest('a, button')) return
-    const sel = window.getSelection()
-    if (sel && sel.toString()) return // don't steal focus mid-selection
-    input.focus()
-  })
+  // Clicking the prompt line focuses the input (without hijacking page clicks)
+  form.addEventListener('click', () => input.focus())
 
   refreshPrompt()
   setHint(computeHint())
