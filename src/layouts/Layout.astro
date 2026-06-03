@@ -175,11 +175,11 @@ let generatedCss: string = cssLines.join('\n')
   <body class="m-0 h-[100dvh] w-full overflow-hidden bg-background text-foreground">
     <div
       id="terminal-shell"
-      class="mx-auto flex h-[100dvh] max-w-4xl flex-col border-x border-accent/10 font-mono"
+      class="flex h-[100dvh] w-full flex-col font-mono"
     >
       <!-- Window title bar -->
       <div
-        class="flex shrink-0 items-center gap-2 border-b border-foreground/10 bg-foreground/[0.05] px-4 py-2.5"
+        class="flex shrink-0 items-center gap-2 border-b border-foreground/10 bg-foreground/[0.05] px-4 py-2.5 sm:px-6"
       >
         <a href="/" aria-label="Home" class="flex items-center gap-2 no-underline">
           <span class="size-3 rounded-full bg-red/80"></span>
@@ -189,12 +189,20 @@ let generatedCss: string = cssLines.join('\n')
         <span class="ml-2 truncate text-xs text-foreground/55">
           {shellPrompt.replace(/\$$/, '')} — {siteConfig.title}
         </span>
+        <a
+          href="/"
+          aria-label="Back to home"
+          class="ml-auto flex shrink-0 items-center gap-1 rounded-md border border-accent/30 px-2 py-0.5 text-xs text-accent no-underline transition-colors hover:bg-accent/10"
+        >
+          <span aria-hidden="true">⌂</span>
+          <span class="hidden sm:inline">home</span>
+        </a>
       </div>
 
       <!-- Scrollable output: this page's content is the command output -->
       <div
         data-term-output
-        class="flex-1 overflow-y-auto px-4 py-5 sm:px-7 sm:py-6"
+        class="flex-1 overflow-y-auto px-4 py-5 sm:px-8 sm:py-6 lg:px-12"
       >
         <div class="mb-5 text-sm text-foreground/55">
           <span class="text-green">{shellPrompt}</span>
@@ -208,7 +216,7 @@ let generatedCss: string = cssLines.join('\n')
 
       <!-- Persistent prompt + clickable destinations -->
       <div
-        class="shrink-0 border-t border-foreground/10 bg-foreground/[0.03] px-4 py-2.5 sm:px-7"
+        class="shrink-0 border-t border-foreground/10 bg-foreground/[0.03] px-4 py-2.5 sm:px-8 lg:px-12"
       >
         <form data-term-form class="flex items-center gap-2 text-sm">
           <span data-term-prompt class="shrink-0 whitespace-nowrap text-green">
