@@ -31,6 +31,7 @@ export function mountTerminal(
   const input = root.querySelector<HTMLInputElement>('[data-term-input]')
   const promptEl = root.querySelector<HTMLElement>('[data-term-prompt]')
   const hintEl = root.querySelector<HTMLElement>('[data-term-hint]')
+  const sugEl = root.querySelector<HTMLElement>('[data-term-suggestions]')
   if (!dataEl || !out || !form || !input || !promptEl) return null
 
   root.dataset.termReady = '1'
@@ -261,6 +262,94 @@ export function mountTerminal(
       )
   }
 
+  type Suggestion = { label: string; desc: string; cmd: string }
+
+  function cap(s: string) {
+    return s.charAt(0).toUpperCase() + s.slice(1)
+  }
+
+  // Context-aware list of "where to next" destinations for the current location.
+  function computeSuggestions(): Suggestion[] {
+    const s: Suggestion[] = []
+    const at = cwd
+    if (at.length === 0) {
+      s.push({ label: 'Posts', desc: 'All articles', cmd: 'cd posts' })
+      if (DATA.tags.length)
+        s.push({ label: 'Tags', desc: 'Browse by topic', cmd: 'cd tags' })
+      for (const p of DATA.pages)
+        s.push({ label: cap(p.name), desc: '', cmd: `cd ${p.name}` })
+      s.push({ label: 'Site map', desc: 'Everything at a glance', cmd: 'tree' })
+      DATA.posts.slice(0, 3).forEach((p) =>
+        s.push({ label: p.title, desc: 'read', cmd: `cat ${p.slug}` }),
+      )
+    } else if (at[0] === 'posts' && at.length === 1) {
+      DATA.posts.slice(0, 6).forEach((p) =>
+        s.push({
+          label: p.title,
+          desc: p.tags[0] ? '#' + p.tags[0] : 'read',
+          cmd: `cat ${p.slug}`,
+        }),
+      )
+      s.push({ label: 'Home', desc: '', cmd: 'cd ~' })
+    } else if (at[0] === 'posts' && at.length >= 2) {
+      s.push({ label: 'All posts', desc: '', cmd: 'cd posts' })
+      if (DATA.tags.length) s.push({ label: 'Tags', desc: '', cmd: 'cd tags' })
+      s.push({ label: 'Home', desc: '', cmd: 'cd ~' })
+      DATA.posts
+        .filter((p) => p.slug !== at[1])
+        .slice(0, 3)
+        .forEach((p) =>
+          s.push({ label: p.title, desc: 'read next', cmd: `cat ${p.slug}` }),
+        )
+    } else if (at[0] === 'tags' && at.length === 1) {
+      DATA.tags.slice(0, 8).forEach((t) =>
+        s.push({ label: '#' + t, desc: '', cmd: `cd ${t}` }),
+      )
+      s.push({ label: 'Home', desc: '', cmd: 'cd ~' })
+    } else if (at[0] === 'tags' && at.length >= 2) {
+      const tag = at[1]
+      DATA.posts
+        .filter((p) => p.tags.map((x) => x.toLowerCase()).includes(tag.toLowerCase()))
+        .slice(0, 6)
+        .forEach((p) =>
+          s.push({ label: p.title, desc: 'read', cmd: `cat ${p.slug}` }),
+        )
+      s.push({ label: 'All tags', desc: '', cmd: 'cd tags' })
+      s.push({ label: 'Home', desc: '', cmd: 'cd ~' })
+    } else {
+      s.push({ label: 'Posts', desc: '', cmd: 'cd posts' })
+      if (DATA.tags.length) s.push({ label: 'Tags', desc: '', cmd: 'cd tags' })
+      s.push({ label: 'Home', desc: '', cmd: 'cd ~' })
+    }
+    return s
+  }
+
+  function renderSuggestions() {
+    if (!sugEl) return
+    sugEl.innerHTML = ''
+    const head = document.createElement('div')
+    head.className =
+      'mb-1.5 text-xs uppercase tracking-wider text-foreground/40 select-none'
+    head.textContent = 'where to next?'
+    sugEl.appendChild(head)
+
+    for (const it of computeSuggestions()) {
+      const btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className =
+        'term-suggestion group flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-accent/10 focus-visible:bg-accent/10'
+      btn.innerHTML =
+        `<span class="text-green transition-transform group-hover:translate-x-0.5">↳</span>` +
+        `<span class="truncate text-accent">${escapeHTML(it.label)}</span>` +
+        (it.desc
+          ? `<span class="shrink-0 text-foreground/40">${escapeHTML(it.desc)}</span>`
+          : '') +
+        `<code class="ml-auto shrink-0 text-xs text-foreground/30 opacity-0 transition-opacity group-hover:opacity-100">${escapeHTML(it.cmd)}</code>`
+      btn.addEventListener('click', () => run(it.cmd))
+      sugEl.appendChild(btn)
+    }
+  }
+
   function run(raw: string) {
     const line = raw.trim()
     echoCommand(line)
@@ -330,6 +419,7 @@ export function mountTerminal(
         print(`command not found: ${cmd}. Type 'help'.`, 'text-warning')
     }
     setHint(computeHint())
+    renderSuggestions()
   }
 
   function printWelcome() {
@@ -378,6 +468,7 @@ export function mountTerminal(
 
   refreshPrompt()
   setHint(computeHint())
+  renderSuggestions()
 
   return {
     printWelcome,
