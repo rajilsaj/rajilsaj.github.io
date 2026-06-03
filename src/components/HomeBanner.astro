@@ -43,7 +43,6 @@ const avatars = [
       <div class="avatar-glow relative shrink-0">
         <div
           class="avatar-cycle relative size-44 overflow-hidden rounded-full ring-2 ring-accent/60 sm:size-56"
-          title="Hover to cycle photos"
         >
           {
             avatars.map((a) => (
@@ -58,6 +57,7 @@ const avatars = [
             ))
           }
         </div>
+        <div class="avatar-ring" aria-hidden="true"></div>
       </div>
 
       <div class="min-w-0 flex-1">
@@ -127,6 +127,54 @@ const avatars = [
     }
   }
 
+  /* --- "Charging" progress ring --------------------------------------- */
+  /* A thin accent ring that fills 0 -> 360deg over one full photo cycle,
+     visible only while hovering, so it reads like the photos are loading. */
+  @property --ring-progress {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 0%;
+  }
+
+  .avatar-ring {
+    position: absolute;
+    inset: -7px;
+    border-radius: 9999px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    background: conic-gradient(
+      from -90deg,
+      var(--theme-accent) var(--ring-progress, 0%),
+      color-mix(in oklab, var(--theme-accent) 12%, transparent) 0
+    );
+    /* Carve out the center so only a thin ring shows */
+    -webkit-mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - 4px),
+      #000 calc(100% - 4px)
+    );
+    mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - 4px),
+      #000 calc(100% - 4px)
+    );
+  }
+
+  .avatar-glow:hover .avatar-ring {
+    opacity: 1;
+    animation: ring-charge 4s linear infinite;
+  }
+
+  @keyframes ring-charge {
+    from {
+      --ring-progress: 0%;
+    }
+    to {
+      --ring-progress: 100%;
+    }
+  }
+
   /* --- Glow behind the avatar ----------------------------------------- */
   .avatar-glow::before {
     content: '';
@@ -189,7 +237,8 @@ const avatars = [
   @media (prefers-reduced-motion: reduce) {
     .avatar-glow::before,
     .cursor,
-    .avatar-cycle:hover img {
+    .avatar-cycle:hover img,
+    .avatar-glow:hover .avatar-ring {
       animation: none;
     }
   }
