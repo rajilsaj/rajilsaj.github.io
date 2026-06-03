@@ -2,12 +2,23 @@
 import { Image } from 'astro:assets'
 import GitHubActivityCalendar from '~/components/GitHubActivityCalendar.astro'
 import type { FrontmatterImage } from '~/types'
+import profile0 from '~/content/profile-0.jpg'
+import profile1 from '~/content/profile-1.jpg'
+import profile2 from '~/content/profile-2.jpg'
+import profile3 from '~/content/profile-3.jpg'
 
 interface Props {
   avatarImage?: FrontmatterImage
   githubCalendar?: string
 }
-const { avatarImage, githubCalendar } = Astro.props
+const { githubCalendar } = Astro.props
+
+const avatars = [
+  { src: profile0, alt: 'Rajil at his graduation' },
+  { src: profile1, alt: 'Rajil at NASA JPL' },
+  { src: profile2, alt: 'Rajil in a Superheroes of Science beanie' },
+  { src: profile3, alt: 'Rajil in a tan jacket' },
+]
 ---
 
 <div class="my-6 md:mx-2">
@@ -29,21 +40,25 @@ const { avatarImage, githubCalendar } = Astro.props
     <div
       class="flex flex-col items-center gap-6 px-6 py-8 sm:flex-row sm:items-center sm:gap-8 sm:px-9 sm:py-9"
     >
-      {
-        avatarImage && (
-          <div class="avatar-glow relative shrink-0">
-            <Image
-              priority
-              src={avatarImage.src}
-              alt={avatarImage.alt}
-              class="relative size-32 rounded-full object-cover ring-2 ring-accent/60 sm:size-36"
-              widths={[288]}
-              height={144}
-              width={144}
-            />
-          </div>
-        )
-      }
+      <div class="avatar-glow relative shrink-0">
+        <div
+          class="avatar-cycle relative size-44 overflow-hidden rounded-full ring-2 ring-accent/60 sm:size-56"
+          title="Hover to cycle photos"
+        >
+          {
+            avatars.map((a) => (
+              <Image
+                src={a.src}
+                alt={a.alt}
+                widths={[288]}
+                height={144}
+                width={144}
+                class="absolute inset-0 size-full object-cover"
+              />
+            ))
+          }
+        </div>
+      </div>
 
       <div class="min-w-0 flex-1">
         <p class="mb-3 font-mono text-sm text-foreground/55">
@@ -65,7 +80,54 @@ const { avatarImage, githubCalendar } = Astro.props
 </div>
 
 <style>
-  /* Subtle animated glow behind the avatar, tinted by the active theme accent */
+  /* --- Cycling avatar -------------------------------------------------- */
+  /* Stack of photos; first one shown by default, the rest fade in only
+     while the circle is hovered, looping for as long as the cursor stays. */
+  .avatar-cycle img {
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .avatar-cycle img:nth-child(1) {
+    opacity: 1;
+  }
+
+  .avatar-cycle:hover img {
+    animation: avatar-cycle 4s infinite;
+  }
+  /* Negative offset on the first image keeps it visible at hover-start
+     (no flash); the 1s spacing across 4 photos gives an even rotation. */
+  .avatar-cycle:hover img:nth-child(1) {
+    animation-delay: -0.5s;
+  }
+  .avatar-cycle:hover img:nth-child(2) {
+    animation-delay: 0.5s;
+  }
+  .avatar-cycle:hover img:nth-child(3) {
+    animation-delay: 1.5s;
+  }
+  .avatar-cycle:hover img:nth-child(4) {
+    animation-delay: 2.5s;
+  }
+
+  @keyframes avatar-cycle {
+    0% {
+      opacity: 0;
+    }
+    8% {
+      opacity: 1;
+    }
+    25% {
+      opacity: 1;
+    }
+    33% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* --- Glow behind the avatar ----------------------------------------- */
   .avatar-glow::before {
     content: '';
     position: absolute;
@@ -126,7 +188,8 @@ const { avatarImage, githubCalendar } = Astro.props
 
   @media (prefers-reduced-motion: reduce) {
     .avatar-glow::before,
-    .cursor {
+    .cursor,
+    .avatar-cycle:hover img {
       animation: none;
     }
   }
