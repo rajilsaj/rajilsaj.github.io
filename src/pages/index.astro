@@ -29,7 +29,7 @@ const postsHaveTags = sortedPosts.some(
 const postsHaveSeries = sortedPosts.some((post) => post.data.series)
 ---
 
-<Layout>
+<Layout hideHeader>
   {
     HomeContent && (
       <HomeBanner avatarImage={homeAvatarImage} githubCalendar={homeGithubCalendar}>
@@ -57,20 +57,6 @@ const postsHaveSeries = sortedPosts.some((post) => post.data.series)
       </section>
     )
   */
-  }
-  {
-    sortedPosts.length > 0 && (
-      <section>
-        <BlockHeader>Latest Posts</BlockHeader>
-        {sortedPosts
-          .reverse()
-          .slice(0, Math.floor(siteConfig.pageSize / 2))
-          .map((post) => (
-            <PostPreview post={post} />
-          ))}
-        <Pagination nextLink="/posts" nextText="Archive" />
-      </section>
-    )
   }
 </Layout>
 

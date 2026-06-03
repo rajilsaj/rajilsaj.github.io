@@ -14,9 +14,10 @@ interface Props {
   description?: string
   tags?: string[]
   author?: string
+  hideHeader?: boolean
 }
 
-const { title, description, tags, author } = Astro.props
+const { title, description, tags, author, hideHeader } = Astro.props
 const pageUrl = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '') // Remove trailing slash for consistency
 const pageType = Astro.url.pathname.startsWith('/posts') ? 'article' : 'website'
 const pageTitle = title ? `${title} - ${siteConfig.title}` : siteConfig.title
@@ -159,7 +160,7 @@ let generatedCss: string = cssLines.join('\n')
     <div
       class="flex flex-col max-w-3xl min-h-screen border-accent/10 m-auto p-3 sm:py-5 sm:px-6 md:py-10"
     >
-      <Header />
+      {!hideHeader && <Header />}
       <main class="flex flex-col py-1">
         <slot />
       </main>
