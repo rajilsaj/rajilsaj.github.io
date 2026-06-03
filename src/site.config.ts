@@ -7,7 +7,7 @@ const config: SiteConfig = {
   title: 'Rajil Saj',
 
   // My title line
-  titleLine: 'Software Engineer 🇺🇸🇨🇬',
+  titleLine: 'Software Engineer · ML · Systems · AI',
 
   // The description of your site, used for SEO and RSS feed.
   description:
@@ -22,7 +22,7 @@ const config: SiteConfig = {
   socialCardAvatarImage: './src/content/avatar.jpg',
   // Font imported from @fontsource or elsewhere, used for the entire site.
   // To change this see src/styles/global.css and import a different font.
-  font: 'JetBrains Mono Variable',
+  font: 'Inter Variable',
   // For pagination, the number of posts to display per page.
   // The homepage will display half this number in the "Latest Posts" section.
   pageSize: 6,
@@ -35,6 +35,10 @@ const config: SiteConfig = {
     {
       name: 'Research',
       url: '/research',
+    },
+    {
+      name: 'Blog',
+      url: '/posts',
     },
     {
       name: 'CV',
@@ -126,6 +130,12 @@ const config: SiteConfig = {
     // Their values can be either a literal color (hex, rgb, hsl) or another theme key.
     // See themeKeys list in src/types.ts for available keys to override and reference.
     overrides: {
+      // Minimal portfolio palette: near-black ink on white with one indigo accent
+      'github-light': {
+        accent: '#4f46e5',
+        link: '#4f46e5',
+        separator: '#e5e7eb',
+      },
       // Improve readability for aurora-x theme
       // 'aurora-x': {
       //   background: '#292929FF',

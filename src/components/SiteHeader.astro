@@ -1,0 +1,47 @@
+---
+import siteConfig from '~/site.config'
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/'
+const isActive = (url: string) =>
+  url === '/' ? path === '/' : path === url || path.startsWith(url + '/')
+---
+
+<header
+  class="sticky top-0 z-40 border-b border-foreground/10 bg-background/80 backdrop-blur"
+>
+  <div
+    class="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-4 sm:px-6"
+  >
+    <a
+      href="/"
+      class="text-base font-semibold tracking-tight text-foreground no-underline hover:text-accent"
+    >
+      {siteConfig.title}
+    </a>
+
+    <nav aria-label="Primary">
+      <ul class="flex items-center gap-5 text-sm sm:gap-7">
+        {
+          siteConfig.navLinks.map((link) => (
+            <li>
+              <a
+                href={link.url}
+                target={link.external ? '_blank' : undefined}
+                rel={link.external ? 'noreferrer noopener' : undefined}
+                aria-current={isActive(link.url) ? 'page' : undefined}
+                class:list={[
+                  'no-underline transition-colors hover:text-accent',
+                  isActive(link.url)
+                    ? 'font-medium text-accent'
+                    : 'text-foreground/65',
+                ]}
+              >
+                {link.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>

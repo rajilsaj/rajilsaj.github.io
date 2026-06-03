@@ -1,0 +1,132 @@
+---
+import { Image } from 'astro:assets'
+import profile0 from '~/content/profile-0.jpg'
+import profile1 from '~/content/profile-1.jpg'
+import profile2 from '~/content/profile-2.jpg'
+import profile3 from '~/content/profile-3.jpg'
+import siteConfig from '~/site.config'
+
+const avatars = [
+  { src: profile0, alt: 'Rajil at his graduation' },
+  { src: profile1, alt: 'Rajil at NASA JPL' },
+  { src: profile2, alt: 'Rajil in a Superheroes of Science beanie' },
+  { src: profile3, alt: 'Rajil in a tan jacket' },
+]
+---
+
+<section
+  class="flex flex-col-reverse items-start gap-10 sm:flex-row sm:items-center sm:justify-between"
+>
+  <div class="max-w-xl">
+    <p class="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-accent">
+      {siteConfig.titleLine}
+    </p>
+    <h1
+      class="text-5xl font-semibold leading-[0.95] tracking-tight sm:text-7xl"
+    >
+      Rajil<br />Vembe
+    </h1>
+
+    <div class="prose mt-6 max-w-none text-lg text-foreground/75">
+      <slot />
+    </div>
+
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href="/research" class="btn btn-primary">Research</a>
+      <a href="/posts" class="btn">Blog</a>
+      <a href="/cv" class="btn">CV</a>
+    </div>
+  </div>
+
+  <div class="avatar-cycle relative size-40 shrink-0 overflow-hidden rounded-full ring-1 ring-foreground/10 sm:size-56">
+    {
+      avatars.map((a) => (
+        <Image
+          src={a.src}
+          alt={a.alt}
+          widths={[224, 448]}
+          height={224}
+          width={224}
+          class="absolute inset-0 size-full object-cover"
+        />
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in oklab, var(--theme-foreground) 18%, transparent);
+    padding: 0.55rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--theme-foreground);
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .btn:hover {
+    border-color: var(--theme-accent);
+    color: var(--theme-accent);
+  }
+  .btn-primary {
+    background: var(--theme-accent);
+    border-color: var(--theme-accent);
+    color: var(--theme-background);
+  }
+  .btn-primary:hover {
+    color: var(--theme-background);
+    filter: brightness(1.08);
+  }
+
+  /* Hover cross-fade through the photos */
+  .avatar-cycle img {
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .avatar-cycle img:nth-child(1) {
+    opacity: 1;
+  }
+  .avatar-cycle:hover img {
+    animation: avatar-cycle 4s infinite;
+  }
+  .avatar-cycle:hover img:nth-child(1) {
+    animation-delay: -0.5s;
+  }
+  .avatar-cycle:hover img:nth-child(2) {
+    animation-delay: 0.5s;
+  }
+  .avatar-cycle:hover img:nth-child(3) {
+    animation-delay: 1.5s;
+  }
+  .avatar-cycle:hover img:nth-child(4) {
+    animation-delay: 2.5s;
+  }
+  @keyframes avatar-cycle {
+    0% {
+      opacity: 0;
+    }
+    8% {
+      opacity: 1;
+    }
+    25% {
+      opacity: 1;
+    }
+    33% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .avatar-cycle:hover img {
+      animation: none;
+    }
+  }
+</style>

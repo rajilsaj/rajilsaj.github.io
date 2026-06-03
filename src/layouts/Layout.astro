@@ -1,7 +1,7 @@
 ---
 import '~/styles/global.css'
+import SiteHeader from '~/components/SiteHeader.astro'
 import Footer from '~/components/Footer.astro'
-import TerminalData from '~/components/TerminalData.astro'
 import LightDarkAutoThemeLoader from '~/components/LightDarkAutoThemeLoader.astro'
 import SelectThemeLoader from '~/components/SelectThemeLoader.astro'
 import siteConfig from '~/site.config'
@@ -13,29 +13,12 @@ interface Props {
   description?: string
   tags?: string[]
   author?: string
-  hideHeader?: boolean
+  /** Full-bleed pages (like the home hero) opt out of the prose container */
+  wide?: boolean
 }
 
-const { title, description, tags, author, hideHeader } = Astro.props
+const { title, description, tags, author, wide } = Astro.props
 
-// --- Terminal shell: derive the "command" that produced this page ---
-const path = Astro.url.pathname.replace(/\/+$/, '') || '/'
-const segs = path.replace(/^\/|\/$/g, '').split('/').filter(Boolean)
-const cwdDisplay = segs.length ? '~/' + segs.map(decodeURIComponent).join('/') : '~'
-const shellPrompt = `rajil@web:${cwdDisplay}$`
-let pageCommand = 'whoami'
-if (path === '/') pageCommand = 'whoami'
-else if (path === '/posts' || /^\/posts\/\d+$/.test(path)) pageCommand = 'ls posts'
-else if (path.startsWith('/posts/'))
-  pageCommand = `cat ${decodeURIComponent(segs[segs.length - 1])}`
-else if (path.startsWith('/about')) pageCommand = 'cat about'
-else if (path.startsWith('/tags/'))
-  pageCommand = `ls tags/${decodeURIComponent(segs[1] ?? '')}`
-else if (path.startsWith('/series/'))
-  pageCommand = `ls series/${decodeURIComponent(segs[1] ?? '')}`
-else if (segs.length)
-  pageCommand = `cat ${decodeURIComponent(segs[segs.length - 1])}`
-else pageCommand = 'whoami'
 const pageUrl = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '') // Remove trailing slash for consistency
 const pageType = Astro.url.pathname.startsWith('/posts') ? 'article' : 'website'
 const pageTitle = title ? `${title} - ${siteConfig.title}` : siteConfig.title
@@ -174,81 +157,21 @@ let generatedCss: string = cssLines.join('\n')
     {themeMode === 'light-dark-auto' && <LightDarkAutoThemeLoader />}
     {themeMode === 'select' && <SelectThemeLoader />}
   </head>
-  <body class="m-0 h-[100dvh] w-full overflow-hidden bg-background text-foreground">
-    <div
-      id="terminal-shell"
-      class="flex h-[100dvh] w-full flex-col font-mono"
-    >
-      <!-- Window title bar -->
-      <div
-        class="flex shrink-0 items-center gap-2 border-b border-foreground/10 bg-foreground/[0.05] px-4 py-2.5 sm:px-6"
-      >
-        <a href="/" aria-label="Home" class="flex items-center gap-2 no-underline">
-          <span class="size-3 rounded-full bg-red/80"></span>
-          <span class="size-3 rounded-full bg-yellow/80"></span>
-          <span class="size-3 rounded-full bg-green/80"></span>
-        </a>
-        <span class="ml-2 truncate text-xs text-foreground/55">
-          {shellPrompt.replace(/\$$/, '')} — {siteConfig.title}
-        </span>
-        <a
-          href="/"
-          aria-label="Back to home"
-          class="ml-auto flex shrink-0 items-center gap-1 rounded-md border border-accent/30 px-2 py-0.5 text-xs text-accent no-underline transition-colors hover:bg-accent/10"
-        >
-          <span aria-hidden="true">⌂</span>
-          <span class="hidden sm:inline">home</span>
-        </a>
-      </div>
-
-      <!-- Scrollable output: this page's content is the command output -->
-      <div
-        data-term-output
-        class="flex-1 overflow-y-auto px-4 py-5 sm:px-8 sm:py-6 lg:px-12"
-      >
-        <div class="mb-5 text-sm text-foreground/55">
-          <span class="text-green">{shellPrompt}</span>
-          <span class="text-accent">{pageCommand}</span>
-        </div>
-        <main class="flex flex-col"><slot /></main>
-        <Footer />
-        <!-- Ephemeral console for ls / tree / help output -->
-        <div data-term-console class="mt-3 space-y-0.5 text-sm"></div>
-      </div>
-
-      <!-- Persistent prompt + clickable destinations -->
-      <div
-        class="shrink-0 border-t border-foreground/10 bg-foreground/[0.03] px-4 py-2.5 sm:px-8 lg:px-12"
-      >
-        <form data-term-form class="flex items-center gap-2 text-sm">
-          <span data-term-prompt class="shrink-0 whitespace-nowrap text-green">
-            {shellPrompt}
-          </span>
-          <input
-            data-term-input
-            type="text"
-            autocomplete="off"
-            autocapitalize="off"
-            spellcheck="false"
-            aria-label="Terminal command input"
-            placeholder="type a command…"
-            class="min-w-0 flex-1 border-none bg-transparent text-foreground outline-none"
-          />
-        </form>
-        <div data-term-hint class="mt-1.5 text-xs text-foreground/45"></div>
-        <div data-term-suggestions class="mt-2"></div>
-      </div>
+  <body class="m-0 min-h-[100dvh] w-full bg-background text-foreground antialiased">
+    <div class="flex min-h-[100dvh] flex-col">
+      <SiteHeader />
+      <main class="w-full flex-1">
+        {
+          wide ? (
+            <slot />
+          ) : (
+            <div class="mx-auto w-full max-w-3xl px-5 py-10 sm:px-6 sm:py-16">
+              <slot />
+            </div>
+          )
+        }
+      </main>
+      <Footer />
     </div>
-    <TerminalData />
-
-    <script>
-      import { mountTerminal } from '../scripts/terminalEngine'
-      function initShell() {
-        const shell = document.getElementById('terminal-shell')
-        if (shell) mountTerminal(shell)
-      }
-      initShell()
-      document.addEventListener('astro:page-load', initShell)
-    </script>
   </body>
 </html>

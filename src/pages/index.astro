@@ -2,62 +2,49 @@
 import Layout from '~/layouts/Layout.astro'
 import { getSortedPosts } from '~/utils'
 import { getCollection, render } from 'astro:content'
+import Hero from '~/components/Hero.astro'
 import PostPreview from '~/components/PostPreview.astro'
-import Pagination from '~/components/Pagination.astro'
-import BlockHeader from '~/components/BlockHeader.astro'
-import HomeBanner from '~/components/HomeBanner.astro'
-import siteConfig from '~/site.config'
-import TagsSection from '~/components/TagsSection.astro'
-import SeriesSection from '~/components/SeriesSection.astro'
 
 const home = await getCollection('home')
 let HomeContent
-let homeAvatarImage
-let homeGithubCalendar
 if (home.length > 0) {
-  const homeEntry = home[0]
-  const { Content } = await render(homeEntry)
+  const { Content } = await render(home[0])
   HomeContent = Content
-  homeAvatarImage = homeEntry.data.avatarImage
-  homeGithubCalendar = homeEntry.data.githubCalendar
 }
-const sortedPosts = await getSortedPosts()
-const postsHaveTags = sortedPosts.some(
-  (post) => post.data.tags && post.data.tags.length > 0,
-)
 
-const postsHaveSeries = sortedPosts.some((post) => post.data.series)
+const sortedPosts = await getSortedPosts()
+const recentPosts = sortedPosts.reverse().slice(0, 3)
 ---
 
-<Layout hideHeader>
-  {
-    HomeContent && (
-      <HomeBanner avatarImage={homeAvatarImage} githubCalendar={homeGithubCalendar}>
-        <HomeContent />
-      </HomeBanner>
-    )
-  }
+<Layout wide>
+  <div class="mx-auto w-full max-w-5xl px-5 py-14 sm:px-6 sm:py-20">
+    <Hero>
+      {HomeContent && <HomeContent />}
+    </Hero>
 
-  {
-    /*
-    postsHaveSeries && (
-      <section>
-        <BlockHeader>Series</BlockHeader>
-        <SeriesSection posts={sortedPosts} />
-      </section>
-    )
-   */
-  }
-  {
-    /*
-    postsHaveTags && (
-      <section>
-        <BlockHeader>Tags</BlockHeader>
-        <TagsSection posts={sortedPosts} />
-      </section>
-    )
-  */
-  }
+    {
+      recentPosts.length > 0 && (
+        <section class="mt-20 sm:mt-28">
+          <div class="mb-6 flex items-end justify-between">
+            <h2 class="text-sm font-medium uppercase tracking-[0.2em] text-foreground/50">
+              Recent writing
+            </h2>
+            <a
+              href="/posts"
+              class="text-sm text-accent no-underline hover:underline"
+            >
+              All posts →
+            </a>
+          </div>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {recentPosts.map((post) => (
+              <PostPreview post={post} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </div>
 </Layout>
 
 <style is:global>
