@@ -1,0 +1,495 @@
+---
+import { getSortedPosts } from '~/utils'
+import siteConfig from '~/site.config'
+
+const posts = await getSortedPosts()
+const navPages = siteConfig.navLinks
+  .filter((l) => !l.external && l.url.startsWith('/') && l.url !== '/')
+  .map((l) => ({ name: l.url.replace(/^\//, ''), path: l.url }))
+
+const terminalData = {
+  author: siteConfig.author,
+  title: siteConfig.title,
+  posts: posts.map((p) => ({
+    slug: p.id,
+    title: p.data.title,
+    tags: p.data.tags ?? [],
+  })),
+  tags: [...new Set(posts.flatMap((p) => p.data.tags ?? []))].sort(),
+  pages: navPages,
+}
+---
+
+<!-- Launcher button (bottom-right) -->
+<button
+  id="term-launcher"
+  type="button"
+  aria-label="Open terminal navigator"
+  class="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-xl border border-accent/40 bg-background/90 px-3 py-2 font-mono text-sm text-accent shadow-lg backdrop-blur transition-colors hover:bg-accent/10"
+>
+  <span aria-hidden="true">{'>_'}</span>
+  <span class="hidden sm:inline">terminal</span>
+</button>
+
+<!-- Terminal panel -->
+<div
+  id="term"
+  role="dialog"
+  aria-label="Terminal navigator"
+  class="fixed bottom-4 right-4 left-4 z-50 hidden max-h-[70vh] flex-col overflow-hidden rounded-xl border border-accent/40 bg-background/95 font-mono text-sm shadow-2xl backdrop-blur sm:left-auto sm:w-[34rem]"
+>
+  <!-- Title bar -->
+  <div
+    class="flex items-center gap-2 border-b border-foreground/10 bg-foreground/[0.05] px-3 py-2"
+  >
+    <span class="size-3 rounded-full bg-red/80"></span>
+    <span class="size-3 rounded-full bg-yellow/80"></span>
+    <span class="size-3 rounded-full bg-green/80"></span>
+    <span class="ml-2 text-xs text-foreground/50">rajil@web — bash</span>
+    <button
+      id="term-close"
+      type="button"
+      aria-label="Close terminal"
+      class="ml-auto px-2 text-foreground/60 hover:text-foreground"
+    >
+      ✕
+    </button>
+  </div>
+
+  <!-- Output -->
+  <div
+    id="term-output"
+    class="flex-1 space-y-0.5 overflow-y-auto px-3 py-3 leading-relaxed text-foreground/90"
+  >
+  </div>
+
+  <!-- Input line -->
+  <form id="term-form" class="flex items-center gap-2 px-3 pb-1 pt-1">
+    <span id="term-prompt" class="shrink-0 whitespace-nowrap text-green">
+      rajil@web:~$
+    </span>
+    <input
+      id="term-input"
+      type="text"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+      class="min-w-0 flex-1 border-none bg-transparent text-foreground outline-none"
+    />
+  </form>
+
+  <!-- Hint -->
+  <div
+    id="term-hint"
+    class="border-t border-foreground/10 px-3 py-2 text-xs text-foreground/50"
+  >
+  </div>
+</div>
+
+<script
+  type="application/json"
+  id="terminal-data"
+  is:inline
+  set:html={JSON.stringify(terminalData)}
+></script>
+
+<script>
+  type Post = { slug: string; title: string; tags: string[] }
+  type TermData = {
+    author: string
+    title: string
+    posts: Post[]
+    tags: string[]
+    pages: { name: string; path: string }[]
+  }
+
+  function initTerminal() {
+    const dataEl = document.getElementById('terminal-data')
+    const term = document.getElementById('term')
+    const launcher = document.getElementById('term-launcher')
+    const out = document.getElementById('term-output')
+    const input = document.getElementById('term-input') as HTMLInputElement | null
+    const form = document.getElementById('term-form')
+    const hintEl = document.getElementById('term-hint')
+    const promptEl = document.getElementById('term-prompt')
+    const closeBtn = document.getElementById('term-close')
+    if (
+      !dataEl ||
+      !term ||
+      !launcher ||
+      !out ||
+      !input ||
+      !form ||
+      !hintEl ||
+      !promptEl ||
+      !closeBtn
+    )
+      return
+    // Guard against double init (e.g. view transitions)
+    if (term.dataset.ready === '1') return
+    term.dataset.ready = '1'
+
+    const DATA: TermData = JSON.parse(dataEl.textContent || '{}')
+    const history: string[] = []
+    let histIdx = -1
+    let cwd: string[] = pathToCwd(location.pathname)
+    let currentHint = 'help'
+
+    function pathToCwd(pathname: string): string[] {
+      const parts = pathname.replace(/^\/|\/$/g, '').split('/').filter(Boolean)
+      // Ignore numeric pagination segments like /posts/2
+      if (parts.length === 2 && parts[0] === 'posts' && /^\d+$/.test(parts[1])) {
+        return ['posts']
+      }
+      return parts
+    }
+
+    function cwdString(): string {
+      return cwd.length ? '~/' + cwd.join('/') : '~'
+    }
+
+    function refreshPrompt() {
+      promptEl!.textContent = `rajil@web:${cwdString()}$`
+    }
+
+    function scrollDown() {
+      out!.scrollTop = out!.scrollHeight
+    }
+
+    function print(text: string, cls = '') {
+      const div = document.createElement('div')
+      if (cls) div.className = cls
+      div.textContent = text
+      out!.appendChild(div)
+      scrollDown()
+    }
+
+    function printHTML(html: string) {
+      const div = document.createElement('div')
+      div.innerHTML = html
+      out!.appendChild(div)
+      scrollDown()
+    }
+
+    function echoCommand(cmd: string) {
+      printHTML(
+        `<span class="text-green">${escapeHTML(promptEl!.textContent || '$')}</span> ${escapeHTML(cmd)}`,
+      )
+    }
+
+    function escapeHTML(s: string) {
+      return s.replace(
+        /[&<>"]/g,
+        (c) =>
+          ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c] || c,
+      )
+    }
+
+    function setHint(cmd: string, note = 'Tab to autofill, Enter to run') {
+      currentHint = cmd
+      input!.placeholder = cmd
+      hintEl!.innerHTML = `<span class="text-accent">hint:</span> type <span class="text-foreground">${escapeHTML(cmd)}</span> · <span class="text-foreground/40">${note}</span>`
+    }
+
+    // Suggest the next command based on where you are.
+    function computeHint(): string {
+      if (cwd.length === 0) return 'cd posts'
+      if (cwd[0] === 'posts' && cwd.length === 1) {
+        const first = DATA.posts[0]
+        return first ? `cat ${first.slug}` : 'cd ~'
+      }
+      if (cwd[0] === 'posts' && cwd.length >= 2) return 'cd ~'
+      if (cwd[0] === 'tags' && cwd.length === 1) {
+        const first = DATA.tags[0]
+        return first ? `cd ${first}` : 'cd ~'
+      }
+      if (cwd[0] === 'tags' && cwd.length >= 2) return 'cd ~'
+      return 'cd ~'
+    }
+
+    function go(url: string) {
+      print(`navigating to ${url} …`, 'text-foreground/50')
+      sessionStorage.setItem('term-open', '1')
+      window.location.href = url
+    }
+
+    function listing(items: { label: string; cls?: string }[]) {
+      const wrap = document.createElement('div')
+      wrap.className = 'flex flex-wrap gap-x-5 gap-y-0.5'
+      for (const it of items) {
+        const span = document.createElement('span')
+        span.className = it.cls || 'text-foreground/90'
+        span.textContent = it.label
+        wrap.appendChild(span)
+      }
+      out!.appendChild(wrap)
+      scrollDown()
+    }
+
+    function doLs(arg?: string) {
+      let scope = cwd
+      if (arg) scope = pathToCwd('/' + arg.replace(/^[~/]+/, ''))
+      if (scope.length === 0) {
+        listing([
+          { label: 'posts/', cls: 'text-accent' },
+          { label: 'tags/', cls: 'text-accent' },
+          ...DATA.pages.map((p) => ({ label: p.name, cls: 'text-link' })),
+        ])
+        return
+      }
+      if (scope[0] === 'posts' && scope.length === 1) {
+        DATA.posts.forEach((p, i) =>
+          printHTML(
+            `<span class="text-foreground/40">${String(i + 1).padStart(2, ' ')}</span>  <span class="text-link">${escapeHTML(p.slug)}</span>  <span class="text-foreground/50">— ${escapeHTML(p.title)}</span>`,
+          ),
+        )
+        return
+      }
+      if (scope[0] === 'tags' && scope.length === 1) {
+        listing(DATA.tags.map((t) => ({ label: t, cls: 'text-accent' })))
+        return
+      }
+      if (scope[0] === 'tags' && scope.length === 2) {
+        const tag = scope[1]
+        const tagged = DATA.posts.filter((p) =>
+          p.tags.map((t) => t.toLowerCase()).includes(tag.toLowerCase()),
+        )
+        if (!tagged.length) print(`no posts tagged "${tag}"`, 'text-warning')
+        tagged.forEach((p) =>
+          printHTML(
+            `<span class="text-link">${escapeHTML(p.slug)}</span>  <span class="text-foreground/50">— ${escapeHTML(p.title)}</span>`,
+          ),
+        )
+        return
+      }
+      print('not a directory', 'text-warning')
+    }
+
+    function findPost(name: string): Post | undefined {
+      const n = name.toLowerCase()
+      return (
+        DATA.posts.find((p) => p.slug.toLowerCase() === n) ||
+        DATA.posts.find((p) => p.slug.toLowerCase().includes(n))
+      )
+    }
+
+    function doCd(target?: string) {
+      if (!target || target === '~' || target === '/') return go('/')
+      // Resolve segments relative to cwd unless absolute (~ or /)
+      let segs: string[]
+      if (target.startsWith('~') || target.startsWith('/')) {
+        segs = target.replace(/^[~/]+/, '').split('/').filter(Boolean)
+      } else {
+        segs = [...cwd]
+        for (const part of target.split('/').filter(Boolean)) {
+          if (part === '.') continue
+          else if (part === '..') segs.pop()
+          else segs.push(part)
+        }
+      }
+      // Map resolved path to a real URL
+      if (segs.length === 0) return go('/')
+      const page = DATA.pages.find((p) => p.name === segs[0])
+      if (page && segs.length === 1) return go(page.path)
+      if (segs[0] === 'posts' && segs.length === 1) return go('/posts')
+      if (segs[0] === 'posts' && segs.length === 2) {
+        const post = findPost(segs[1])
+        if (post) return go(`/posts/${post.slug}`)
+        return print(`cd: no such post: ${segs[1]}`, 'text-warning')
+      }
+      if (segs[0] === 'tags' && segs.length === 1) {
+        // No tags index page — list them virtually instead
+        cwd = ['tags']
+        refreshPrompt()
+        print('tags/ (pick one to open)', 'text-foreground/50')
+        doLs()
+        return
+      }
+      if (segs[0] === 'tags' && segs.length === 2) {
+        const tag = DATA.tags.find(
+          (t) => t.toLowerCase() === segs[1].toLowerCase(),
+        )
+        if (tag) return go(`/tags/${encodeURIComponent(tag)}`)
+        return print(`cd: no such tag: ${segs[1]}`, 'text-warning')
+      }
+      // Allow bare tag name while inside tags/
+      if (cwd[0] === 'tags' && segs.length === 1) {
+        const tag = DATA.tags.find((t) => t.toLowerCase() === segs[0].toLowerCase())
+        if (tag) return go(`/tags/${encodeURIComponent(tag)}`)
+      }
+      print(`cd: no such directory: ${target}`, 'text-warning')
+    }
+
+    function doHelp() {
+      const rows: [string, string][] = [
+        ['ls [path]', 'list what is here (or at path)'],
+        ['cd <dir>', 'go somewhere — posts, tags, about, ~, ..'],
+        ['cat <post>', 'open a post by its slug'],
+        ['posts', 'jump to the post archive'],
+        ['tags', 'list all tags'],
+        ['whoami', 'about the author'],
+        ['pwd', 'print current location'],
+        ['open <url>', 'open an external link'],
+        ['clear', 'clear the screen'],
+        ['help', 'show this help'],
+      ]
+      print('Available commands:', 'text-accent')
+      for (const [cmd, desc] of rows)
+        printHTML(
+          `  <span class="text-link">${cmd.padEnd(12)}</span><span class="text-foreground/60">${escapeHTML(desc)}</span>`,
+        )
+    }
+
+    function run(raw: string) {
+      const line = raw.trim()
+      echoCommand(line)
+      if (line) {
+        history.push(line)
+        if (history.length > 50) history.shift()
+      }
+      histIdx = history.length
+      const [cmd, ...rest] = line.split(/\s+/)
+      const arg = rest.join(' ')
+      switch (cmd) {
+        case '':
+          break
+        case 'help':
+        case '?':
+          doHelp()
+          break
+        case 'ls':
+        case 'dir':
+          doLs(arg)
+          break
+        case 'cd':
+          doCd(arg)
+          break
+        case 'cat':
+        case 'open': {
+          if (cmd === 'open' && /^https?:\/\//.test(arg)) {
+            print(`opening ${arg} …`, 'text-foreground/50')
+            window.open(arg, '_blank', 'noopener')
+            break
+          }
+          const post = findPost(arg)
+          if (post) go(`/posts/${post.slug}`)
+          else print(`${cmd}: not found: ${arg}`, 'text-warning')
+          break
+        }
+        case 'posts':
+          go('/posts')
+          break
+        case 'tags':
+          doCd('tags')
+          break
+        case 'about':
+          doCd('about')
+          break
+        case 'home':
+          go('/')
+          break
+        case 'pwd':
+          print(cwdString())
+          break
+        case 'whoami':
+          print(DATA.author, 'text-accent')
+          print(`Maintainer of ${DATA.title}. Try 'cd about' for more.`, 'text-foreground/60')
+          break
+        case 'clear':
+          out!.innerHTML = ''
+          break
+        case 'sudo':
+          print('nice try 😏 — you already have root here.', 'text-magenta')
+          break
+        case 'exit':
+          closeTerm()
+          break
+        default:
+          print(`command not found: ${cmd}. Type 'help'.`, 'text-warning')
+      }
+      setHint(computeHint())
+    }
+
+    function openTerm(first = false) {
+      term!.classList.remove('hidden')
+      term!.classList.add('flex')
+      launcher!.classList.add('hidden')
+      sessionStorage.setItem('term-open', '1')
+      if (first || out!.childElementCount === 0) {
+        print(`${DATA.title} — terminal navigator`, 'text-accent')
+        print("Type a command to move around. 'help' lists them all.", 'text-foreground/60')
+        if (cwd.length) print(`You are in ${cwdString()}`, 'text-foreground/50')
+      }
+      refreshPrompt()
+      setHint(computeHint())
+      setTimeout(() => input!.focus(), 0)
+    }
+
+    function closeTerm() {
+      term!.classList.add('hidden')
+      term!.classList.remove('flex')
+      launcher!.classList.remove('hidden')
+      sessionStorage.setItem('term-open', '0')
+    }
+
+    // --- Wire up events ---
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      const val = input.value
+      input.value = ''
+      run(val)
+    })
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault()
+        input.value = currentHint
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        if (histIdx > 0) {
+          histIdx--
+          input.value = history[histIdx] || ''
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        if (histIdx < history.length - 1) {
+          histIdx++
+          input.value = history[histIdx] || ''
+        } else {
+          histIdx = history.length
+          input.value = ''
+        }
+      } else if (e.key === 'Escape') {
+        closeTerm()
+      }
+    })
+
+    launcher.addEventListener('click', () => openTerm())
+    closeBtn.addEventListener('click', () => closeTerm())
+
+    // Global shortcut: backtick toggles the terminal (when not typing elsewhere)
+    document.addEventListener('keydown', (e) => {
+      const el = document.activeElement
+      const typing =
+        el &&
+        (el.tagName === 'INPUT' ||
+          el.tagName === 'TEXTAREA' ||
+          (el as HTMLElement).isContentEditable)
+      if (e.key === '`' && (!typing || el === input)) {
+        e.preventDefault()
+        if (term!.classList.contains('hidden')) openTerm()
+        else closeTerm()
+      }
+    })
+
+    // Restore open state across navigations (default open on the homepage)
+    const saved = sessionStorage.getItem('term-open')
+    if (saved === '1' || (saved === null && location.pathname === '/')) {
+      openTerm(true)
+    }
+  }
+
+  initTerminal()
+  // Re-init after Astro view transitions, if any
+  document.addEventListener('astro:page-load', initTerminal)
+</script>
