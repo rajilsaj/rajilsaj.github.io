@@ -167,7 +167,7 @@ const config: SiteConfig = {
     // linkedin: '',
     // bluesky: '',
     // twitter: '',
-    rss: true, // Set to true to include an RSS feed link in the footer
+    rss: false, // Set to true to include an RSS feed link in the footer
   },
   // Configuration for Giscus comments.
   // To set up Giscus, follow the instructions at https://giscus.app/
