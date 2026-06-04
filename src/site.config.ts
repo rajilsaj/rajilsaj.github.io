@@ -31,30 +31,16 @@ const config: SiteConfig = {
   // It is not recommended to change this, since most links existing in the site currently do not have trailing slashes.
   trailingSlashes: false,
   // The navigation links to display in the header.
+  // Only About Me + Blog show in the menu. The other pages (projects, reading,
+  // lenscape, contact) still exist and are reachable by URL — just hidden here.
   navLinks: [
     {
-      name: 'Projects',
-      url: '/projects',
-    },
-    {
-      name: 'Reading',
-      url: '/reading',
-    },
-    {
-      name: 'Lenscape',
-      url: '/lenscape',
+      name: 'About Me',
+      url: '/about',
     },
     {
       name: 'Blog',
       url: '/posts',
-    },
-    {
-      name: 'About',
-      url: '/about',
-    },
-    {
-      name: 'Contact',
-      url: '/contact',
     },
   ],
   // The theming configuration for the site.
@@ -177,6 +163,7 @@ const config: SiteConfig = {
   // Social links to display in the footer.
   socialLinks: {
     linkedin: 'https://www.linkedin.com/in/rajilsaj/',
+    twitter: 'https://x.com/rajilsaj',
     // github: '',
     // mastodon: '',
     // email: '',

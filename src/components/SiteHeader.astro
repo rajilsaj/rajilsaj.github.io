@@ -1,6 +1,7 @@
 ---
 import siteConfig from '~/site.config'
 import IconLinkedin from '~/icons/linkedin.svg'
+import IconTwitter from '~/icons/twitter.svg'
 
 interface Props {
   title?: string
@@ -13,6 +14,7 @@ const isActive = (url: string) =>
   url === '/' ? path === '/' : path === url || path.startsWith(url + '/')
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 const linkedin = siteConfig.socialLinks?.linkedin
+const twitter = siteConfig.socialLinks?.twitter
 
 // Terminal-style breadcrumb: / Site / Section / Page
 type Crumb = { label: string; href?: string }
@@ -75,18 +77,33 @@ if (segs.length) {
       }
     </div>
 
-    {
-      linkedin && (
-        <a
-          href={linkedin}
-          target="_blank"
-          rel="noreferrer noopener"
-          aria-label="LinkedIn"
-          class="shrink-0 text-foreground/55 no-underline transition-colors hover:text-foreground"
-        >
-          <IconLinkedin class="size-4.5" />
-        </a>
-      )
-    }
+    <div class="flex shrink-0 items-center gap-3">
+      {
+        twitter && (
+          <a
+            href={twitter}
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="X (Twitter)"
+            class="text-foreground/55 no-underline transition-colors hover:text-foreground"
+          >
+            <IconTwitter class="size-4.5" />
+          </a>
+        )
+      }
+      {
+        linkedin && (
+          <a
+            href={linkedin}
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="LinkedIn"
+            class="text-foreground/55 no-underline transition-colors hover:text-foreground"
+          >
+            <IconLinkedin class="size-4.5" />
+          </a>
+        )
+      }
+    </div>
   </nav>
 </header>
