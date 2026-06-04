@@ -33,8 +33,16 @@ const config: SiteConfig = {
   // The navigation links to display in the header.
   navLinks: [
     {
-      name: 'Research',
-      url: '/research',
+      name: 'Projects',
+      url: '/projects',
+    },
+    {
+      name: 'Reading',
+      url: '/reading',
+    },
+    {
+      name: 'Lenscape',
+      url: '/lenscape',
     },
     {
       name: 'Blog',
@@ -42,7 +50,8 @@ const config: SiteConfig = {
     },
     {
       name: 'CV',
-      url: '/cv',
+      url: 'https://www.linkedin.com/in/rajilsaj/',
+      external: true,
     },
     {
       name: 'About',

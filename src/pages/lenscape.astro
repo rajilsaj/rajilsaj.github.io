@@ -1,0 +1,54 @@
+---
+import Layout from '~/layouts/Layout.astro'
+import { Image } from 'astro:assets'
+import profile0 from '~/content/profile-0.jpg'
+import profile1 from '~/content/profile-1.jpg'
+import profile2 from '~/content/profile-2.jpg'
+import profile3 from '~/content/profile-3.jpg'
+
+// Sample shots — replace src/caption/date with your own photography.
+const shots = [
+  { src: profile0, caption: 'Graduation', place: 'Raleigh, NC' },
+  { src: profile1, caption: 'JPL visit', place: 'Pasadena, CA' },
+  { src: profile2, caption: 'Cold morning', place: 'Backyard' },
+  { src: profile3, caption: 'Indoors', place: 'Home' },
+  { src: profile1, caption: 'Mission control', place: 'Pasadena, CA' },
+  { src: profile2, caption: 'Layers', place: 'Backyard' },
+]
+---
+
+<Layout
+  title="Lenscape"
+  description="A small gallery — photos through my lens."
+>
+  <h1 class="mb-3 text-2xl font-semibold text-heading1 sm:text-3xl">Lenscape</h1>
+  <div class="prose max-w-none">
+    <p class="text-foreground/70">
+      <em>Sample gallery — swap in your own photos.</em> A few frames through my
+      lens. Hover a shot to bring out its colour.
+    </p>
+  </div>
+
+  <div class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
+    {
+      shots.map((s) => (
+        <figure class="group m-0">
+          <div class="overflow-hidden rounded-lg ring-1 ring-foreground/15">
+            <Image
+              src={s.src}
+              alt={s.caption}
+              widths={[200, 400]}
+              height={300}
+              width={300}
+              class="aspect-square w-full object-cover grayscale transition duration-500 group-hover:scale-[1.03] group-hover:grayscale-0"
+            />
+          </div>
+          <figcaption class="mt-1.5 flex items-baseline justify-between text-xs text-foreground/45">
+            <span class="text-foreground/70">{s.caption}</span>
+            <span>{s.place}</span>
+          </figcaption>
+        </figure>
+      ))
+    }
+  </div>
+</Layout>
