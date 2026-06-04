@@ -96,6 +96,20 @@ body {
   @apply transition-colors;
   font-display: block;
   font-size-adjust: from-font var(--theme-font);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* KISS typography polish: balanced headings, tidy paragraph wrapping */
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+p,
+li {
+  text-wrap: pretty;
 }
 
 input:focus-visible,
