@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'katex/dist/katex.css';
+@import '@fontsource-variable/inter';
 
 /* https://fontsource.org/fonts/jetbrains-mono/install */
 /* jetbrains-mono-latin-wght-normal */
@@ -38,7 +39,7 @@
   --color-yellow: var(--theme-yellow);
   --color-magenta: var(--theme-magenta);
   --color-cyan: var(--theme-cyan);
-  --default-font-family: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --default-font-family: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --default-mono-font-family: 'JetBrains Mono Variable', ui-monospace, monospace;
 }
 
@@ -328,7 +329,7 @@ article img {
   }
 
   a {
-    @apply text-link underline decoration-dotted underline-offset-2 hover:decoration-solid;
+    @apply text-link no-underline underline-offset-2 hover:underline;
 
     &.heading-anchor {
       text-decoration: none;

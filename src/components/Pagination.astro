@@ -12,7 +12,7 @@ const { prevLink, prevText, nextLink, nextText } = Astro.props
 <nav class="mt-12 flex items-center justify-between text-sm" aria-label="Pagination">
   {
     prevLink ? (
-      <a href={prevLink} class="no-underline decoration-dotted hover:underline">
+      <a href={prevLink} class="no-underline hover:underline">
         ← {prevText || 'Newer'}
       </a>
     ) : (
@@ -21,7 +21,7 @@ const { prevLink, prevText, nextLink, nextText } = Astro.props
   }
   {
     nextLink ? (
-      <a href={nextLink} class="no-underline decoration-dotted hover:underline">
+      <a href={nextLink} class="no-underline hover:underline">
         {nextText || 'Older'} →
       </a>
     ) : (

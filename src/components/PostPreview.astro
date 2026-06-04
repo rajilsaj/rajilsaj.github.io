@@ -16,7 +16,7 @@ const href = `/posts/${post.id}`
   <time datetime={post.data.published.toISOString()} class="text-sm text-foreground/45">
     {dateString(post.data.published)}
   </time>
-  <a href={href} class="no-underline hover:underline decoration-dotted">
+  <a href={href} class="no-underline hover:underline">
     {post.data.title}
   </a>
 </div>
