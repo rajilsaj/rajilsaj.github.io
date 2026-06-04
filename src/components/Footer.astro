@@ -1,7 +1,11 @@
 ---
 import siteConfig from '~/site.config'
+
+// ✎ Mood quote — change this anytime, however you're feeling.
+const quote = '“Simplicity is the ultimate sophistication.” — Leonardo da Vinci'
 ---
 
-<footer class="mt-16 border-t border-separator pt-6 text-center text-sm text-foreground/55">
+<footer class="mt-16 pt-6 text-center text-sm text-foreground/55">
+  <p class="mx-auto mb-3 max-w-md text-foreground/65 italic">{quote}</p>
   <p>© {new Date().getFullYear()} {siteConfig.author}</p>
 </footer>

@@ -6,49 +6,82 @@ import profile1 from '~/content/profile-1.jpg'
 import profile2 from '~/content/profile-2.jpg'
 import profile3 from '~/content/profile-3.jpg'
 
-// Sample shots — replace src/caption/date with your own photography.
+// Sample data — replace src/label/date/place with your own photography.
 const shots = [
-  { src: profile0, caption: 'Graduation', place: 'Raleigh, NC' },
-  { src: profile1, caption: 'JPL visit', place: 'Pasadena, CA' },
-  { src: profile2, caption: 'Cold morning', place: 'Backyard' },
-  { src: profile3, caption: 'Indoors', place: 'Home' },
-  { src: profile1, caption: 'Mission control', place: 'Pasadena, CA' },
-  { src: profile2, caption: 'Layers', place: 'Backyard' },
+  { src: profile0, label: 'Cap & gown', date: 'May 2024', place: 'Raleigh, NC' },
+  { src: profile1, label: 'Mission control', date: 'Aug 2023', place: 'Pasadena, CA' },
+  { src: profile2, label: 'Cold morning', date: 'Jan 2024', place: 'Backyard' },
+  { src: profile3, label: 'Golden hour', date: 'Mar 2024', place: 'Home' },
+  { src: profile1, label: 'The big antenna', date: 'Aug 2023', place: 'Pasadena, CA' },
+  { src: profile2, label: 'Layers', date: 'Feb 2024', place: 'Backyard' },
 ]
 ---
 
-<Layout
-  title="Lenscape"
-  description="A small gallery — photos through my lens."
->
+<Layout title="Lenscape" description="A parallax gallery — photos through my lens.">
   <h1 class="mb-3 text-2xl font-semibold text-heading1 sm:text-3xl">Lenscape</h1>
   <div class="prose max-w-none">
     <p class="text-foreground/70">
-      <em>Sample gallery — swap in your own photos.</em> A few frames through my
-      lens. Hover a shot to bring out its colour.
+      <em>Sample gallery — swap in your own photos.</em> Scroll slowly: each frame
+      drifts as it passes.
     </p>
   </div>
 
-  <div class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
+  <div class="mt-10 flex flex-col gap-12">
     {
       shots.map((s) => (
-        <figure class="group m-0">
-          <div class="overflow-hidden rounded-lg ring-1 ring-foreground/15">
+        <figure class="m-0">
+          <div class="parallax-window relative overflow-hidden rounded-xl ring-1 ring-foreground/15">
             <Image
               src={s.src}
-              alt={s.caption}
-              widths={[200, 400]}
-              height={300}
-              width={300}
-              class="aspect-square w-full object-cover grayscale transition duration-500 group-hover:scale-[1.03] group-hover:grayscale-0"
+              alt={s.label}
+              widths={[640, 1000]}
+              width={1000}
+              height={650}
+              class="parallax-img absolute left-0 top-[-15%] h-[130%] w-full object-cover"
             />
           </div>
-          <figcaption class="mt-1.5 flex items-baseline justify-between text-xs text-foreground/45">
-            <span class="text-foreground/70">{s.caption}</span>
-            <span>{s.place}</span>
+          <figcaption class="mt-2.5 flex flex-wrap items-baseline justify-between gap-x-4 text-sm text-foreground/50">
+            <span class="font-medium text-foreground/85">{s.label}</span>
+            <span>
+              {s.date} · {s.place}
+            </span>
           </figcaption>
         </figure>
       ))
     }
   </div>
 </Layout>
+
+<style>
+  .parallax-window {
+    height: 16rem;
+  }
+  @media (min-width: 640px) {
+    .parallax-window {
+      height: 22rem;
+    }
+  }
+
+  /* Zero-JS parallax via scroll-driven animations (graceful fallback elsewhere) */
+  @supports (animation-timeline: view()) {
+    .parallax-img {
+      animation: lens-parallax linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+    @keyframes lens-parallax {
+      from {
+        transform: translateY(-8%);
+      }
+      to {
+        transform: translateY(8%);
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .parallax-img {
+      animation: none;
+    }
+  }
+</style>

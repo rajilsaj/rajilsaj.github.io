@@ -42,12 +42,38 @@
   --default-mono-font-family: 'JetBrains Mono Variable', ui-monospace, monospace;
 }
 
+/* Keep the nav fixed in place while page content transitions in/out */
 header {
-  view-transition-name: none;
+  view-transition-name: site-header;
 }
 
 @view-transition {
   navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: content-out 0.22s ease both;
+}
+::view-transition-new(root) {
+  animation: content-in 0.32s ease both;
+}
+@keyframes content-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+@keyframes content-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
 }
 
 * {
@@ -62,6 +88,8 @@ html {
   /* Prevents layout from jumping when opening theme select or search dialog menus */
   scrollbar-gutter: stable;
   scroll-behavior: smooth;
+  /* Offset anchor jumps so headings clear the sticky nav */
+  scroll-padding-top: 6rem;
 }
 
 body {
@@ -597,7 +625,7 @@ article img {
     @apply border-accent cursor-pointer;
   }
 }
-/* Shibui-style nested numbered heading counters (1., 1.1., 1.1.1., …) */
+/* Rajil — nested numbered heading counters (1., 1.1., 1.1.1., …) */
 .prose {
   counter-reset: h2;
 }

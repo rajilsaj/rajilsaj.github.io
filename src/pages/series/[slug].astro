@@ -2,7 +2,6 @@
 import type { GetStaticPaths } from 'astro'
 import Layout from '~/layouts/Layout.astro'
 import { SeriesGroup } from '~/utils'
-import PageHeader from '~/components/PageHeader.astro'
 import PostPreview from '~/components/PostPreview.astro'
 
 export const getStaticPaths = (async () => {
@@ -22,8 +21,11 @@ const { posts, seriesTitle } = Astro.props
   title={`Series: ${seriesTitle}`}
   description={`All posts in the ${seriesTitle} series`}
 >
-  <div class="mt-2 sm:mt-0">
-    <PageHeader titlePieces={['series', seriesTitle]} />
-    {posts.map((post) => <PostPreview post={post} />)}
+  <div>
+    <h1 class="text-2xl font-semibold text-heading1 sm:text-3xl">{seriesTitle}</h1>
+    <p class="mt-2 mb-8 text-foreground/60">Posts in this series.</p>
+    <div class="flex flex-col">
+      {posts.map((post) => <PostPreview post={post} />)}
+    </div>
   </div>
 </Layout>

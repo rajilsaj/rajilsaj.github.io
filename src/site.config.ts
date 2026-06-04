@@ -49,13 +49,12 @@ const config: SiteConfig = {
       url: '/posts',
     },
     {
-      name: 'CV',
-      url: 'https://www.linkedin.com/in/rajilsaj/',
-      external: true,
-    },
-    {
       name: 'About',
       url: '/about',
+    },
+    {
+      name: 'Contact',
+      url: '/contact',
     },
   ],
   // The theming configuration for the site.
@@ -139,7 +138,7 @@ const config: SiteConfig = {
     // Their values can be either a literal color (hex, rgb, hsl) or another theme key.
     // See themeKeys list in src/types.ts for available keys to override and reference.
     overrides: {
-      // Shibui-style paper monochrome: near-black ink on near-white, no accent hue
+      // Rajil — paper monochrome palette: near-black ink on near-white, no accent hue
       'github-light': {
         background: '#fcfcfc',
         foreground: '#1a1a1a',
@@ -177,11 +176,10 @@ const config: SiteConfig = {
   },
   // Social links to display in the footer.
   socialLinks: {
-    // Social media icons are hidden. Add a URL for any platform to show its icon.
+    linkedin: 'https://www.linkedin.com/in/rajilsaj/',
     // github: '',
     // mastodon: '',
     // email: '',
-    // linkedin: '',
     // bluesky: '',
     // twitter: '',
     rss: false, // Set to true to include an RSS feed link in the footer

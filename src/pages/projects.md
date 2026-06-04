@@ -17,8 +17,8 @@ A few things I've built and am tinkering with. Most live on
 - **Auto-Archiver** — a tiny automation that tidies and archives weekly exports
   so I never touch them by hand.
   Bash · cron — [code](#)
-- **This site** — a terminal-flavoured personal site, redesigned in the
-  minimalist *shibui* style.
+- **This site** — a personal site rebuilt in my own minimalist
+  *Rajil* style: monospace, paper-toned, content-first.
   Astro · Tailwind — [code](https://github.com/rajilsaj/rajilsaj.github.io)
 
 ## Experiments
