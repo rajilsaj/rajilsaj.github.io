@@ -35,12 +35,12 @@ const config: SiteConfig = {
   // lenscape, contact) still exist and are reachable by URL — just hidden here.
   navLinks: [
     {
-      name: 'About Me',
-      url: '/about',
-    },
-    {
       name: 'Blog',
       url: '/posts',
+    },
+    {
+      name: 'About Me',
+      url: '/about',
     },
   ],
   // The theming configuration for the site.
