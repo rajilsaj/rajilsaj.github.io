@@ -1,0 +1,208 @@
+---
+import type { MarkdownHeading } from 'astro'
+import Layout from '~/layouts/Layout.astro'
+import TableOfContents from '~/components/TableOfContents.astro'
+
+// ---------------------------------------------------------------------------
+// Reading data — edit this to maintain your list.
+// `years` is newest-first; each book is { title, author, date }.
+// Everything below (counter, stats, bookshelf, nav) is generated from this.
+// ---------------------------------------------------------------------------
+const startYear = 2026
+
+const years: { year: number; books: { title: string; author: string; date: string }[] }[] = [
+  {
+    year: 2026,
+    books: [
+      { title: 'Designing Data-Intensive Applications', author: 'Martin Kleppmann', date: '2026-01-18' },
+      { title: 'The Pragmatic Programmer', author: 'Hunt & Thomas', date: '2026-02-09' },
+      { title: 'Hands-On Machine Learning', author: 'Aurélien Géron', date: '2026-03-22' },
+      { title: 'Atomic Habits', author: 'James Clear', date: '2026-04-15' },
+      { title: 'Why We Sleep', author: 'Matthew Walker', date: '2026-05-30' },
+    ],
+  },
+]
+
+const currentlyReading: { title: string; author: string; since: string }[] = [
+  { title: "The Staff Engineer's Path", author: 'Tanya Reilly', since: '2026-06-01' },
+  { title: 'Deep Learning', author: 'Goodfellow, Bengio & Courville', since: '2026-05-20' },
+]
+
+// --- Derived values -------------------------------------------------------
+const allBooks = years.flatMap((y) => y.books)
+const totalBooks = allBooks.length
+const currentYear = years.length > 0 ? years[0].year : startYear
+
+// Distinct + most-read author.
+const authorCounts = new Map<string, number>()
+for (const b of allBooks) authorCounts.set(b.author, (authorCounts.get(b.author) ?? 0) + 1)
+const distinctAuthors = authorCounts.size
+const topAuthor = [...authorCounts.entries()].sort((a, b) => b[1] - a[1])[0]
+
+// Reading cadence: average days between consecutive finishes this year.
+const thisYearDates = (years[0]?.books ?? [])
+  .map((b) => new Date(b.date).getTime())
+  .sort((a, b) => a - b)
+let cadence: number | null = null
+if (thisYearDates.length > 1) {
+  const spanDays = (thisYearDates.at(-1)! - thisYearDates[0]) / 86_400_000
+  cadence = Math.round(spanDays / (thisYearDates.length - 1))
+}
+
+const stats = [
+  { value: String(totalBooks), label: totalBooks === 1 ? 'book' : 'books' },
+  { value: String(distinctAuthors), label: distinctAuthors === 1 ? 'author' : 'authors' },
+  { value: topAuthor ? topAuthor[0].split(/\s|&/).filter(Boolean).slice(-1)[0] : '—', label: 'most read' },
+  { value: cadence ? `${cadence}d` : '—', label: 'avg cadence' },
+]
+
+// Deterministic spine height so the shelf is stable between builds (46–92px).
+const spineHeight = (title: string) => 46 + ((title.length * 11) % 47)
+const shelfBooks = years[0]?.books ?? []
+
+// Group years into decade rows for the jump grid (ascending within a row).
+const decades = new Map<number, number[]>()
+for (const { year } of years) {
+  const decade = Math.floor(year / 10) * 10
+  if (!decades.has(decade)) decades.set(decade, [])
+  decades.get(decade)!.push(year)
+}
+const decadeRows = [...decades.entries()]
+  .sort((a, b) => a[0] - b[0])
+  .map(([decade, ys]) => ({ decade, years: ys.sort((a, b) => a - b) }))
+
+// Headings for the section navigation (must match the `id`s rendered below).
+const headings: MarkdownHeading[] = [
+  ...years.map((y) => ({ depth: 2, slug: String(y.year), text: String(y.year) })),
+  { depth: 2, slug: 'currently-reading', text: 'Currently reading' },
+  { depth: 2, slug: 'about', text: 'About this list' },
+]
+---
+
+<Layout
+  title="Reading"
+  description="Every book I have read, logged by year — title, author, and the date I finished."
+>
+  <header class="mb-8">
+    <h1 class="text-2xl font-semibold text-heading1 sm:text-3xl">
+      What I have read since {startYear}
+    </h1>
+    <p class="mt-2 font-mono text-xs text-foreground/45">
+      // {totalBooks} volumes · {distinctAuthors} authors{
+        cadence && <> · ~{cadence}-day cadence</>
+      }{currentlyReading.length > 0 && <> · {currentlyReading.length} in flight</>}
+    </p>
+
+    <!-- Stats strip -->
+    <dl class="mt-5 grid grid-cols-2 overflow-hidden rounded-lg border border-separator sm:grid-cols-4">
+      {
+        stats.map((s, i) => (
+          <div
+            class:list={[
+              'px-4 py-3',
+              i > 0 && 'border-l border-separator',
+              i === 2 && 'max-sm:border-l-0 max-sm:border-t',
+              i === 3 && 'max-sm:border-t',
+            ]}
+          >
+            <dd class="truncate text-xl font-semibold tracking-tight text-foreground" title={s.value}>
+              {s.value}
+            </dd>
+            <dt class="mt-0.5 font-mono text-[0.65rem] uppercase tracking-wider text-foreground/45">
+              {s.label}
+            </dt>
+          </div>
+        ))
+      }
+    </dl>
+
+    <!-- Bookshelf -->
+    {
+      shelfBooks.length > 0 && (
+        <div class="mt-6">
+          <div class="shelf flex items-end gap-[3px] border-b-2 border-foreground/25 pb-px">
+            {shelfBooks.map((b, i) => (
+              <a
+                href={`#${currentYear}`}
+                class="spine group relative block w-[14px] shrink-0 rounded-t-[2px] border border-foreground/25 transition-all hover:-translate-y-1"
+                style={`height:${spineHeight(b.title)}px;background-color:color-mix(in srgb, var(--theme-foreground) ${8 + (i % 4) * 4}%, transparent)`}
+                aria-label={`${b.title} — ${b.author}`}
+              >
+                <span class="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 z-10 hidden w-max max-w-[14rem] -translate-x-1/2 rounded-md border border-separator bg-background px-2.5 py-1.5 text-xs shadow-sm group-hover:block">
+                  <span class="font-medium text-foreground">{b.title}</span>
+                  <span class="block text-foreground/55">{b.author}</span>
+                </span>
+              </a>
+            ))}
+          </div>
+          <p class="mt-2 font-mono text-[0.65rem] text-foreground/35">{currentYear} shelf</p>
+        </div>
+      )
+    }
+  </header>
+
+  <div class="flex flex-col xl:flex-row xl:items-start xl:gap-10">
+    <TableOfContents headings={headings} />
+
+    <div class="prose max-w-none xl:flex-1">
+      <p>
+        <a href="#about">about</a> | <a href={`#${currentYear}`}>this year</a> |
+        <a href="#currently-reading">current</a>
+      </p>
+
+      {
+        decadeRows.map(({ decade, years: ys }) => (
+          <p>
+            {decade}s:{' '}
+            <Fragment>
+              {ys.map((y, i) => (
+                <>
+                  {i > 0 && ' | '}
+                  <a href={`#${y}`}>{y}</a>
+                </>
+              ))}
+            </Fragment>
+          </p>
+        ))
+      }
+
+      {
+        years.map((y) => (
+          <section>
+            <h2 id={String(y.year)}>{y.year}</h2>
+            <ol>
+              {y.books.map((b) => (
+                <li>
+                  {b.title} | {b.author} | {b.date}
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))
+      }
+
+      <section>
+        <h2 id="currently-reading">Currently reading</h2>
+        <ol>
+          {
+            currentlyReading.map((b) => (
+              <li>
+                {b.title} | {b.author} | started {b.since}
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <section>
+        <h2 id="about">About this list</h2>
+        <p>
+          A running log of every book I finish, one line each:
+          <strong>title | author | date finished</strong>. I started keeping it
+          in {startYear}. Use the section navigation or the jump links above to
+          skip between years.
+        </p>
+      </section>
+    </div>
+  </div>
+</Layout>
