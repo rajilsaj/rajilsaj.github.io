@@ -1,37 +1,29 @@
 ---
 layout: '~/layouts/MarkdownLayout.astro'
-title: Reading
-description: 'Books I am reading and have recently finished — with short notes.'
+title: What I have read since 2026
+description: 'Every book I have read, logged by year — title, author, and the date I finished.'
 ---
 
-> _Sample content — swap in your own books, notes, and ratings._
+[about](#about) | [this year](#2026) | [current](#currently-reading)
 
-What I'm reading and what I've recently finished, with a line on each.
-Ratings are out of five (★).
+2020s: [2026](#2026)
+
+## 2026
+
+1. Designing Data-Intensive Applications | Martin Kleppmann | 2026-01-18
+2. The Pragmatic Programmer | Hunt & Thomas | 2026-02-09
+3. Hands-On Machine Learning | Aurélien Géron | 2026-03-22
+4. Atomic Habits | James Clear | 2026-04-15
+5. Why We Sleep | Matthew Walker | 2026-05-30
 
 ## Currently reading
 
-- **Designing Data-Intensive Applications** — Martin Kleppmann
-  _The systems book everyone recommends. Deep in the replication chapters; the diagrams alone are worth it._
-- **Why We Sleep** — Matthew Walker
-  _A few pages before bed. Already changed how I think about my schedule._
+1. The Staff Engineer's Path | Tanya Reilly | started 2026-06-01
+2. Deep Learning | Goodfellow, Bengio & Courville | started 2026-05-20
 
-## Recently finished
+## about
 
-- **The Pragmatic Programmer** — Hunt & Thomas · ★★★★★
-  _Re-read. The advice ages remarkably well; "don't live with broken windows" stuck with me._
-- **Atomic Habits** — James Clear · ★★★★☆
-  _Practical and short. The "make it obvious / easy" framing is the keeper._
-- **Hands-On Machine Learning** — Aurélien Géron · ★★★★★
-  _Still my go-to reference. Worked through the end-to-end project chapter again._
-
-## On the shelf (next up)
-
-- **The Staff Engineer's Path** — Tanya Reilly
-- **Thinking, Fast and Slow** — Daniel Kahneman
-- **Deep Learning** — Goodfellow, Bengio & Courville
-
-## 2025 in review
-
-A quick tally to set a baseline — **18 books**, mostly split between
-software, ML, and the occasional novel to reset.
+This is a running log of every book I finish, one line each:
+**title | author | date finished**. I started keeping it in 2026.
+Newest years are added as their own section; the jump links above and
+the decade list let you skip straight to a year.

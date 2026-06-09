@@ -42,6 +42,10 @@ const config: SiteConfig = {
       name: 'About Me',
       url: '/about',
     },
+    {
+      name: 'Reading',
+      url: '/reading',
+    },
   ],
   // The theming configuration for the site.
   themes: {
