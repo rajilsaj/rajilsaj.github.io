@@ -3,10 +3,15 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: About Me
 ---
 
-I moved to US as an International Student from Republic of Congo in October 2022 
-- AI became mainstream November 2022
-- We entered the AI generated code era in 2024
-- AI systems evolved into agents  in 2025
-- I graduated in May 2026 in Computer Science, Maths and Data Science
-Then what now ?
+I moved to the U.S. from the Republic of the Congo in October 2022.
+
+- AI became mainstream in November 2022.
+
+- We entered the AI-generated coding era in 2024.
+
+- AI evolved into autonomous agents in 2025.
+
+- I graduated in May 2026 with a Bachelor's in Computer Science and a Master's in Data Science.
+
+Now what?
 
