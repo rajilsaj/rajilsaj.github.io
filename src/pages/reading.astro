@@ -13,20 +13,11 @@ const startYear = 2026
 const years: { year: number; books: { title: string; author: string; date: string }[] }[] = [
   {
     year: 2026,
-    books: [
-      { title: 'Designing Data-Intensive Applications', author: 'Martin Kleppmann', date: '2026-01-18' },
-      { title: 'The Pragmatic Programmer', author: 'Hunt & Thomas', date: '2026-02-09' },
-      { title: 'Hands-On Machine Learning', author: 'Aurélien Géron', date: '2026-03-22' },
-      { title: 'Atomic Habits', author: 'James Clear', date: '2026-04-15' },
-      { title: 'Why We Sleep', author: 'Matthew Walker', date: '2026-05-30' },
-    ],
+    books: [],
   },
 ]
 
-const currentlyReading: { title: string; author: string; since: string }[] = [
-  { title: "The Staff Engineer's Path", author: 'Tanya Reilly', since: '2026-06-01' },
-  { title: 'Deep Learning', author: 'Goodfellow, Bengio & Courville', since: '2026-05-20' },
-]
+const currentlyReading: { title: string; author: string; since: string }[] = []
 
 // --- Derived values -------------------------------------------------------
 const allBooks = years.flatMap((y) => y.books)
