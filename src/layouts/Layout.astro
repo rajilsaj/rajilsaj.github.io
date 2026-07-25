@@ -13,9 +13,13 @@ interface Props {
   description?: string
   tags?: string[]
   author?: string
+  // When true, hide the site nav header and footer (standalone page chrome).
+  bare?: boolean
+  // When true, render the slot full-bleed with no centered max-width wrapper.
+  fullScreen?: boolean
 }
 
-const { title, description, tags, author } = Astro.props
+const { title, description, tags, author, bare, fullScreen } = Astro.props
 
 const pageUrl = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '') // Remove trailing slash for consistency
 const pageType = Astro.url.pathname.startsWith('/posts') ? 'article' : 'website'
@@ -156,14 +160,18 @@ let generatedCss: string = cssLines.join('\n')
     {themeMode === 'select' && <SelectThemeLoader />}
   </head>
   <body class="m-0 min-h-[100dvh] w-full bg-background text-foreground antialiased">
-    <div
-      class="mx-auto flex min-h-[100dvh] w-full max-w-[68ch] flex-col px-5 py-8 sm:px-6 sm:py-12"
-    >
-      <SiteHeader />
-      <main class="w-full flex-1">
+    {
+      fullScreen ? (
         <slot />
-      </main>
-      <Footer />
-    </div>
+      ) : (
+        <div class="mx-auto flex min-h-[100dvh] w-full max-w-[68ch] flex-col px-5 py-8 sm:px-6 sm:py-12">
+          {!bare && <SiteHeader />}
+          <main class="w-full flex-1">
+            <slot />
+          </main>
+          {!bare && <Footer />}
+        </div>
+      )
+    }
   </body>
 </html>

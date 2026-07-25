@@ -1,0 +1,14 @@
+{
+  "name": "rajil-benchmark-upload",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloudflare Worker that commits /benchmark uploads into the GitHub repo.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "secret": "wrangler secret put GITHUB_TOKEN"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

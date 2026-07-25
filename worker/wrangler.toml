@@ -1,0 +1,22 @@
+name = "rajil-benchmark-upload"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+# Non-secret config. Edit these to match your repo.
+[vars]
+GH_OWNER = "rajilsaj"
+GH_REPO = "rajilsaj.github.io"
+GH_BRANCH = "main"
+# Origins allowed to call this Worker (your live site). Comma-separated.
+ALLOWED_ORIGINS = "https://rajil.me,https://www.rajil.me"
+
+# Per-IP rate limit: 5 uploads / 60s. (period must be 10 or 60.)
+# If `wrangler deploy` complains about this block, delete it — the Worker
+# treats the limiter as optional and simply skips rate limiting without it.
+[[ratelimit]]
+name = "UPLOAD_LIMIT"
+namespace_id = "1001"
+simple = { limit = 5, period = 60 }
+
+# NOTE: GITHUB_TOKEN is NOT here — it's a secret. Set it with:
+#   wrangler secret put GITHUB_TOKEN
