@@ -1,0 +1,339 @@
+---
+import Layout from '~/layouts/Layout.astro'
+
+// ---------------------------------------------------------------------------
+// Benchmark model upload — UNLISTED page (reachable only via /benchmark URL;
+// intentionally absent from `navLinks` in src/site.config.ts).
+//
+// This is a STATIC page on GitHub Pages, which cannot write to the repo itself.
+// Set UPLOAD_ENDPOINT to a serverless proxy that receives the multipart upload
+// and commits it into /benchmark-models via the GitHub Contents API.
+// While empty, the form validates + previews client-side but has nowhere to
+// send files (it will tell the user the endpoint isn't configured yet).
+// ---------------------------------------------------------------------------
+const UPLOAD_ENDPOINT = '' // e.g. 'https://your-worker.workers.dev/upload'
+
+// Max per-file size. GitHub's Contents API hard-rejects files over 100 MB.
+const MAX_BYTES = 100 * 1024 * 1024
+
+// Accepted model file extensions (also enforce this server-side!).
+const ACCEPTED = [
+  '.pt',
+  '.pth',
+  '.onnx',
+  '.safetensors',
+  '.gguf',
+  '.h5',
+  '.keras',
+  '.pb',
+  '.tflite',
+  '.pkl',
+  '.joblib',
+  '.ckpt',
+  '.bin',
+  '.mar',
+  '.zip',
+]
+---
+
+<Layout
+  title="Benchmark — Upload a model"
+  description="Upload an ML model for benchmarking."
+>
+  <header class="mb-8">
+    <p class="font-mono text-xs uppercase tracking-wider text-foreground/40">
+      // unlisted
+    </p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-heading1 sm:text-3xl">
+      Upload a model
+    </h1>
+    <p class="mt-2 max-w-prose text-sm leading-relaxed text-foreground/60">
+      Drop a trained ML model file below to submit it for benchmarking. Files are
+      capped at <span class="font-mono text-foreground/80">100&nbsp;MB</span> each.
+      Accepted formats:
+      <span class="font-mono text-xs text-foreground/70">{ACCEPTED.join(' ')}</span>.
+    </p>
+  </header>
+
+  <form
+    id="upload-form"
+    class="flex flex-col gap-5"
+    data-endpoint={UPLOAD_ENDPOINT}
+    data-max-bytes={MAX_BYTES}
+    data-accepted={ACCEPTED.join(',')}
+  >
+    <!-- Dropzone -->
+    <label
+      id="dropzone"
+      for="file-input"
+      class="group relative flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-separator px-6 py-14 text-center transition-colors hover:border-accent/50"
+    >
+      <svg
+        class="size-9 text-foreground/30 transition-colors group-hover:text-accent"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M12 15V3" />
+        <path d="m7 8 5-5 5 5" />
+        <path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" />
+      </svg>
+      <p class="mt-4 font-medium text-foreground/80">
+        Drop a model here, or <span class="text-accent underline">browse</span>
+      </p>
+      <p class="mt-1 font-mono text-[0.7rem] text-foreground/40">
+        one file · up to 100&nbsp;MB
+      </p>
+      <input
+        id="file-input"
+        name="model"
+        type="file"
+        class="sr-only"
+        accept={ACCEPTED.join(',')}
+      />
+    </label>
+
+    <!-- Selected file card (hidden until a file is chosen) -->
+    <div
+      id="file-card"
+      class="hidden items-center gap-3 rounded-xl border border-separator bg-foreground/[0.03] p-4"
+    >
+      <svg
+        class="size-5 shrink-0 text-foreground/50"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <path d="M14 2v6h6" />
+      </svg>
+      <div class="min-w-0 flex-1">
+        <p id="file-name" class="truncate font-medium text-foreground"></p>
+        <p id="file-size" class="font-mono text-xs text-foreground/45"></p>
+      </div>
+      <button
+        type="button"
+        id="file-remove"
+        class="shrink-0 rounded-md border border-separator px-2 py-1 font-mono text-xs text-foreground/60 transition-colors hover:border-red/50 hover:text-red"
+        aria-label="Remove file"
+      >
+        remove
+      </button>
+    </div>
+
+    <!-- Progress bar (hidden until upload starts) -->
+    <div id="progress-wrap" class="hidden">
+      <div class="h-1.5 w-full overflow-hidden rounded-full bg-foreground/10">
+        <div
+          id="progress-bar"
+          class="h-full w-0 rounded-full bg-accent transition-[width] duration-150"
+        >
+        </div>
+      </div>
+      <p
+        id="progress-label"
+        class="mt-1.5 text-right font-mono text-[0.7rem] text-foreground/40"
+      >
+        0%
+      </p>
+    </div>
+
+    <!-- Status message -->
+    <p id="status" class="hidden font-mono text-sm" role="status" aria-live="polite"></p>
+
+    <div class="flex items-center gap-3">
+      <button
+        type="submit"
+        id="submit-btn"
+        class="rounded-lg border border-accent/40 bg-accent/10 px-4 py-2 font-medium text-accent transition-colors hover:bg-accent/20 disabled:cursor-not-allowed disabled:opacity-40"
+        disabled
+      >
+        Upload model
+      </button>
+      <p class="font-mono text-[0.7rem] text-foreground/35">
+        // stored under <span class="text-foreground/55">benchmark-models/</span>
+      </p>
+    </div>
+  </form>
+</Layout>
+
+<script>
+  const form = document.getElementById('upload-form') as HTMLFormElement
+  const input = document.getElementById('file-input') as HTMLInputElement
+  const dropzone = document.getElementById('dropzone') as HTMLLabelElement
+  const card = document.getElementById('file-card') as HTMLDivElement
+  const nameEl = document.getElementById('file-name') as HTMLParagraphElement
+  const sizeEl = document.getElementById('file-size') as HTMLParagraphElement
+  const removeBtn = document.getElementById('file-remove') as HTMLButtonElement
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement
+  const statusEl = document.getElementById('status') as HTMLParagraphElement
+  const progressWrap = document.getElementById('progress-wrap') as HTMLDivElement
+  const progressBar = document.getElementById('progress-bar') as HTMLDivElement
+  const progressLabel = document.getElementById('progress-label') as HTMLParagraphElement
+
+  const endpoint = form.dataset.endpoint || ''
+  const maxBytes = Number(form.dataset.maxBytes)
+  const accepted = (form.dataset.accepted || '').split(',').filter(Boolean)
+
+  let current: File | null = null
+
+  const fmtSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`
+    const units = ['KB', 'MB', 'GB']
+    let v = bytes / 1024
+    let i = 0
+    while (v >= 1024 && i < units.length - 1) {
+      v /= 1024
+      i++
+    }
+    return `${v.toFixed(v < 10 ? 2 : 1)} ${units[i]}`
+  }
+
+  const setStatus = (msg: string, kind: 'info' | 'error' | 'success') => {
+    statusEl.textContent = msg
+    statusEl.classList.remove('hidden', 'text-red', 'text-green', 'text-foreground/60')
+    statusEl.classList.add(
+      kind === 'error' ? 'text-red' : kind === 'success' ? 'text-green' : 'text-foreground/60',
+    )
+  }
+
+  const clearStatus = () => {
+    statusEl.classList.add('hidden')
+    statusEl.textContent = ''
+  }
+
+  const extOf = (fileName: string) => {
+    const dot = fileName.lastIndexOf('.')
+    return dot === -1 ? '' : fileName.slice(dot).toLowerCase()
+  }
+
+  const validate = (file: File): string | null => {
+    if (accepted.length && !accepted.includes(extOf(file.name))) {
+      return `Unsupported file type "${extOf(file.name) || '(none)'}". Accepted: ${accepted.join(' ')}`
+    }
+    if (file.size > maxBytes) {
+      return `File is ${fmtSize(file.size)} — over the ${fmtSize(maxBytes)} limit.`
+    }
+    if (file.size === 0) {
+      return 'That file is empty.'
+    }
+    return null
+  }
+
+  const selectFile = (file: File | null) => {
+    clearStatus()
+    progressWrap.classList.add('hidden')
+    if (!file) {
+      current = null
+      input.value = ''
+      card.classList.add('hidden')
+      card.classList.remove('flex')
+      submitBtn.disabled = true
+      return
+    }
+    const err = validate(file)
+    if (err) {
+      current = null
+      submitBtn.disabled = true
+      card.classList.add('hidden')
+      card.classList.remove('flex')
+      setStatus(err, 'error')
+      return
+    }
+    current = file
+    nameEl.textContent = file.name
+    sizeEl.textContent = fmtSize(file.size)
+    card.classList.remove('hidden')
+    card.classList.add('flex')
+    submitBtn.disabled = false
+  }
+
+  input.addEventListener('change', () => {
+    selectFile(input.files && input.files[0] ? input.files[0] : null)
+  })
+
+  removeBtn.addEventListener('click', () => selectFile(null))
+
+  // Drag & drop
+  ;['dragenter', 'dragover'].forEach((evt) =>
+    dropzone.addEventListener(evt, (e) => {
+      e.preventDefault()
+      dropzone.classList.add('border-accent', 'bg-accent/5')
+    }),
+  )
+  ;['dragleave', 'drop'].forEach((evt) =>
+    dropzone.addEventListener(evt, (e) => {
+      e.preventDefault()
+      dropzone.classList.remove('border-accent', 'bg-accent/5')
+    }),
+  )
+  dropzone.addEventListener('drop', (e) => {
+    const dt = (e as DragEvent).dataTransfer
+    if (dt && dt.files && dt.files[0]) {
+      // Reflect the dropped file into the input for consistency.
+      input.files = dt.files
+      selectFile(dt.files[0])
+    }
+  })
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault()
+    if (!current) return
+
+    if (!endpoint) {
+      setStatus(
+        'No upload endpoint is configured yet — the file was validated but has nowhere to go. Set UPLOAD_ENDPOINT in src/pages/benchmark.astro.',
+        'error',
+      )
+      return
+    }
+
+    const body = new FormData()
+    body.append('model', current, current.name)
+
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', endpoint)
+
+    submitBtn.disabled = true
+    removeBtn.disabled = true
+    progressWrap.classList.remove('hidden')
+    progressBar.style.width = '0%'
+    progressLabel.textContent = '0%'
+    setStatus('Uploading…', 'info')
+
+    xhr.upload.addEventListener('progress', (ev) => {
+      if (ev.lengthComputable) {
+        const pct = Math.round((ev.loaded / ev.total) * 100)
+        progressBar.style.width = `${pct}%`
+        progressLabel.textContent = `${pct}%`
+      }
+    })
+
+    xhr.addEventListener('load', () => {
+      removeBtn.disabled = false
+      if (xhr.status >= 200 && xhr.status < 300) {
+        setStatus('Uploaded. Thanks — your model was submitted.', 'success')
+        selectFile(null)
+      } else {
+        submitBtn.disabled = false
+        setStatus(`Upload failed (HTTP ${xhr.status}). ${xhr.responseText || ''}`.trim(), 'error')
+      }
+    })
+
+    xhr.addEventListener('error', () => {
+      submitBtn.disabled = false
+      removeBtn.disabled = false
+      setStatus('Upload failed — network error or the endpoint rejected the request.', 'error')
+    })
+
+    xhr.send(body)
+  })
+</script>
