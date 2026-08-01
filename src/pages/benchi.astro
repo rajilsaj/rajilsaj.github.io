@@ -66,33 +66,16 @@ const pillClass =
 ---
 
 <Layout
+  bare
   title="Benchi"
   description="ML model benchmark results, measured automatically on a Qualcomm SA8155 devkit."
 >
   <header class="mb-8">
     <h1 class="text-2xl font-semibold tracking-tight text-heading1 sm:text-3xl">
-      Model benchmarks
+      Benchmark
     </h1>
-    <p class="mt-2 font-mono text-xs text-foreground/45">
-      {
-        results.length > 0 ? (
-          <>
-            // {results.length} {results.length === 1 ? 'result' : 'results'} ·{' '}
-            {new Set(results.map((r) => r.runtime)).size}{' '}
-            {new Set(results.map((r) => r.runtime)).size === 1 ? 'runtime' : 'runtimes'}
-          </>
-        ) : (
-          <>// leaderboard · nothing measured yet</>
-        )
-      }
-    </p>
-    <p class="mt-4 max-w-prose text-sm leading-relaxed text-foreground/70">
-      Every model below was benchmarked on a Qualcomm SA8155 devkit. Runs are fully
-      automated — submit a model and the pipeline measures latency, throughput, and
-      size, then publishes the result here on the next deploy.
-    </p>
     <p class="mt-5">
-      <a class="button" href={SUBMIT_URL}>Submit a model →</a>
+      <a class="button" href={SUBMIT_URL}>Upload your model here →</a>
     </p>
   </header>
 
