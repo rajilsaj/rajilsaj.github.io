@@ -1,0 +1,467 @@
+---
+import Layout from '~/layouts/Layout.astro'
+
+// ---------------------------------------------------------------------------
+// /benchi — ML model benchmark leaderboard.
+// Results are fetched at BUILD time from the benchi repo, so the page is
+// fully static; new results show up on the next site deploy.
+// ---------------------------------------------------------------------------
+const RESULTS_URL =
+  'https://raw.githubusercontent.com/rajilsaj/benchi/main/docs/results.json'
+const SUBMIT_URL =
+  'https://github.com/rajilsaj/benchi/issues/new?template=submit-model.yml'
+const ISSUES_URL = 'https://github.com/rajilsaj/benchi/issues'
+
+interface BenchResult {
+  id: string
+  model_name: string
+  framework: string
+  runtime: string
+  status: string
+  latency_ms: number | null
+  throughput_fps: number | null
+  model_size_mb: number | null
+  submitted_by: string
+  date: string
+}
+
+let results: BenchResult[] = []
+const res = await fetch(RESULTS_URL)
+if (res.ok) {
+  const data = await res.json()
+  if (Array.isArray(data)) results = data as BenchResult[]
+} else if (res.status === 404) {
+  // File not published yet — render the empty state instead of failing CI.
+  console.warn(`[benchi] ${RESULTS_URL} returned 404, rendering empty state`)
+} else {
+  throw new Error(`[benchi] Failed to fetch results.json: HTTP ${res.status}`)
+}
+
+const numOr = (n: unknown, fallback: number) =>
+  typeof n === 'number' && Number.isFinite(n) ? n : fallback
+const fmt = (n: unknown) =>
+  typeof n === 'number' && Number.isFinite(n) ? n.toFixed(1) : '—'
+// Value for the row's data-* sort attributes; '' parses to NaN → sorted last.
+const dataNum = (n: unknown) =>
+  typeof n === 'number' && Number.isFinite(n) ? String(n) : ''
+
+// Default order: fastest first, rows without a latency (e.g. failed) last.
+results.sort((a, b) => numOr(a.latency_ms, Infinity) - numOr(b.latency_ms, Infinity))
+
+const runtimes = [...new Set(['DSP', 'GPU', 'CPU', ...results.map((r) => r.runtime)])]
+const knownStatuses = ['published', 'failed']
+const statusRank = (s: string) => {
+  const i = knownStatuses.indexOf(s)
+  return i === -1 ? knownStatuses.length : i
+}
+const statuses = [...new Set(results.map((r) => r.status))].sort(
+  (a, b) => statusRank(a) - statusRank(b) || a.localeCompare(b),
+)
+
+const badgeTone = (s: string) =>
+  s === 'published' ? 'green' : s === 'failed' ? 'red' : 'yellow'
+
+const pillClass =
+  'pill rounded-md border border-separator px-2.5 py-1 font-mono text-xs text-foreground/60 transition-colors hover:border-accent/40 hover:text-accent aria-pressed:border-accent/50 aria-pressed:bg-accent/10 aria-pressed:text-accent'
+---
+
+<Layout
+  title="Benchi"
+  description="ML model benchmark results, measured automatically on a Qualcomm SA8155 devkit."
+>
+  <header class="mb-8">
+    <h1 class="text-2xl font-semibold tracking-tight text-heading1 sm:text-3xl">
+      Model benchmarks
+    </h1>
+    <p class="mt-2 font-mono text-xs text-foreground/45">
+      {
+        results.length > 0 ? (
+          <>
+            // {results.length} {results.length === 1 ? 'result' : 'results'} ·{' '}
+            {new Set(results.map((r) => r.runtime)).size}{' '}
+            {new Set(results.map((r) => r.runtime)).size === 1 ? 'runtime' : 'runtimes'}
+          </>
+        ) : (
+          <>// leaderboard · nothing measured yet</>
+        )
+      }
+    </p>
+    <p class="mt-4 max-w-prose text-sm leading-relaxed text-foreground/70">
+      Every model below was benchmarked on a Qualcomm SA8155 devkit. Runs are fully
+      automated — submit a model and the pipeline measures latency, throughput, and
+      size, then publishes the result here on the next deploy.
+    </p>
+    <p class="mt-5">
+      <a class="button" href={SUBMIT_URL}>Submit a model →</a>
+    </p>
+  </header>
+
+  {
+    results.length === 0 ? (
+      <div class="rounded-xl border border-dashed border-separator px-6 py-16 text-center">
+        <svg
+          class="mx-auto size-9 text-foreground/25"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 20V10" />
+          <path d="M18 20V4" />
+          <path d="M6 20v-4" />
+        </svg>
+        <p class="mt-4 font-medium text-foreground/80">No results yet</p>
+        <p class="mx-auto mt-1 max-w-xs text-sm text-foreground/50">
+          The board is empty — the first benchmarked model will show up here.
+        </p>
+      </div>
+    ) : (
+      <section aria-label="Benchmark results">
+        {/* Filters */}
+        <div class="mb-4 flex flex-wrap items-center gap-x-6 gap-y-3">
+          <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by runtime">
+            <span class="font-mono text-[0.65rem] uppercase tracking-wider text-foreground/45">
+              runtime
+            </span>
+            <button type="button" class={pillClass} data-filter="runtime" data-value="all" aria-pressed="true">
+              All
+            </button>
+            {runtimes.map((rt) => (
+              <button type="button" class={pillClass} data-filter="runtime" data-value={rt} aria-pressed="false">
+                {rt}
+              </button>
+            ))}
+          </div>
+          <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by status">
+            <span class="font-mono text-[0.65rem] uppercase tracking-wider text-foreground/45">
+              status
+            </span>
+            <button type="button" class={pillClass} data-filter="status" data-value="all" aria-pressed="true">
+              All
+            </button>
+            {statuses.map((st) => (
+              <button type="button" class={pillClass} data-filter="status" data-value={st} aria-pressed="false">
+                {st}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Results table (collapses to cards on small screens) */}
+        <table id="bench-table">
+          <thead>
+            <tr>
+              <th scope="col">Model</th>
+              <th scope="col">Runtime</th>
+              <th scope="col" class="num" aria-sort="ascending">
+                <button type="button" class="sort" data-key="latency">
+                  Latency <span class="unit">(ms)</span>
+                  <span class="arrow" aria-hidden="true">▲</span>
+                </button>
+              </th>
+              <th scope="col" class="num" aria-sort="none">
+                <button type="button" class="sort" data-key="throughput">
+                  Throughput <span class="unit">(fps)</span>
+                  <span class="arrow" aria-hidden="true">↕</span>
+                </button>
+              </th>
+              <th scope="col" class="num" aria-sort="none">
+                <button type="button" class="sort" data-key="size">
+                  Size <span class="unit">(MB)</span>
+                  <span class="arrow" aria-hidden="true">↕</span>
+                </button>
+              </th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.map((r) => (
+              <tr
+                data-runtime={r.runtime}
+                data-status={r.status}
+                data-latency={dataNum(r.latency_ms)}
+                data-throughput={dataNum(r.throughput_fps)}
+                data-size={dataNum(r.model_size_mb)}
+              >
+                <td class="model-cell">
+                  <span class="model-name">{r.model_name}</span>
+                  <span class="model-meta">
+                    {r.framework} · by {r.submitted_by} · <time datetime={r.date}>{r.date}</time>
+                  </span>
+                </td>
+                <td data-label="Runtime" class="mono">{r.runtime}</td>
+                <td data-label="Latency (ms)" class="num mono">{fmt(r.latency_ms)}</td>
+                <td data-label="Throughput (fps)" class="num mono">{fmt(r.throughput_fps)}</td>
+                <td data-label="Size (MB)" class="num mono">{fmt(r.model_size_mb)}</td>
+                <td data-label="Status">
+                  {r.status === 'failed' ? (
+                    <a
+                      class={`badge badge-${badgeTone(r.status)}`}
+                      href={`${ISSUES_URL}/${r.id}`}
+                      title={`See issue #${r.id} for the failure log`}
+                    >
+                      failed · #{r.id}
+                    </a>
+                  ) : (
+                    <span class={`badge badge-${badgeTone(r.status)}`}>{r.status}</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <p id="no-match" hidden class="mt-6 rounded-xl border border-dashed border-separator px-6 py-10 text-center text-sm text-foreground/50">
+          No results match the selected filters.
+        </p>
+      </section>
+    )
+  }
+</Layout>
+
+<style>
+  /* --- Table (desktop) ---------------------------------------------------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  thead th {
+    padding: 0.5rem 0.75rem 0.5rem 0;
+    text-align: left;
+    font-family: var(--default-mono-font-family);
+    font-size: 0.65rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: color-mix(in srgb, var(--theme-foreground) 45%, transparent);
+    border-bottom: 1px solid var(--theme-separator);
+    white-space: nowrap;
+  }
+
+  th.num,
+  td.num {
+    text-align: right;
+  }
+
+  button.sort {
+    all: unset;
+    cursor: pointer;
+    text-transform: inherit;
+    letter-spacing: inherit;
+  }
+  button.sort:hover {
+    color: var(--theme-accent);
+  }
+  .unit {
+    opacity: 0.7;
+  }
+  .arrow {
+    display: inline-block;
+    margin-left: 0.2em;
+    font-size: 0.6rem;
+  }
+  th[aria-sort='ascending'] button.sort,
+  th[aria-sort='descending'] button.sort {
+    color: var(--theme-accent);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid color-mix(in srgb, var(--theme-separator) 60%, transparent);
+  }
+
+  tbody td {
+    padding: 0.75rem 0.75rem 0.75rem 0;
+    vertical-align: top;
+  }
+
+  td.mono {
+    font-family: var(--default-mono-font-family);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .model-name {
+    font-weight: 500;
+    color: var(--theme-foreground);
+  }
+  .model-meta {
+    display: block;
+    margin-top: 0.1rem;
+    font-family: var(--default-mono-font-family);
+    font-size: 0.7rem;
+    color: color-mix(in srgb, var(--theme-foreground) 45%, transparent);
+  }
+
+  /* --- Status badges ------------------------------------------------------ */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.375rem;
+    border: 1px solid;
+    font-family: var(--default-mono-font-family);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .badge-green {
+    color: var(--theme-green);
+    border-color: color-mix(in srgb, var(--theme-green) 35%, transparent);
+    background: color-mix(in srgb, var(--theme-green) 10%, transparent);
+  }
+  .badge-red {
+    color: var(--theme-red);
+    border-color: color-mix(in srgb, var(--theme-red) 35%, transparent);
+    background: color-mix(in srgb, var(--theme-red) 10%, transparent);
+  }
+  .badge-yellow {
+    color: var(--theme-yellow);
+    border-color: color-mix(in srgb, var(--theme-yellow) 35%, transparent);
+    background: color-mix(in srgb, var(--theme-yellow) 10%, transparent);
+  }
+  a.badge-red:hover {
+    background: color-mix(in srgb, var(--theme-red) 20%, transparent);
+  }
+
+  /* Rows hidden by the client-side filters (class beats the mobile
+     display:block override below, unlike the [hidden] attribute). */
+  tbody tr.row-hidden {
+    display: none;
+  }
+
+  /* --- Mobile: collapse the table into cards ------------------------------ */
+  @media (max-width: 39.9375rem) {
+    table,
+    tbody,
+    tbody tr,
+    tbody td {
+      display: block;
+    }
+    thead {
+      display: none;
+    }
+
+    tbody tr {
+      border: 1px solid var(--theme-separator);
+      border-radius: 0.75rem;
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    tbody td {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.3rem 0;
+    }
+
+    tbody td[data-label]::before {
+      content: attr(data-label);
+      font-family: var(--default-mono-font-family);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: color-mix(in srgb, var(--theme-foreground) 45%, transparent);
+    }
+
+    td.model-cell {
+      display: block;
+      padding: 0 0 0.5rem;
+      margin-bottom: 0.35rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--theme-separator) 60%, transparent);
+    }
+  }
+</style>
+
+<script>
+  const table = document.getElementById('bench-table')
+  if (table) {
+    const tbody = table.querySelector('tbody') as HTMLTableSectionElement
+    const rows = Array.from(tbody.querySelectorAll<HTMLTableRowElement>('tr'))
+    const noMatch = document.getElementById('no-match') as HTMLParagraphElement
+    const pills = Array.from(document.querySelectorAll<HTMLButtonElement>('.pill'))
+
+    // --- Filtering ---------------------------------------------------------
+    const filters: Record<string, string> = { runtime: 'all', status: 'all' }
+
+    const applyFilters = () => {
+      let visible = 0
+      for (const row of rows) {
+        const show =
+          (filters.runtime === 'all' || row.dataset.runtime === filters.runtime) &&
+          (filters.status === 'all' || row.dataset.status === filters.status)
+        row.classList.toggle('row-hidden', !show)
+        if (show) visible++
+      }
+      noMatch.hidden = visible > 0
+    }
+
+    for (const pill of pills) {
+      pill.addEventListener('click', () => {
+        const group = pill.dataset.filter
+        const value = pill.dataset.value
+        if (!group || !value) return
+        filters[group] = value
+        for (const p of pills) {
+          if (p.dataset.filter === group) {
+            p.setAttribute('aria-pressed', String(p === pill))
+          }
+        }
+        applyFilters()
+      })
+    }
+
+    // --- Sorting -----------------------------------------------------------
+    const sortButtons = Array.from(table.querySelectorAll<HTMLButtonElement>('button.sort'))
+    let sortKey = 'latency'
+    let sortDir = 1 // 1 = ascending, -1 = descending
+
+    const applySort = () => {
+      const sorted = [...rows].sort((a, b) => {
+        const av = parseFloat(a.dataset[sortKey] ?? '')
+        const bv = parseFloat(b.dataset[sortKey] ?? '')
+        const aOk = Number.isFinite(av)
+        const bOk = Number.isFinite(bv)
+        // Rows without a value (e.g. failed runs) always sink to the bottom.
+        if (!aOk && !bOk) return 0
+        if (!aOk) return 1
+        if (!bOk) return -1
+        return (av - bv) * sortDir
+      })
+      for (const row of sorted) tbody.appendChild(row)
+
+      for (const btn of sortButtons) {
+        const active = btn.dataset.key === sortKey
+        const th = btn.closest('th')
+        th?.setAttribute(
+          'aria-sort',
+          active ? (sortDir === 1 ? 'ascending' : 'descending') : 'none',
+        )
+        const arrow = btn.querySelector('.arrow')
+        if (arrow) arrow.textContent = active ? (sortDir === 1 ? '▲' : '▼') : '↕'
+      }
+    }
+
+    for (const btn of sortButtons) {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.key
+        if (!key) return
+        if (key === sortKey) {
+          sortDir = -sortDir
+        } else {
+          sortKey = key
+          sortDir = 1
+        }
+        applySort()
+      })
+    }
+  }
+</script>

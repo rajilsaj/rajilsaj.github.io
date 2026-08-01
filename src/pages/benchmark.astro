@@ -47,62 +47,39 @@ const ACCEPTED = [
     data-max-bytes={MAX_BYTES}
     data-accepted={ACCEPTED.join(',')}
   >
-    <div id="dropzone" class="card">
-      <!-- Heading -->
-      <p class="heading">Drop your files here</p>
-
-      <!-- Center stage: idle art OR progress ring -->
-      <div class="center">
-        <!-- Idle cloud icon -->
-        <svg id="idle-art" class="idle-art" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <div id="card" class="card">
+      <!-- Left: dropzone -->
+      <div class="drop">
+        <svg class="drop-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
           <path
-            d="M7 18a4 4 0 0 1-.5-7.97A5.5 5.5 0 0 1 17 8.5a4.5 4.5 0 0 1 .5 8.98"
+            d="M12 4h18l8 8v32a0 0 0 0 1 0 0H12a0 0 0 0 1 0 0z"
             stroke="currentColor"
-            stroke-width="1.2"
-            stroke-linecap="round"
+            stroke-width="2.5"
             stroke-linejoin="round"></path>
+          <path d="M30 4v8h8" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"
+          ></path>
           <path
-            d="M12 12v6m0-6-2.2 2.2M12 12l2.2 2.2"
+            d="M24 34V21m0 0-5 5m5-5 5 5"
             stroke="currentColor"
-            stroke-width="1.2"
+            stroke-width="2.5"
             stroke-linecap="round"
             stroke-linejoin="round"></path>
         </svg>
-
-        <!-- Progress ring (hidden until upload) -->
-        <div id="ring-wrap" class="ring-wrap" hidden>
-          <svg class="ring" viewBox="0 0 120 120">
-            <circle class="ring-track" cx="60" cy="60" r="52" />
-            <circle
-              id="ring-progress"
-              class="ring-progress"
-              cx="60"
-              cy="60"
-              r="52"
-              transform="rotate(-90 60 60)"></circle>
-          </svg>
-          <div class="ring-label">
-            <div class="ring-pct"><span id="pct-num">0</span><span class="pct-sign">%</span></div>
-            <div id="ring-file" class="ring-file"></div>
-          </div>
-        </div>
+        <p class="drop-title">Drag and drop file</p>
+        <p class="drop-or">or</p>
+        <button type="button" id="browse" class="browse">Browse</button>
+        <input id="file-input" type="file" class="sr-only" multiple accept={ACCEPTED.join(',')} />
       </div>
 
-      <!-- Bottom prompt -->
-      <p class="prompt">
-        or <button type="button" id="browse" class="browse">select a file from computer</button>
-      </p>
-
-      <input id="file-input" type="file" class="sr-only" multiple accept={ACCEPTED.join(',')} />
-
-      <!-- File cards (stack down the right edge) -->
-      <ul id="file-list" class="file-list" aria-live="polite"></ul>
+      <!-- Right: file list -->
+      <ul id="file-list" class="list" aria-live="polite">
+        <li id="empty" class="empty">No files yet — drop a model or click Browse.</li>
+      </ul>
     </div>
   </div>
 </Layout>
 
 <style>
-  /* Fixed light backdrop that ignores the site theme, matching the design. */
   .stage {
     position: fixed;
     inset: 0;
@@ -110,8 +87,8 @@ const ACCEPTED = [
     align-items: center;
     justify-content: center;
     padding: 2rem 1rem;
-    background: #edeff2;
-    color: #303540;
+    background: #3b8ef6;
+    color: #3a4a63;
     font-family:
       'Inter',
       system-ui,
@@ -121,203 +98,171 @@ const ACCEPTED = [
   }
 
   .card {
-    position: relative;
-    width: min(720px, 92vw);
-    min-height: 380px;
-    padding: 2.75rem 2rem 2.25rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    background: #ffffff;
-    border-radius: 4px;
-    box-shadow:
-      0 24px 60px -20px rgba(40, 50, 70, 0.28),
-      0 2px 8px rgba(40, 50, 70, 0.06);
-    transition:
-      box-shadow 0.2s ease,
-      outline-color 0.2s ease;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: min(760px, 94vw);
+    height: min(500px, 84vh);
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 30px 70px -25px rgba(20, 50, 100, 0.5);
+    overflow: hidden;
     outline: 2px dashed transparent;
-    outline-offset: -14px;
+    outline-offset: -12px;
+    transition: outline-color 0.15s ease;
   }
   .card.dragging {
-    outline-color: #ff6f61;
-    box-shadow:
-      0 28px 70px -20px rgba(255, 111, 97, 0.35),
-      0 2px 8px rgba(40, 50, 70, 0.06);
+    outline-color: #3b8ef6;
   }
 
-  .heading {
-    margin: 0;
-    font-size: clamp(1.6rem, 4vw, 2.2rem);
-    font-weight: 300;
-    letter-spacing: 0.01em;
-    color: #cdd2d8;
-    text-align: center;
-  }
-
-  .center {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 1.5rem 0;
-  }
-
-  .idle-art {
-    width: 84px;
-    height: 84px;
-    color: #e2e5ea;
-  }
-
-  /* Progress ring */
-  .ring-wrap {
-    position: relative;
-    width: 168px;
-    height: 168px;
-    display: grid;
-    place-items: center;
-  }
-  .ring {
-    width: 100%;
-    height: 100%;
-  }
-  .ring-track {
-    fill: none;
-    stroke: #f0f2f5;
-    stroke-width: 6;
-  }
-  .ring-progress {
-    fill: none;
-    stroke: #ff6f61;
-    stroke-width: 6;
-    stroke-linecap: round;
-    stroke-dasharray: 326.7; /* 2π·52 */
-    stroke-dashoffset: 326.7;
-    transition: stroke-dashoffset 0.2s ease;
-  }
-  .ring-label {
-    position: absolute;
-    inset: 0;
+  /* Left dropzone */
+  .drop {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
+    gap: 0.25rem;
+    padding: 2rem;
+    border-right: 1px solid #eef1f5;
   }
-  .ring-pct {
-    font-size: 2rem;
-    font-weight: 300;
-    color: #3a3f48;
-    line-height: 1;
+  .drop-icon {
+    width: 62px;
+    height: 62px;
+    color: #3b8ef6;
+    margin-bottom: 1.25rem;
   }
-  .pct-sign {
+  .drop-title {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #aeb8c4;
+    font-weight: 400;
+  }
+  .drop-or {
+    margin: 0.4rem 0;
     font-size: 0.85rem;
-    color: #9aa0a8;
-    margin-left: 2px;
-    vertical-align: top;
+    color: #c4ccd6;
   }
-  .ring-file {
-    margin-top: 0.4rem;
-    max-width: 120px;
-    font-size: 0.66rem;
-    color: #b7bcc4;
+  .browse {
+    margin-top: 0.35rem;
+    border: none;
+    background: #3b8ef6;
+    color: #fff;
+    font: inherit;
+    font-size: 0.95rem;
+    padding: 0.65rem 2.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 8px 18px -8px rgba(59, 142, 246, 0.8);
+    transition:
+      background 0.15s ease,
+      transform 0.05s ease;
+  }
+  .browse:hover {
+    background: #2f80ea;
+  }
+  .browse:active {
+    transform: translateY(1px);
+  }
+
+  /* Right list */
+  .list {
+    margin: 0;
+    padding: 0.5rem 0.25rem 0.5rem 0;
+    list-style: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .list::-webkit-scrollbar {
+    width: 6px;
+  }
+  .list::-webkit-scrollbar-thumb {
+    background: #d9e0e8;
+    border-radius: 3px;
+  }
+  .list {
+    scrollbar-width: thin;
+    scrollbar-color: #d9e0e8 transparent;
+  }
+
+  .empty {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    color: #c4ccd6;
+    font-size: 0.85rem;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.75rem 1.25rem;
+    animation: fade 0.18s ease;
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+  .badge {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #3b8ef6;
+    background: #eaf3fe;
+    box-shadow: inset 0 0 0 1.5px currentColor;
+  }
+  .meta {
+    flex: 1;
+    min-width: 0;
+  }
+  .name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #3a4a63;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-
-  .prompt {
-    margin: 0;
-    font-size: 0.95rem;
-    color: #a7adb5;
+  .prog {
+    margin-top: 0.15rem;
+    font-size: 0.72rem;
+    color: #aeb8c4;
   }
-  .browse {
-    background: none;
-    border: none;
-    padding: 0;
-    font: inherit;
-    color: #ff6f61;
-    cursor: pointer;
-    transition: color 0.15s ease;
+  .row[data-status='error'] .prog {
+    color: #ef6b64;
   }
-  .browse:hover {
-    color: #ff5647;
-    text-decoration: underline;
-  }
-
-  /* File cards stacked down the right edge, poking outside like the design */
-  .file-list {
-    position: absolute;
-    top: 1.5rem;
-    right: -52px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-    width: 92px;
-  }
-  .file-card {
-    position: relative;
-    background: #fff;
-    border-radius: 4px;
-    box-shadow: 0 10px 26px -10px rgba(40, 50, 70, 0.22);
-    padding: 0.85rem 0.5rem 0.55rem;
-    text-align: center;
-    animation: pop 0.18s ease;
-  }
-  @keyframes pop {
-    from {
-      opacity: 0;
-      transform: translateY(6px);
-    }
-  }
-  .file-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 46px;
-    margin: 0 auto;
-    border: 1.5px solid currentColor;
-    border-radius: 3px;
-    font-size: 0.52rem;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-  }
-  .file-size {
-    margin-top: 0.4rem;
-    font-size: 0.6rem;
-    color: #aeb4bc;
-  }
-  .file-x {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    width: 16px;
-    height: 16px;
-    border: none;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 1px 4px rgba(40, 50, 70, 0.25);
-    color: #b7bcc4;
-    font-size: 0.75rem;
-    line-height: 1;
-    cursor: pointer;
+  .status {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
     display: grid;
     place-items: center;
   }
-  .file-x:hover {
-    color: #ff6f61;
+  .status svg {
+    width: 100%;
+    height: 100%;
   }
-  .file-card[data-status='done'] .file-badge {
-    box-shadow: 0 0 0 2px rgba(76, 175, 132, 0.15);
+  .check {
+    color: #3b8ef6;
   }
-  .file-card[data-status='error'] {
-    outline: 1px solid #ffd6d1;
+  .remove {
+    color: #cfd6df;
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+  }
+  .remove:hover {
+    color: #ef6b64;
   }
 
   .sr-only {
@@ -332,26 +277,25 @@ const ACCEPTED = [
     border: 0;
   }
 
-  /* On smaller screens tuck the cards inside and give the card breathing room */
   @media (max-width: 640px) {
-    .file-list {
-      position: static;
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: center;
-      width: 100%;
-      right: auto;
-      margin-top: 1.25rem;
-    }
     .card {
-      min-height: 340px;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      height: min(560px, 88vh);
+    }
+    .drop {
+      border-right: none;
+      border-bottom: 1px solid #eef1f5;
+      padding: 1.75rem;
+    }
+    .drop-icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 0.75rem;
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .ring-progress {
-      transition: none;
-    }
-    .file-card {
+    .row {
       animation: none;
     }
   }
@@ -359,27 +303,26 @@ const ACCEPTED = [
 
 <script>
   const stage = document.getElementById('stage') as HTMLDivElement
-  const card = document.getElementById('dropzone') as HTMLDivElement
+  const card = document.getElementById('card') as HTMLDivElement
   const input = document.getElementById('file-input') as HTMLInputElement
   const browse = document.getElementById('browse') as HTMLButtonElement
   const list = document.getElementById('file-list') as HTMLUListElement
-  const idleArt = document.getElementById('idle-art') as unknown as SVGElement
-  const ringWrap = document.getElementById('ring-wrap') as HTMLDivElement
-  const ringProgress = document.getElementById('ring-progress') as unknown as SVGCircleElement
-  const pctNum = document.getElementById('pct-num') as HTMLSpanElement
-  const ringFile = document.getElementById('ring-file') as HTMLDivElement
+  const emptyEl = document.getElementById('empty') as HTMLLIElement
 
   const endpoint = stage.dataset.endpoint || ''
   const maxBytes = Number(stage.dataset.maxBytes)
   const accepted = (stage.dataset.accepted || '').split(',').filter(Boolean)
 
-  const RING_CIRCUMFERENCE = 2 * Math.PI * 52
+  const CHECK_SVG =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" stroke="none" fill="currentColor" opacity="0.12"/><path d="m8 12 3 3 5-6"/></svg>'
+  const X_SVG =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg>'
 
   type Item = {
     id: string
     file: File
     status: 'queued' | 'uploading' | 'done' | 'error'
-    progress: number
+    loaded: number
     error?: string
     el?: HTMLLIElement
   }
@@ -389,40 +332,21 @@ const ACCEPTED = [
 
   const fmtSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes} B`
-    const units = ['kb', 'mb', 'gb']
+    const units = ['KB', 'MB', 'GB']
     let v = bytes / 1024
     let i = 0
     while (v >= 1024 && i < units.length - 1) {
       v /= 1024
       i++
     }
-    return `${v < 10 ? v.toFixed(1) : Math.round(v)} ${units[i]}`
+    return `${v < 10 ? v.toFixed(2) : v.toFixed(0)} ${units[i]}`
   }
 
   const extOf = (name: string) => {
     const dot = name.lastIndexOf('.')
     return dot === -1 ? '' : name.slice(dot).toLowerCase()
   }
-
-  const badgeLabel = (name: string) => {
-    const e = extOf(name).replace('.', '').toUpperCase()
-    return e || 'FILE'
-  }
-
-  // Deterministic-ish color per extension for the badge outline.
-  const badgeColor = (name: string) => {
-    const map: Record<string, string> = {
-      '.onnx': '#4a90d9',
-      '.pt': '#e0645a',
-      '.pth': '#e0645a',
-      '.safetensors': '#8e6fd0',
-      '.gguf': '#3fae86',
-      '.h5': '#d98a3f',
-      '.keras': '#d98a3f',
-      '.zip': '#8a929c',
-    }
-    return map[extOf(name)] || '#7b98c9'
-  }
+  const badgeLabel = (name: string) => extOf(name).replace('.', '').toUpperCase() || 'FILE'
 
   const validate = (file: File): string | null => {
     if (accepted.length && !accepted.includes(extOf(file.name))) {
@@ -433,47 +357,58 @@ const ACCEPTED = [
     return null
   }
 
-  const renderCard = (item: Item) => {
-    const li = document.createElement('li')
-    li.className = 'file-card'
-    li.dataset.status = item.status
-    li.innerHTML = `
-      <button type="button" class="file-x" aria-label="Remove ${item.file.name}">&times;</button>
-      <span class="file-badge" style="color:${badgeColor(item.file.name)}">${badgeLabel(item.file.name)}</span>
-      <div class="file-size">${item.status === 'error' ? item.error : fmtSize(item.file.size)}</div>
-    `
-    li.querySelector('.file-x')!.addEventListener('click', () => removeItem(item))
-    item.el = li
-    list.appendChild(li)
+  const syncEmpty = () => {
+    emptyEl.style.display = items.length ? 'none' : ''
   }
 
-  const updateCard = (item: Item) => {
+  const progText = (item: Item) => {
+    if (item.status === 'error') return item.error || 'Failed'
+    return `${fmtSize(item.loaded)} / ${fmtSize(item.file.size)}`
+  }
+
+  const statusHtml = (item: Item) => {
+    if (item.status === 'done') return `<span class="status check">${CHECK_SVG}</span>`
+    return `<button type="button" class="remove" aria-label="Remove ${item.file.name}">${X_SVG}</button>`
+  }
+
+  const renderRow = (item: Item) => {
+    const li = document.createElement('li')
+    li.className = 'row'
+    li.dataset.status = item.status
+    li.innerHTML = `
+      <span class="badge">${badgeLabel(item.file.name)}</span>
+      <div class="meta">
+        <div class="name">${item.file.name}</div>
+        <div class="prog">${progText(item)}</div>
+      </div>
+      ${statusHtml(item)}
+    `
+    item.el = li
+    li.querySelector('.remove')?.addEventListener('click', () => removeItem(item))
+    list.appendChild(li)
+    syncEmpty()
+  }
+
+  const updateRow = (item: Item) => {
     if (!item.el) return
     item.el.dataset.status = item.status
-    const size = item.el.querySelector('.file-size') as HTMLDivElement
-    if (item.status === 'error') size.textContent = item.error || 'Failed'
-    else size.textContent = fmtSize(item.file.size)
+    ;(item.el.querySelector('.prog') as HTMLElement).textContent = progText(item)
+    // Swap the trailing element (blue check when done, gray ✕ otherwise).
+    const trailing = item.el.querySelector('.status, .remove') as HTMLElement
+    const wrap = document.createElement('div')
+    wrap.innerHTML = statusHtml(item)
+    const fresh = wrap.firstElementChild as HTMLElement
+    trailing.replaceWith(fresh)
+    if (fresh.classList.contains('remove')) {
+      fresh.addEventListener('click', () => removeItem(item))
+    }
   }
 
   const removeItem = (item: Item) => {
     const i = items.indexOf(item)
     if (i > -1) items.splice(i, 1)
     item.el?.remove()
-    if (!uploading) showIdle()
-  }
-
-  const showIdle = () => {
-    ringWrap.hidden = true
-    idleArt.style.display = ''
-  }
-
-  const setRing = (pct: number, fileName: string) => {
-    idleArt.style.display = 'none'
-    ringWrap.hidden = false
-    pctNum.textContent = String(pct)
-    ringFile.textContent = fileName
-    const offset = RING_CIRCUMFERENCE * (1 - pct / 100)
-    ringProgress.style.strokeDashoffset = String(offset)
+    syncEmpty()
   }
 
   const addFiles = (fileList: FileList | File[]) => {
@@ -483,11 +418,11 @@ const ACCEPTED = [
         id: `f${idCounter++}`,
         file,
         status: err ? 'error' : 'queued',
-        progress: 0,
+        loaded: 0,
         error: err || undefined,
       }
       items.push(item)
-      renderCard(item)
+      renderRow(item)
     }
     processQueue()
   }
@@ -495,25 +430,19 @@ const ACCEPTED = [
   const processQueue = () => {
     if (uploading) return
     const next = items.find((it) => it.status === 'queued')
-    if (!next) {
-      showIdle()
-      return
-    }
+    if (!next) return
 
     if (!endpoint) {
       next.status = 'error'
-      next.error = 'No endpoint'
-      updateCard(next)
-      // Surface it once in the ring area too.
-      setRing(0, 'endpoint not set')
-      ringFile.textContent = 'No upload endpoint configured'
+      next.error = 'No upload endpoint configured'
+      updateRow(next)
       processQueue()
       return
     }
 
     uploading = true
     next.status = 'uploading'
-    setRing(0, next.file.name)
+    updateRow(next)
 
     const body = new FormData()
     body.append('model', next.file, next.file.name)
@@ -523,9 +452,8 @@ const ACCEPTED = [
 
     xhr.upload.addEventListener('progress', (ev) => {
       if (ev.lengthComputable) {
-        const pct = Math.round((ev.loaded / ev.total) * 100)
-        next.progress = pct
-        setRing(pct, next.file.name)
+        next.loaded = ev.loaded
+        ;(next.el?.querySelector('.prog') as HTMLElement).textContent = progText(next)
       }
     })
 
@@ -533,20 +461,20 @@ const ACCEPTED = [
       uploading = false
       if (xhr.status >= 200 && xhr.status < 300) {
         next.status = 'done'
-        setRing(100, next.file.name)
+        next.loaded = next.file.size
       } else {
         next.status = 'error'
-        next.error = `HTTP ${xhr.status}`
+        next.error = `Failed (HTTP ${xhr.status})`
       }
-      updateCard(next)
+      updateRow(next)
       processQueue()
     })
 
     xhr.addEventListener('error', () => {
       uploading = false
       next.status = 'error'
-      next.error = 'Network'
-      updateCard(next)
+      next.error = 'Network error'
+      updateRow(next)
       processQueue()
     })
 
