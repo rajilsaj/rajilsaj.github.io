@@ -1,0 +1,1166 @@
+---
+// Chronotype Lab — ported verbatim from the standalone chronotype-lab.html.
+// Deliberately NOT wrapped in ~/layouts/Layout.astro: that layout pulls in
+// global.css (Tailwind preflight, theme colours, focus rings, body transitions)
+// which would fight the tool's own dark palette and typography. The page owns
+// its whole document instead.
+const title = 'Which Sleeper Are You — Chronotype Lab'
+const description =
+  'Find your sleep chronotype — lion, bear, wolf or dolphin — and score what your bedtime is doing to you'
+const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '')
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- is:global on purpose: the tool builds most of its DOM at runtime via innerHTML,
+         and Astro's scoped-style data-astro-cid-* attributes never reach those nodes. -->
+    <style is:global>
+/* Space Grotesk, self-hosted (variable, latin subset) instead of the Google Fonts request. */
+@font-face{
+  font-family:"Space Grotesk";
+  font-style:normal;
+  font-weight:300 700;
+  font-display:swap;
+  src:url(/test/space-grotesk-latin-wght.woff2) format("woff2");
+}
+
+:root{
+  --void:#08131f; --panel:#0f2033; --panel-2:#142c46; --line:#1e3c58;
+  --ink:#eaf2f8; --muted:#8aa3b8;
+  --lion:#f0a537; --bear:#b8763f; --wolf:#8fa3b8; --dolphin:#4fb8e8;
+  --n1:#ffd166; --n2:#2ee6a8; --n3:#47a9f5; --rem:#9b8cff;
+  --eeg:#ff6b6b; --eog:#c2d95f; --emg:#5aa9e6; --bad:#ff7a7a; --accent:#2ee6a8;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(900px 520px at 12% -12%, #17385a 0%, transparent 62%),
+    radial-gradient(760px 420px at 92% -4%, #123049 0%, transparent 58%),
+    var(--void);
+  color:var(--ink);
+  font-family:"Space Grotesk", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  font-size:16px; line-height:1.55; min-height:100vh; padding:28px 18px 64px;
+}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#cfe6ff;opacity:.22;animation:tw 6s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.1;transform:scale(.7)}50%{opacity:.65;transform:scale(1)}}
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto}
+
+.rail{display:flex;gap:6px;margin-bottom:22px}
+.rail div{height:3px;flex:1;border-radius:2px;background:rgba(255,255,255,.09);transition:background 500ms}
+.rail div.on{background:var(--accent)}
+.step{display:none}
+.step.active{display:block;animation:enter 460ms cubic-bezier(.2,.9,.3,1) both}
+@keyframes enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+h1{font-size:clamp(32px,6vw,56px);line-height:1.02;letter-spacing:-.035em;font-weight:700;margin:0 0 14px}
+h1 em{font-style:normal;display:block;color:var(--accent)}
+h2{font-size:22px;letter-spacing:-.015em;margin:0 0 4px}
+p{margin:0 0 14px}
+.lede{color:var(--muted);max-width:60ch}
+.source{color:var(--muted);font-size:13.5px;border-left:2px solid var(--line);padding-left:14px;margin:22px 0 26px;max-width:66ch}
+.source b{color:var(--ink);font-weight:500}
+
+button{font:inherit}
+.go{border:none;border-radius:12px;padding:15px 26px;background:var(--accent);color:#052a20;font-weight:700;font-size:17px;cursor:pointer;transition:box-shadow 420ms,transform 160ms}
+.go:hover{box-shadow:0 0 34px -8px rgba(46,230,168,.6)}
+.go:active{transform:translateY(1px)}
+.ghost{background:none;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:9px 18px;cursor:pointer;transition:border-color 300ms,color 300ms}
+.ghost:hover{border-color:var(--accent);color:var(--ink)}
+:focus-visible{outline:2px solid var(--n1);outline-offset:2px}
+
+.photo{position:relative;border-radius:50%;overflow:hidden;aspect-ratio:1;border:3px solid var(--c,var(--line));background:#0d1c2c}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.photo .fb{display:none;position:absolute;inset:0}
+.photo .fb svg{width:100%;height:100%}
+.photo.failed img{display:none}
+.photo.failed .fb{display:block}
+
+.herd{display:flex;gap:12px;margin:30px 0;flex-wrap:wrap}
+.herd figure{margin:0;text-align:center;flex:1;min-width:130px;border:1px solid var(--line);border-radius:16px;padding:14px 10px;background:rgba(15,32,51,.6)}
+.herd .photo{width:86px;margin:0 auto 8px}
+.herd figcaption{font-size:13px;color:var(--muted)}
+.herd figcaption b{display:block;color:var(--ink);font-size:15px;font-weight:500}
+.herd button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:4px;text-decoration:underline}
+.herd button:hover{color:var(--ink)}
+
+.qcount{color:var(--muted);font-size:13.5px;margin-bottom:6px;font-variant-numeric:tabular-nums}
+.qtext{font-size:clamp(22px,3.6vw,30px);line-height:1.2;letter-spacing:-.02em;font-weight:700;margin:0 0 22px;max-width:23ch}
+.opts{display:grid;gap:10px;margin-bottom:22px}
+.opt{text-align:left;background:rgba(15,32,51,.7);border:1px solid var(--line);color:var(--ink);border-radius:14px;padding:15px 18px;cursor:pointer;font-size:16px;transition:border-color 260ms,background 260ms,transform 160ms}
+.opt:hover{border-color:var(--accent);transform:translateX(3px)}
+.opts.binary{grid-template-columns:1fr 1fr;max-width:420px}
+.opts.binary .opt{text-align:center;font-weight:500;padding:18px}
+.opts.binary .opt:hover{transform:translateY(-2px)}
+.qnav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+.reveal{display:grid;grid-template-columns:210px 1fr;gap:28px;align-items:center;margin-bottom:24px}
+.badge{width:210px;justify-self:center;animation:land 900ms cubic-bezier(.2,1.2,.35,1) both;box-shadow:0 0 60px -18px var(--c)}
+@keyframes land{from{opacity:0;transform:scale(.62) rotate(-7deg)}to{opacity:1;transform:none}}
+.you{font-size:clamp(34px,6vw,52px);line-height:1;letter-spacing:-.03em;font-weight:700;margin:0 0 8px}
+.share{color:var(--muted);font-size:14px;margin-bottom:10px}
+.schedule{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px}
+.schedule div{border-left:2px solid var(--line);padding-left:12px}
+.schedule span{display:block;font-size:12.5px;color:var(--muted)}
+.schedule b{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+.runner{color:var(--muted);font-size:14px;margin-top:16px}
+.speak{background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:6px 14px;font-size:13.5px;cursor:pointer;margin-right:8px}
+.speak:hover{border-color:var(--accent)}
+.credit{font-size:12px;color:var(--muted);margin-top:10px}
+.credit a{color:var(--muted)}
+
+.panel{border:1px solid var(--line);border-radius:18px;padding:20px;background:linear-gradient(180deg,var(--panel-2),var(--panel));margin-bottom:16px}
+.fields{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+input[type=time],input[type=number],select,input[type=text]{width:100%;background:var(--void);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:11px 12px;font:inherit;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.val{color:var(--accent);font-variant-numeric:tabular-nums}
+.sliders{display:grid;gap:12px;margin-top:14px}
+
+.verdict{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+.ring{width:112px;height:112px;flex:0 0 auto}
+.ring circle{fill:none;stroke-width:9;stroke-linecap:round}
+.ring .track{stroke:rgba(255,255,255,.07)}
+.ring .prog{transition:stroke-dashoffset 1200ms cubic-bezier(.2,.8,.2,1)}
+.ring text{font-family:inherit;font-weight:700;font-size:28px;fill:var(--ink);text-anchor:middle;font-variant-numeric:tabular-nums}
+.grade{font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.12}
+.gnote{color:var(--muted);font-size:14.5px;margin-top:4px;max-width:40ch}
+.mini{width:56px;flex:0 0 auto}
+
+.hyp svg{width:100%;height:auto;display:block;cursor:crosshair}
+.hyp .grid{stroke:rgba(255,255,255,.06)}
+.hyp .lbl,.hyp .tlbl{fill:var(--muted);font-size:9px;font-family:inherit}
+.hyp .tlbl{font-variant-numeric:tabular-nums}
+.hyp .trace{fill:none;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;transition:stroke-dashoffset 1700ms cubic-bezier(.35,.05,.2,1)}
+.hyp .seg{opacity:0;transition:opacity 400ms}
+.hyp.go .seg{opacity:1}
+.hyp .tick{stroke:rgba(255,255,255,.15);stroke-dasharray:2 4}
+.hyp .head{stroke:#fff;stroke-width:1.4;opacity:.85}
+.hyp .headdot{fill:#fff}
+
+details{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:rgba(8,19,31,.5);margin-top:12px}
+summary{cursor:pointer;font-size:14.5px;color:var(--muted)}
+summary:hover{color:var(--ink)}
+.labtop{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0 8px}
+.play{background:rgba(46,230,168,.14);border:1px solid rgba(46,230,168,.4);color:#9df3d3;border-radius:999px;padding:6px 14px;font-size:13.5px;cursor:pointer}
+.clockread{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.clockread b{color:var(--ink);font-weight:500}
+.pill{padding:3px 11px;border-radius:999px;font-size:13px;font-weight:500;color:#05202b;background:#2ee6a8}
+canvas{width:100%;height:172px;display:block}
+.scrub{margin-top:6px}
+.chan{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:6px}
+.chan span{display:flex;align-items:center;gap:6px}
+.chan i{width:14px;height:2px;border-radius:2px}
+
+.split{display:grid;gap:22px;grid-template-columns:190px 1fr;align-items:center;margin-top:20px}
+.donut{width:190px;height:190px;justify-self:center}
+.donut circle.arc{fill:none;stroke-width:28;transition:stroke-dasharray 1000ms cubic-bezier(.2,.8,.2,1)}
+.donut text{font-family:inherit;text-anchor:middle;fill:var(--ink)}
+.donut .big{font-size:32px;font-weight:700}
+.donut .small{font-size:11px;fill:var(--muted)}
+.legend{display:grid;gap:9px;margin:0;padding:0;list-style:none}
+.legend li{display:grid;grid-template-columns:12px 1fr auto;gap:10px;align-items:center;font-size:14px}
+.dot{width:12px;height:12px;border-radius:3px}
+.legend .amt{color:var(--muted);font-variant-numeric:tabular-nums}
+.legend small{display:block;color:var(--muted);font-size:11.5px;line-height:1.2}
+
+.bars{margin-top:22px;display:grid;gap:14px}
+.bar .top{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;margin-bottom:6px}
+.bar .top span:last-child{color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.track2{height:7px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden}
+.fill{height:100%;width:0;border-radius:4px;transition:width 950ms cubic-bezier(.2,.8,.2,1)}
+
+.tips{margin-top:20px;border-top:1px solid var(--line);padding-top:16px}
+.tips p{font-size:14px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:rgba(71,169,245,.12);border:1px solid rgba(71,169,245,.35);color:#bfe0ff;border-radius:999px;padding:7px 13px;font-size:13.5px;cursor:pointer;font-variant-numeric:tabular-nums;transition:background 300ms}
+.chip:hover{background:rgba(71,169,245,.26)}
+
+.banner{display:none;border:1px solid var(--line);border-left:4px solid var(--n1);border-radius:12px;padding:14px 18px;background:rgba(255,209,102,.07);margin-top:14px}
+.banner.show{display:block;animation:enter 500ms both}
+.week{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.night{border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--muted);cursor:pointer;background:none;transition:all 260ms}
+.night.done{background:rgba(46,230,168,.15);border-color:var(--accent);color:var(--ink)}
+footer{color:var(--muted);font-size:12.5px;margin-top:30px;max-width:74ch}
+footer a{color:var(--muted)}
+
+@media (max-width:760px){.reveal,.split{grid-template-columns:1fr}.badge{width:170px}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:1ms!important;transition-duration:1ms!important}}
+    </style>
+  </head>
+  <body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+
+<div class="wrap">
+  <div class="rail" id="rail" aria-hidden="true"><div class="on"></div><div></div><div></div><div></div></div>
+
+  <section class="step active" id="s1">
+    <h1>Four sleepers walk into a night<em>which one are you?</em></h1>
+    <p class="lede">Eight questions drawn fresh each time you play, from a bank of <b id="bankSize">many</b>, one animal, then a full readout of what your bedtime is actually doing to you. Sound on if you can — every animal answers when it wins.</p>
+    <div class="herd" id="herd"></div>
+    <p class="source"><b>Where this comes from.</b> Sleep specialist Dr. Michael Breus proposed the four-animal chronotype framework — lion, bear, wolf, dolphin — in <i>The Power of When</i>, as a more usable way to describe the circadian differences older research files under lark and owl. The schedules and population shares follow his framework as summarised by Mount Sinai's Health Center with Lara Trevino, AGNP-C, MSN, along with the rule this whole tool is built on: your chronotype is largely hard-wired, you can nudge it 30 to 45 minutes, and forcing more than that feels like jet lag you never booked a flight for.</p>
+    <button class="go" id="begin">Find my animal</button>
+  </section>
+
+  <section class="step" id="s2">
+    <p class="qcount" id="qcount"></p>
+    <h2 class="qtext" id="qtext"></h2>
+    <div class="opts" id="opts"></div>
+    <div class="qnav">
+      <button class="ghost" id="back">Back</button>
+      <button class="ghost" id="restart">New questions</button>
+    </div>
+  </section>
+
+  <section class="step" id="s3">
+    <div class="reveal">
+      <div id="badgeSlot"></div>
+      <div>
+        <p class="qcount">Your chronotype</p>
+        <h2 class="you" id="youAre"></h2>
+        <p class="share" id="youShare"></p>
+        <p class="lede" id="youDesc"></p>
+        <div class="schedule" id="youSched"></div>
+        <p class="runner" id="youRunner"></p>
+        <p style="margin-top:16px">
+          <button class="speak" id="callAgain">Hear it again</button>
+          <button class="speak" id="muteBtn">Mute sound</button>
+        </p>
+      </div>
+    </div>
+    <button class="go" id="toNight">Score my night</button>
+    <button class="ghost" id="more" style="display:none">Ask 8 more to be sure</button>
+    <button class="ghost" id="redo">Start again</button>
+    <p class="credit" id="credit"></p>
+  </section>
+
+  <section class="step" id="s4">
+    <div class="panel">
+      <div class="fields">
+        <div><label for="bed">Lights out</label><input type="time" id="bed"></div>
+        <div><label for="wake">Alarm</label><input type="time" id="wake"></div>
+        <div><label for="age">Age</label><input type="number" id="age" min="10" max="95" value="32"></div>
+        <div><label for="chrono">Chronotype</label>
+          <select id="chrono">
+            <option value="lion">Lion</option><option value="bear">Bear</option>
+            <option value="wolf">Wolf</option><option value="dolphin">Dolphin</option>
+          </select>
+        </div>
+      </div>
+      <div class="sliders">
+        <div><label for="lat">Minutes to fall asleep — <span class="val" id="latV">15</span></label><input type="range" id="lat" min="0" max="60" step="5" value="15"></div>
+        <div><label for="cyc">Cycle length — <span class="val" id="cycV">90</span> min</label><input type="range" id="cyc" min="80" max="110" step="5" value="90"></div>
+      </div>
+      <p class="share" id="windowLine" style="margin-top:14px"></p>
+    </div>
+
+    <div class="panel" id="card"></div>
+
+    <div class="panel">
+      <h2>Challenge a colleague</h2>
+      <p class="lede" style="font-size:14.5px">Same model, their animal. Highest score takes it, and the winner gets the last word.</p>
+      <div class="fields">
+        <div><label for="cName">Name</label><input type="text" id="cName" value="Colleague"></div>
+        <div><label for="cChrono">Their chronotype</label>
+          <select id="cChrono">
+            <option value="lion">Lion</option><option value="bear">Bear</option>
+            <option value="wolf" selected>Wolf</option><option value="dolphin">Dolphin</option>
+          </select>
+        </div>
+        <div><label for="cBed">Lights out</label><input type="time" id="cBed" value="01:15"></div>
+        <div><label for="cWake">Alarm</label><input type="time" id="cWake" value="06:40"></div>
+        <div><label for="cAge">Age</label><input type="number" id="cAge" min="10" max="95" value="29"></div>
+      </div>
+      <div class="banner" id="banner"></div>
+      <p style="margin-top:14px"><button class="go" id="fight">Compare nights</button></p>
+    </div>
+
+    <div class="panel">
+      <h2>The seven-night challenge</h2>
+      <p class="lede" id="challengeLine" style="font-size:14.5px"></p>
+      <div class="week" id="week"></div>
+      <p class="lede" style="font-size:14px;margin-top:14px">Hold the window for a week before judging it. If it fights you, shift both ends by half an hour — not more, or you're back to jet lag. Phone out of reach, no caffeine after midday, room cold and properly dark.</p>
+    </div>
+
+    <button class="ghost" id="redo2">New questions</button>
+  </section>
+
+  <footer>
+    A model, not a sleep study. Cycles are treated as ~90 minutes, deep sleep is weighted early and REM late, and the dolphin profile is modelled with brief awakenings between cycles. Animal framework after Dr. Michael Breus; schedules per Mount Sinai's Health Center summary. Photographs from Wikimedia Commons; animal calls are synthesised in your browser, not recordings. If sleep is genuinely a problem, that's a conversation for a clinician rather than a web page.
+  </footer>
+</div>
+
+    <!-- is:inline on purpose: plain DOM IIFE, no imports, must not go through the bundler. -->
+    <script is:inline>
+(function(){
+"use strict";
+
+/* ===== photos (Wikimedia Commons, stable file paths) + drawn fallbacks ===== */
+/* Self-hosted copies of the Wikimedia Commons files (public/test/). `file` keeps the Commons name for attribution. */
+const PHOTO = {
+  lion:{src:"/test/lion.jpg", file:"Lion waiting in Namibia.jpg"},
+  bear:{src:"/test/bear.jpg", file:"2010-brown-bear.jpg"},
+  wolf:{src:"/test/wolf.jpg", file:"Grey wolf P1130270.jpg"},
+  dolphin:{src:"/test/dolphin.jpg", file:"Bottlenose dolphin with young.JPG"}
+};
+const ART = {
+  lion:'<svg viewBox="0 0 120 120">'+
+    (function(){let s="";for(let i=0;i<12;i++){const a=i/12*Math.PI*2;s+='<circle cx="'+(60+Math.cos(a)*29).toFixed(1)+'" cy="'+(60+Math.sin(a)*29).toFixed(1)+'" r="14" fill="#c97f2a"/>';}return s;})()+
+    '<circle cx="60" cy="60" r="30" fill="#f0a537"/><circle cx="44" cy="42" r="8" fill="#e08d2c"/><circle cx="76" cy="42" r="8" fill="#e08d2c"/>'+
+    '<ellipse cx="60" cy="72" rx="17" ry="13" fill="#ffd9a0"/><path d="M52 66 L68 66 L60 74 Z" fill="#3b2412"/>'+
+    '<circle cx="49" cy="54" r="3.4" fill="#3b2412"/><circle cx="71" cy="54" r="3.4" fill="#3b2412"/></svg>',
+  bear:'<svg viewBox="0 0 120 120">'+
+    '<circle cx="34" cy="34" r="15" fill="#8a5730"/><circle cx="34" cy="34" r="7" fill="#c48a5c"/>'+
+    '<circle cx="86" cy="34" r="15" fill="#8a5730"/><circle cx="86" cy="34" r="7" fill="#c48a5c"/>'+
+    '<circle cx="60" cy="64" r="33" fill="#b8763f"/><ellipse cx="60" cy="78" rx="20" ry="15" fill="#e5c39c"/>'+
+    '<ellipse cx="60" cy="70" rx="7" ry="5.5" fill="#3b2412"/>'+
+    '<circle cx="47" cy="56" r="3.6" fill="#3b2412"/><circle cx="73" cy="56" r="3.6" fill="#3b2412"/></svg>',
+  wolf:'<svg viewBox="0 0 120 120">'+
+    '<path d="M30 24 L46 46 L26 54 Z" fill="#6f8398"/><path d="M90 24 L74 46 L94 54 Z" fill="#6f8398"/>'+
+    '<path d="M32 46 Q60 32 88 46 L84 74 L60 96 L36 74 Z" fill="#8fa3b8"/>'+
+    '<path d="M48 70 L72 70 L60 94 Z" fill="#d7e2ec"/><ellipse cx="60" cy="80" rx="5.5" ry="4.2" fill="#22303d"/>'+
+    '<path d="M42 56 L54 59 L42 62 Z" fill="#22303d"/><path d="M78 56 L66 59 L78 62 Z" fill="#22303d"/></svg>',
+  dolphin:'<svg viewBox="0 0 120 120">'+
+    '<path d="M14 62 Q22 34 52 28 Q80 23 104 40 Q92 42 86 50 Q76 74 46 80 Q26 82 14 62 Z" fill="#4fb8e8"/>'+
+    '<path d="M54 30 Q60 14 74 8 Q68 20 68 33 Z" fill="#3a9fd0"/><path d="M16 60 Q6 60 2 48 Q12 54 20 52 Z" fill="#3a9fd0"/>'+
+    '<path d="M30 74 Q48 84 70 62 Q54 78 30 74 Z" fill="#bfe6f7"/><circle cx="88" cy="43" r="3" fill="#123044"/></svg>'
+};
+function photoHTML(key, cls){
+  const T=TYPES[key];
+  return '<div class="photo '+(cls||"")+'" style="--c:'+T.color+'">'+
+    '<img src="'+PHOTO[key].src+'" alt="'+T.name+'" loading="lazy" '+
+    'onerror="this.closest(\'.photo\').classList.add(\'failed\')">'+
+    '<div class="fb">'+ART[key]+'</div></div>';
+}
+
+const TYPES = {
+  lion:{name:"Lion", share:"about 15% of people", color:"#f0a537",
+    desc:"You are up before the building is. Mornings are when your head works best, and by mid-evening you are running on fumes — a feature, not a flaw.",
+    wake:"06:00", peak:"9 AM – 2 PM", bed:"22:00", idealBed:1320, tol:45},
+  bear:{name:"Bear", share:"40–55% of people, the biggest group by far", color:"#b8763f",
+    desc:"You run with the sun and, conveniently, with the working day. Social, steady, and the reason the nine-to-five has the shape it does.",
+    wake:"07:00", peak:"10 AM – 2 PM", bed:"23:00", idealBed:1380, tol:45},
+  wolf:{name:"Wolf", share:"15–30% of people", color:"#8fa3b8",
+    desc:"Your brain switches on when everyone else is winding down. Afternoons and late evenings are your good hours, and every early meeting is a tax you quietly pay.",
+    wake:"07:30", peak:"1 PM – 5 PM", bed:"00:00", idealBed:0, tol:45},
+  dolphin:{name:"Dolphin", share:"10–15% of people", color:"#4fb8e8",
+    desc:"A light, easily broken sleeper. You wake at noises other people sleep through, and often get told you have insomnia when what you have is a nervous system that never fully clocks off.",
+    wake:"06:00", peak:"3 PM – 7 PM", bed:"23:00", idealBed:1380, tol:25}
+};
+
+/* ===== question bank: authored items + slot-generated variants =====
+   Every item is tagged with the dimension it measures, so a session can
+   sample across dimensions instead of asking one thing eight ways.      */
+const DIMS = {
+  timing:"where your clock sits", alert:"when your head works",
+  depth:"how solid your sleep is", arousal:"how easily you settle",
+  flex:"how much your schedule can move", recovery:"what happens when you run short"
+};
+
+const AUTHORED = [
+  {dim:"timing", q:"No alarm, no obligations. When do your eyes open?", a:[
+    ["Around 5 or 6, wide awake",{lion:3}],["Around 7, with the light",{bear:3}],
+    ["Nine or later if nobody stops me",{wolf:3}],["Early — but only because I kept waking up",{dolphin:3}]]},
+  {dim:"timing", q:"Your weekend wake-up compared with your weekday one", a:[
+    ["Same time. My body doesn't do lie-ins",{lion:3}],["An hour later, maybe",{bear:3}],
+    ["Three or four hours later, easily",{wolf:4}],["Same time, and I still feel unrested",{dolphin:3}]]},
+  {dim:"timing", q:"A month with no schedule at all. Your bedtime settles at", a:[
+    ["Nine or ten",{lion:3}],["Around eleven",{bear:3}],
+    ["One or two in the morning",{wolf:4}],["It wouldn't settle. That's the whole problem",{dolphin:4}]]},
+  {dim:"timing", q:"At sunrise you have usually", a:[
+    ["Been up a while",{lion:4}],["Just woken",{bear:3}],
+    ["Been asleep about three hours",{wolf:4}],["Been awake since four",{dolphin:3}]]},
+
+  {dim:"alert", q:"When does your brain actually work?", a:[
+    ["Morning, easily",{lion:3}],["Late morning into afternoon",{bear:3}],
+    ["Early afternoon until evening",{wolf:2,dolphin:1}],["Late afternoon and into the night",{dolphin:2,wolf:2}]]},
+  {dim:"alert", q:"Your first hour awake looks like", a:[
+    ["Sharp straight away. Things get done",{lion:3}],["Slow start, fine by nine",{bear:3}],
+    ["Do not speak to me before noon",{wolf:3}],["Foggy and wired at the same time",{dolphin:3}]]},
+  {dim:"alert", q:"When do your best ideas turn up?", a:[
+    ["In the first hours of the day",{lion:3}],["Somewhere in the middle of the workday",{bear:3}],
+    ["Late, when it's quiet",{wolf:4}],["At 3am, unhelpfully",{dolphin:3}]]},
+  {dim:"alert", q:"The mid-afternoon slump", a:[
+    ["Hits me hard — I'm spent by then",{lion:3}],["A dip, then I come back",{bear:3}],
+    ["Never really noticed one",{wolf:2}],["My whole day is dips and spikes",{dolphin:3}]]},
+  {dim:"alert", q:"Exercise lands best for you", a:[
+    ["Early morning, before anything else",{lion:3}],["Lunchtime or straight after work",{bear:2}],
+    ["Evening. I'm strongest late",{wolf:3}],["Morning, mostly to take the edge off",{dolphin:3}]]},
+
+  {dim:"depth", q:"How would someone describe your sleep?", a:[
+    ["Heavy. Hard to wake me",{lion:2,bear:1}],["Solid most nights",{bear:3}],
+    ["Short on weekdays, long on weekends",{wolf:3}],["Light. Every noise gets through",{dolphin:4}]]},
+  {dim:"depth", q:"Naps?", a:[
+    ["Never need one",{lion:2}],["A dip mid-afternoon sometimes",{bear:2}],
+    ["I can nap late and still sleep fine",{wolf:2}],["I cannot nap. Ever",{dolphin:4}]]},
+  {dim:"depth", q:"You wake up feeling", a:[
+    ["Rested, and early",{lion:3}],["Rested enough",{bear:3}],
+    ["Robbed",{wolf:3}],["Like I never quite went under",{dolphin:4}]]},
+  {dim:"depth", q:"Someone gets up in the night and shuts a door", a:[
+    ["Slept straight through it",{bear:3,lion:1}],["Half-registered it, stayed under",{bear:2,lion:1}],
+    ["Woke, dropped off again quickly",{wolf:2}],["Awake for the next hour",{dolphin:4}]]},
+
+  {dim:"arousal", q:"How do you feel about going to bed?", a:[
+    ["Relieved. I've been fading since eight",{lion:3}],["Neutral. It's just what happens next",{bear:3}],
+    ["Reluctant. The night is the good part",{wolf:3}],["Slightly anxious about whether it'll work",{dolphin:4}]]},
+  {dim:"arousal", q:"I'm often irritable because I'm tired.", fixed:true, a:[
+    ["True",{dolphin:3,wolf:2}],["False",{lion:2,bear:2}]]},
+  {dim:"arousal", q:"I worry about small details.", fixed:true, a:[
+    ["True",{dolphin:4,lion:1}],["False",{bear:2,wolf:2}]]},
+  {dim:"arousal", q:"I check the clock during the night.", fixed:true, a:[
+    ["True",{dolphin:4}],["False",{bear:2,lion:2}]]},
+  {dim:"arousal", q:"My mind gets busiest once the room goes quiet.", fixed:true, a:[
+    ["True",{dolphin:3,wolf:1}],["False",{bear:2,lion:2}]]},
+  {dim:"arousal", q:"Coffee after 4pm", a:[
+    ["Doesn't touch me, I'll sleep anyway",{lion:2,bear:1}],["I'd avoid it, but I'd survive",{bear:2}],
+    ["Irrelevant, I'm up late regardless",{wolf:3}],["Absolutely not. That's the night gone",{dolphin:4}]]},
+
+  {dim:"flex", q:"Alarm clocks", a:[
+    ["I beat mine most days",{lion:4}],["I need it, and it works",{bear:3}],
+    ["Three alarms and a fight",{wolf:4}],["I'm usually awake before it, unhappily",{dolphin:3}]]},
+  {dim:"flex", q:"Deadline tomorrow. Your move", a:[
+    ["Sleep now, start at 5am",{lion:3}],["Normal hours, just tighter",{bear:3}],
+    ["Work until 2am — that's my best window",{wolf:3}],["Pick at it all day and half the night",{dolphin:3}]]},
+  {dim:"flex", q:"Which sentence stings the most?", a:[
+    ["Dinner's at nine",{lion:3}],["The schedule's changed again",{bear:2}],
+    ["The meeting's been moved to eight",{wolf:3}],["Just relax and you'll drop off",{dolphin:4}]]},
+  {dim:"flex", q:"Moving your bedtime two hours for a week would", a:[
+    ["Be miserable, but I'd hold the line",{lion:2}],["Barely register",{bear:3}],
+    ["Suit me fine, if it's later",{wolf:3}],["Take the week apart",{dolphin:4}]]},
+  {dim:"flex", q:"The clocks change on Sunday", a:[
+    ["I feel it for a couple of days",{lion:2}],["Barely notice",{bear:3}],
+    ["The autumn one is a gift",{wolf:3}],["Any change costs me a week",{dolphin:4}]]},
+
+  {dim:"recovery", q:"After a bad night you", a:[
+    ["Get up at the usual time anyway",{lion:3}],["Sleep in a little and recover",{bear:3}],
+    ["Write the morning off",{wolf:3}],["Feel exactly as you always do, which is tired",{dolphin:4}]]},
+  {dim:"recovery", q:"You catch up on sleep by", a:[
+    ["I don't really need to",{lion:3}],["A long weekend lie-in",{bear:3}],
+    ["Sleeping until noon on Saturday",{wolf:4}],["I never manage to catch up",{dolphin:4}]]},
+  {dim:"recovery", q:"Big social dinner starting at 9pm", a:[
+    ["I'll come, but I'll leave early",{lion:3}],["Sounds good, home by midnight",{bear:2}],
+    ["Perfect. That's when I'm fun",{wolf:3}],["I'll go, then lie awake replaying it",{dolphin:3}]]},
+  {dim:"recovery", q:"Two nights of five hours. On day three you are", a:[
+    ["Rough, but I'd hold the routine",{lion:3}],["Flat and slow",{bear:3}],
+    ["Fine. I run on this",{wolf:3}],["No worse than usual",{dolphin:3}]]}
+];
+
+/* Slots carry context and wording only — never anything that changes which
+   answer belongs to which animal, or the item would stop measuring. */
+const TEMPLATES = [
+  {dim:"timing", tpl:"It's {t} on a {n} and nothing is stopping you. You are:",
+   slots:{t:["10pm","half past ten","11pm"], n:["weeknight","Tuesday","work night","ordinary night"]},
+   a:[["Asleep, or close to it",{lion:3}],["Winding down, bed within the hour",{bear:3}],
+      ["Just hitting my stride",{wolf:3}],["In bed, mind speeding up",{dolphin:3}]]},
+
+  {dim:"timing", tpl:"You have to be at the {p} by {e} for a {r}. That morning is:",
+   slots:{p:["airport","station","office","clinic"], e:["5am","half five","six"], r:["flight","meeting","training day"]},
+   a:[["Easy. I'm up before that anyway",{lion:4}],["Fine, with an early night first",{bear:3}],
+      ["Brutal, and I'd feel it all day",{wolf:4}],["I'd lie awake half the night waiting for the alarm",{dolphin:4}]]},
+
+  {dim:"timing", tpl:"On {day} with nothing booked, you'd get up at:",
+   slots:{day:["a Saturday","a bank holiday","the first day of leave","a snowed-in Monday"]},
+   a:[["Six, same as always",{lion:4}],["Seven or eight",{bear:3}],
+      ["Ten, happily",{wolf:4}],["Early, because I'd be awake anyway",{dolphin:3}]]},
+
+  {dim:"alert", tpl:"You get one clear hour for {task}. When do you book it?",
+   slots:{task:["writing","the hard maths","a difficult call","the code that matters","planning the week","the thing you keep avoiding"]},
+   a:[["First thing, before seven",{lion:4}],["Mid-morning",{bear:3}],
+      ["Mid-afternoon",{wolf:2,dolphin:2}],["After everyone else has gone home",{wolf:4}]]},
+
+  {dim:"alert", tpl:"Your sharpest {perform} happens",
+   slots:{perform:["thinking","writing","talking","deciding","problem-solving"]},
+   a:[["Before most people are awake",{lion:4}],["In the working day, middle of it",{bear:3}],
+      ["Late afternoon onwards",{wolf:3}],["In unpredictable bursts",{dolphin:3}]]},
+
+  {dim:"depth", tpl:"You're sleeping at {place} and overnight there's {noise}.",
+   slots:{place:["a friend's flat","a hotel","your parents' house","a hostel","a cabin"],
+          noise:["a slamming door","traffic","someone in the corridor","a dripping tap","a dog barking"]},
+   a:[["I'd sleep straight through",{bear:3,lion:1}],["I'd stir, then go back under",{bear:2,wolf:1}],
+      ["I'd wake late and never know it happened",{wolf:3}],["I'd be awake for the rest of the night",{dolphin:4}]]},
+
+  {dim:"arousal", tpl:"Lights out. The last thing on your mind is {thing}.",
+   slots:{thing:["tomorrow","something you said at lunch","an email you sent","the week ahead","money","a conversation from years ago"]},
+   a:[["Nothing. I'm already gone",{lion:3,bear:1}],["It crosses my mind, then I sleep",{bear:3}],
+      ["Whatever I'm working on — so I get up again",{wolf:3}],["All of it, in detail, for an hour",{dolphin:4}]]},
+
+  {dim:"flex", tpl:"Your team moves the {event} to {early}.",
+   slots:{event:["standup","weekly review","planning session","all-hands"], early:["8am","half seven","half eight"]},
+   a:[["Fine. I'm sharpest then",{lion:4}],["I'd adjust without much fuss",{bear:3}],
+      ["I'd be there in body only",{wolf:4}],["I'd sleep badly the night before it",{dolphin:3}]]},
+
+  {dim:"recovery", tpl:"{n2} nights of short sleep because of {cause}. You are:",
+   slots:{n2:["Two","Three","Four"], cause:["a deadline","travel","noise","a new baby"]},
+   a:[["Rough, but the routine holds",{lion:3}],["Slow, and I need a proper night",{bear:3}],
+      ["Fine. This is roughly my normal",{wolf:3}],["No different from any other week",{dolphin:4}]]}
+];
+
+function shuffle(a){ const x=a.slice(); for(let i=x.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=x[i]; x[i]=x[j]; x[j]=t; } return x; }
+
+function buildBank(){
+  const bank=[];
+  AUTHORED.forEach(function(it,i){ bank.push({id:"a"+i,dim:it.dim,q:it.q,fixed:!!it.fixed,a:it.a}); });
+  TEMPLATES.forEach(function(t,ti){
+    const keys=Object.keys(t.slots);
+    let combos=[[]];
+    keys.forEach(function(k){
+      const next=[];
+      combos.forEach(function(c){ t.slots[k].forEach(function(v){ next.push(c.concat([v])); }); });
+      combos=next;
+    });
+    combos.forEach(function(c,ci){
+      let q=t.tpl;
+      keys.forEach(function(k,ki){ q=q.split("{"+k+"}").join(c[ki]); });
+      bank.push({id:"t"+ti+"-"+ci,dim:t.dim,q:q,fixed:!!t.fixed,a:t.a});
+    });
+  });
+  return bank;
+}
+const BANK=buildBank();
+const QCOUNT=8;
+
+/* stratified draw: rotate through dimensions, never repeat an item you've seen */
+const seen={};
+function drawQuestions(n){
+  const byDim={};
+  BANK.forEach(function(it){ (byDim[it.dim]=byDim[it.dim]||[]).push(it); });
+  const dims=shuffle(Object.keys(byDim));
+  const out=[]; let di=0, guard=0;
+  while(out.length<n && guard++<600){
+    const pool=byDim[dims[di%dims.length]].filter(function(it){
+      return !seen[it.id] && out.indexOf(it)<0;
+    });
+    di++;
+    if(!pool.length) continue;
+    out.push(pool[Math.floor(Math.random()*pool.length)]);
+  }
+  if(out.length<n){                       // bank exhausted — start the rotation again
+    for(const k in seen) delete seen[k];
+    BANK.forEach(function(it){ if(out.length<n && out.indexOf(it)<0) out.push(it); });
+  }
+  out.forEach(function(it){ seen[it.id]=1; });
+  return out.map(function(it){
+    return {id:it.id, dim:it.dim, q:it.q, a:it.fixed ? it.a.slice() : shuffle(it.a)};
+  });
+}
+
+/* ===== sound: synthesised calls, no files ===== */
+const Calls = (function(){
+  let ctx=null, muted=false;
+  function ac(){
+    if(!ctx){ const C=window.AudioContext||window.webkitAudioContext; if(!C) return null; ctx=new C(); }
+    if(ctx.state==="suspended") ctx.resume();
+    return ctx;
+  }
+  function noise(c,dur){
+    const b=c.createBuffer(1, Math.max(1,Math.floor(c.sampleRate*dur)), c.sampleRate);
+    const d=b.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+    const s=c.createBufferSource(); s.buffer=b; return s;
+  }
+  function growl(c,t,opt){
+    const out=c.createGain(); out.connect(c.destination);
+    const lp=c.createBiquadFilter(); lp.type="lowpass";
+    lp.frequency.setValueAtTime(opt.lpf,t); lp.frequency.exponentialRampToValueAtTime(opt.lpf*0.45,t+opt.dur);
+    lp.connect(out);
+    const g=c.createGain(); g.connect(lp);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(opt.gain,t+opt.att);
+    g.gain.setValueAtTime(opt.gain,t+opt.dur*0.6);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+opt.dur);
+    [0,7].forEach(function(det){
+      const o=c.createOscillator(); o.type="sawtooth"; o.detune.value=det;
+      o.frequency.setValueAtTime(opt.f0,t);
+      o.frequency.exponentialRampToValueAtTime(opt.f1,t+opt.dur);
+      o.connect(g); o.start(t); o.stop(t+opt.dur+0.05);
+    });
+    const rasp=c.createOscillator(); rasp.type="square"; rasp.frequency.value=opt.rasp;
+    const rg=c.createGain(); rg.gain.value=opt.raspDepth;
+    rasp.connect(rg); rg.connect(g.gain); rasp.start(t); rasp.stop(t+opt.dur);
+    const n=noise(c,opt.dur), bp=c.createBiquadFilter();
+    bp.type="bandpass"; bp.frequency.value=opt.f0*4; bp.Q.value=0.8;
+    const ng=c.createGain(); ng.gain.setValueAtTime(opt.noise,t);
+    ng.gain.exponentialRampToValueAtTime(0.0001,t+opt.dur);
+    n.connect(bp); bp.connect(ng); ng.connect(lp); n.start(t); n.stop(t+opt.dur);
+  }
+  function howl(c,t){
+    const out=c.createGain(); out.gain.value=0.9; out.connect(c.destination);
+    const dl=c.createDelay(); dl.delayTime.value=0.26;
+    const fb=c.createGain(); fb.gain.value=0.28;
+    dl.connect(fb); fb.connect(dl); dl.connect(out);
+    const g=c.createGain(); g.connect(out); g.connect(dl);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(0.42,t+0.30);
+    g.gain.setValueAtTime(0.42,t+1.45);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+2.35);
+    const o=c.createOscillator(); o.type="sine";
+    o.frequency.setValueAtTime(300,t);
+    o.frequency.exponentialRampToValueAtTime(615,t+0.42);
+    o.frequency.setValueAtTime(615,t+1.25);
+    o.frequency.exponentialRampToValueAtTime(540,t+1.75);
+    o.frequency.exponentialRampToValueAtTime(285,t+2.3);
+    const h=c.createOscillator(); h.type="triangle";
+    h.frequency.setValueAtTime(600,t);
+    h.frequency.exponentialRampToValueAtTime(1230,t+0.42);
+    h.frequency.exponentialRampToValueAtTime(570,t+2.3);
+    const hg=c.createGain(); hg.gain.value=0.14; h.connect(hg); hg.connect(g);
+    const vib=c.createOscillator(); vib.frequency.value=5.4;
+    const vg=c.createGain(); vg.gain.value=9;
+    vib.connect(vg); vg.connect(o.frequency);
+    o.connect(g);
+    [o,h,vib].forEach(function(n){ n.start(t); n.stop(t+2.45); });
+  }
+  function dolphinCall(c,t){
+    const out=c.createGain(); out.gain.value=0.8; out.connect(c.destination);
+    for(let i=0;i<7;i++){
+      const s=t+i*0.045, n=noise(c,0.02), hp=c.createBiquadFilter();
+      hp.type="highpass"; hp.frequency.value=3200;
+      const g=c.createGain();
+      g.gain.setValueAtTime(0.22,s); g.gain.exponentialRampToValueAtTime(0.0001,s+0.02);
+      n.connect(hp); hp.connect(g); g.connect(out); n.start(s); n.stop(s+0.02);
+    }
+    [[0.38,1700,5400,2400,0.62],[1.10,2400,6100,3100,0.5]].forEach(function(w){
+      const s=t+w[0], o=c.createOscillator(), g=c.createGain();
+      o.type="sine";
+      o.frequency.setValueAtTime(w[1],s);
+      o.frequency.exponentialRampToValueAtTime(w[2],s+w[4]*0.45);
+      o.frequency.exponentialRampToValueAtTime(w[3],s+w[4]);
+      const vib=c.createOscillator(); vib.frequency.value=17;
+      const vg=c.createGain(); vg.gain.value=260;
+      vib.connect(vg); vg.connect(o.frequency);
+      g.gain.setValueAtTime(0.0001,s);
+      g.gain.exponentialRampToValueAtTime(0.16,s+0.06);
+      g.gain.exponentialRampToValueAtTime(0.0001,s+w[4]);
+      o.connect(g); g.connect(out);
+      o.start(s); o.stop(s+w[4]+0.05); vib.start(s); vib.stop(s+w[4]+0.05);
+    });
+  }
+  return {
+    play:function(type){
+      if(muted) return;
+      const c=ac(); if(!c) return;
+      const t=c.currentTime+0.05;
+      if(type==="lion") growl(c,t,{f0:150,f1:78,dur:1.9,att:0.14,gain:0.34,rasp:26,raspDepth:0.16,lpf:1100,noise:0.16});
+      else if(type==="bear") growl(c,t,{f0:104,f1:62,dur:1.25,att:0.10,gain:0.32,rasp:44,raspDepth:0.20,lpf:620,noise:0.22});
+      else if(type==="wolf") howl(c,t);
+      else dolphinCall(c,t);
+    },
+    toggle:function(){ muted=!muted; return muted; },
+    muted:function(){ return muted; }
+  };
+})();
+
+/* ===== night model ===== */
+const STAGES={W:{raw:"#6c8299",note:"awake"},N1:{raw:"#ffd166",note:"drifting off"},
+  N2:{raw:"#2ee6a8",note:"light sleep"},N3:{raw:"#47a9f5",note:"deep sleep"},REM:{raw:"#9b8cff",note:"vivid dreaming"}};
+const LEVEL={W:14,REM:36,N1:60,N2:86,N3:112};
+const W=620, PADL=34, PADR=10;
+const REDUCED=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const el=id=>document.getElementById(id);
+const toMin=v=>{const p=v.split(":").map(Number);return p[0]*60+p[1];};
+const fmt=m=>{m=((Math.round(m)%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");};
+const dur=m=>Math.floor(m/60)+"h "+String(Math.round(m)%60).padStart(2,"0")+"m";
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const circDist=(a,b)=>{const d=Math.abs(a-b);return d>720?1440-d:d;};
+const rnd=()=>Math.random()*2-1;
+
+function idealBed(type,age){
+  const drift=clamp((age-20)*1.1,0,75);
+  return ((TYPES[type].idealBed-drift)%1440+1440)%1440;
+}
+function idealSleep(age){ if(age<18)return 505; if(age<25)return 480; if(age<65)return 460; return 435; }
+
+function segments(sleepMin,cycle,type){
+  const k=cycle/90, frag=(type==="dolphin"), segs=[]; let t=0,i=0;
+  while(t<sleepMin && i<14){
+    const dm=frag?0.7:1;
+    const n1=5*k, n3=Math.max(0,35-12*i)*k*dm, rem=Math.min(35,8+9*i)*k;
+    const n2=cycle-n1-n3-rem, n2a=n3>0?n2*0.55:n2*0.6;
+    const order=[["N1",n1],["N2",n2a],["N3",n3],["N2",n2-n2a],["REM",rem]];
+    if(frag&&i>0) order.unshift(["W",4]);
+    for(let j=0;j<order.length;j++){
+      const st=order[j][0], len=order[j][1];
+      if(len<=0.5) continue;
+      if(t>=sleepMin) break;
+      const l=Math.min(len,sleepMin-t);
+      segs.push({stage:st,start:t,len:l}); t+=l;
+    }
+    i++;
+  }
+  return segs;
+}
+
+function evaluate(p){
+  let inBed=(p.wake-p.bed+1440)%1440; if(inBed===0) inBed=1440;
+  const sleep=Math.max(0,inBed-p.lat);
+  const segs=segments(sleep,p.cycle,p.type);
+  const totals={W:0,N1:0,N2:0,N3:0,REM:0};
+  segs.forEach(function(s){ totals[s.stage]+=s.len; });
+  const asleep=sleep-totals.W;
+  const idealDur=idealSleep(p.age), ib=idealBed(p.type,p.age), T=TYPES[p.type];
+  const sLen=asleep<=0?0:(asleep<idealDur
+    ?100*Math.max(0,1-Math.pow((idealDur-asleep)/270,1.6))
+    :100*Math.max(0,1-Math.pow((asleep-idealDur)/300,1.8)));
+  const r=sleep%p.cycle, off=Math.min(r,p.cycle-r);
+  const sAlign=100*(1-off/(p.cycle/2));
+  const clockOff=circDist(p.bed,ib), free=T.tol;
+  const sClock=clockOff<=free?100:100*Math.max(0,1-Math.pow((clockOff-free)/180,1.4));
+  const remTarget=idealDur*0.22;
+  const sRem=100*clamp(totals.REM/remTarget,0,1);
+  const score=Math.round(sLen*0.32+sAlign*0.26+sClock*0.27+sRem*0.15);
+
+  let grade,note;
+  if(score>=85){ grade="A "+T.name.toLowerCase()+"'s night"; note="Long enough, lands on a cycle edge, and sits inside the window your genes asked for."; }
+  else if(score>=70){ grade="Solid night"; note="You'll wake up functional. One lever is off, not three."; }
+  else if(score>=50){ grade="Survivable"; note="Enough to work with, but something here is charging interest."; }
+  else if(score>=30){ grade="Rough"; note="Short, mistimed, or cut mid-cycle. Expect a slow morning."; }
+  else { grade="Brutal"; note="A night you recover from rather than sleep through."; }
+
+  const flags=[];
+  if(asleep<360) flags.push("under six hours actually asleep");
+  if(off>p.cycle/4) flags.push("the alarm fires "+Math.round(r)+" min into cycle "+(Math.floor(sleep/p.cycle)+1)+" instead of at the edge");
+  if(clockOff>free) flags.push("lights out is "+Math.round(clockOff)+" min from your "+T.name.toLowerCase()+" window of "+fmt(ib)+", and only "+free+" of those are free");
+  if(totals.REM<remTarget*0.7&&sleep>60) flags.push("REM is short by "+Math.round(remTarget-totals.REM)+" min — it lives in the cycles you cut");
+  if(totals.W>8) flags.push(Math.round(totals.W)+" min lost to the awakenings dolphins get between cycles");
+
+  return {name:p.name,type:p.type,bed:p.bed,wake:p.wake,lat:p.lat,cycle:p.cycle,inBed:inBed,
+    sleep:sleep,asleep:asleep,segs:segs,totals:totals,score:score,idealBed:ib,idealDur:idealDur,
+    clockOff:clockOff,grade:grade,note:note,flags:flags,cycles:Math.floor(sleep/p.cycle),
+    parts:[
+      {k:"Length",v:sLen,hint:dur(asleep)+" of ~"+dur(idealDur),color:"var(--n2)"},
+      {k:"Cycle fit",v:sAlign,hint:Math.round(off)+" min off a "+p.cycle+"-min edge",color:"var(--n1)"},
+      {k:"Chronotype fit",v:sClock,hint:T.name+" window "+fmt(ib),color:T.color},
+      {k:"Dream time",v:sRem,hint:Math.round(totals.REM)+" min REM of ~"+Math.round(remTarget),color:"var(--rem)"}
+    ]};
+}
+
+/* ===== chrome ===== */
+const sky=el("stars");
+for(let i=0;i<64;i++){
+  const s=document.createElement("i");
+  s.style.left=(Math.random()*100).toFixed(2)+"%";
+  s.style.top=(Math.random()*100).toFixed(2)+"%";
+  s.style.animationDelay=(Math.random()*6).toFixed(2)+"s";
+  sky.appendChild(s);
+}
+const herd=el("herd");
+Object.keys(TYPES).forEach(function(k){
+  const f=document.createElement("figure");
+  f.innerHTML=photoHTML(k)+'<figcaption><b>'+TYPES[k].name+'</b>'+TYPES[k].bed+' – '+TYPES[k].wake+'</figcaption>';
+  const b=document.createElement("button");
+  b.textContent="hear it"; b.addEventListener("click",function(){ Calls.play(k); });
+  f.appendChild(b); herd.appendChild(f);
+});
+
+function showStep(n){
+  for(let i=1;i<=4;i++) el("s"+i).classList.toggle("active",i===n);
+  const rail=el("rail").children;
+  for(let i=0;i<4;i++) rail[i].classList.toggle("on",i<n);
+  window.scrollTo({top:0,behavior:REDUCED?"auto":"smooth"});
+}
+
+/* ===== quiz ===== */
+let deck=[], qi=0, tally={lion:0,bear:0,wolf:0,dolphin:0}, picks=[], myType="bear";
+
+function newDeck(){
+  deck=drawQuestions(QCOUNT);
+  qi=0; tally={lion:0,bear:0,wolf:0,dolphin:0}; picks=[];
+}
+function renderQ(){
+  const q=deck[qi];
+  el("qcount").textContent="Question "+(qi+1)+" of "+deck.length+" \u00b7 "+DIMS[q.dim];
+  el("qtext").textContent=q.q;
+  const box=el("opts"); box.innerHTML="";
+  box.className = q.a.length===2 ? "opts binary" : "opts";
+  q.a.forEach(function(pair,i){
+    const b=document.createElement("button");
+    b.className="opt"; b.textContent=pair[0];
+    b.style.animation="enter "+(220+i*70)+"ms both";
+    b.addEventListener("click",function(){ answer(pair[1]); });
+    box.appendChild(b);
+  });
+  el("back").style.visibility=qi===0?"hidden":"visible";
+}
+function answer(pts){
+  picks[qi]=pts;
+  Object.keys(pts).forEach(function(k){ tally[k]+=pts[k]; });
+  qi++;
+  if(qi<deck.length) renderQ(); else finish();
+}
+el("back").addEventListener("click",function(){
+  if(qi===0) return;
+  qi--;
+  const p=picks[qi]||{};
+  Object.keys(p).forEach(function(k){ tally[k]-=p[k]; });
+  renderQ();
+});
+function startQuiz(){ newDeck(); renderQ(); showStep(2); }
+["begin","restart","redo","redo2"].forEach(function(id){ el(id).addEventListener("click",startQuiz); });
+
+function finish(){
+  const rank=Object.keys(tally).sort(function(a,b){ return tally[b]-tally[a]; });
+  myType=rank[0];
+  const T=TYPES[myType];
+  el("badgeSlot").innerHTML=photoHTML(myType,"badge");
+  el("youAre").textContent="You're a "+T.name;
+  el("youAre").style.color=T.color;
+  el("youShare").textContent=T.share+".";
+  el("youDesc").textContent=T.desc;
+  el("youSched").innerHTML='<div><span>Wake up</span><b>'+T.wake+'</b></div>'+
+    '<div><span>Best hours</span><b>'+T.peak+'</b></div>'+
+    '<div><span>Bedtime</span><b>'+T.bed+'</b></div>';
+  const second=rank[1];
+  let total=0; Object.keys(tally).forEach(function(k){ total+=tally[k]; });
+  const margin=total ? (tally[rank[0]]-tally[second])/total : 0;
+  const pct=function(k){ return total?Math.round(100*tally[k]/total):0; };
+  const level = margin>=0.22 ? "high" : (margin>=0.10 ? "moderate" : "low");
+  el("youRunner").textContent = level==="high"
+    ? "Confidence high — "+pct(rank[0])+"% of your points went to "+T.name.toLowerCase()+", against "+pct(second)+"% for "+TYPES[second].name.toLowerCase()+". "+deck.length+" questions across "+Object.keys(DIMS).length+" areas."
+    : (level==="moderate"
+      ? "Confidence moderate — "+pct(rank[0])+"% "+T.name.toLowerCase()+" against "+pct(second)+"% "+TYPES[second].name.toLowerCase()+". Real enough to act on, close enough to be worth another round."
+      : "Confidence low — "+pct(rank[0])+"% against "+pct(second)+"%. You sit between "+T.name.toLowerCase()+" and "+TYPES[second].name.toLowerCase()+", which is common. Another eight questions would settle it.");
+  el("more").style.display = level==="high" ? "none" : "inline-block";
+  el("credit").innerHTML='Photograph: <a href="https://commons.wikimedia.org/wiki/File:'+
+    encodeURIComponent(PHOTO[myType].file.replace(/ /g,"_"))+'" target="_blank" rel="noopener">'+
+    PHOTO[myType].file+'</a>, Wikimedia Commons. The call is synthesised in your browser.';
+  el("chrono").value=myType;
+  el("bed").value=T.bed;
+  el("wake").value=T.wake;
+  showStep(3);
+  setTimeout(function(){ Calls.play(myType); }, 420);
+}
+el("more").addEventListener("click",function(){
+  drawQuestions(QCOUNT).forEach(function(q){ deck.push(q); });
+  renderQ(); showStep(2);
+});
+el("callAgain").addEventListener("click",function(){ Calls.play(myType); });
+el("muteBtn").addEventListener("click",function(){
+  el("muteBtn").textContent = Calls.toggle() ? "Sound off" : "Mute sound";
+});
+el("toNight").addEventListener("click",function(){ showStep(4); run(true); });
+
+/* ===== drawing ===== */
+function countUp(node,to){
+  if(REDUCED){ node.textContent=Math.round(to); return; }
+  const t0=performance.now();
+  (function s(now){
+    const p=Math.min(1,(now-t0)/1100);
+    node.textContent=Math.round(to*(1-Math.pow(1-p,3)));
+    if(p<1) requestAnimationFrame(s);
+  })(t0);
+}
+const scoreColor=s=>s>=70?"#2ee6a8":(s>=50?"#ffd166":"#ff7a7a");
+
+function cardHTML(d){
+  return '<h2>'+(d.name||"Your night")+'</h2>'+
+  '<p class="share">'+fmt(d.bed)+' \u2192 '+fmt(d.wake)+' \u00b7 '+dur(d.inBed)+' in bed \u00b7 '+dur(d.asleep)+' asleep \u00b7 '+d.cycle+'-min cycles</p>'+
+  '<div class="verdict">'+
+    '<svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="43"></circle>'+
+    '<circle class="prog" cx="50" cy="50" r="43" transform="rotate(-90 50 50)"></circle>'+
+    '<text x="50" y="59" class="tScore">0</text></svg>'+
+    photoHTML(d.type,"mini")+
+    '<div><div class="grade">'+d.grade+'</div><div class="gnote">'+d.note+'</div></div>'+
+  '</div>'+
+  '<div class="hyp"><svg viewBox="0 0 620 150" class="tHypSvg" role="img" aria-label="Sleep stages across the night">'+
+    '<g class="tGrid"></g><g class="tTicks"></g><g class="tSegs"></g><path class="trace tTrace"></path>'+
+    '<g><line class="head" y1="8" y2="146"></line><circle class="headdot" r="3"></circle></g></svg></div>'+
+  '<details><summary>Open the recorder — brain waves, eye movements, muscle tension</summary>'+
+    '<div class="labtop"><button class="play tPlay">Play the night</button>'+
+    '<span class="clockread">Clock <b class="tClock">\u2014</b></span><span class="pill tPill">\u2014</span></div>'+
+    '<canvas class="tCanvas"></canvas>'+
+    '<input type="range" class="scrub tScrub" min="0" max="100" step="0.1" value="0" aria-label="Scrub through the night">'+
+    '<div class="chan"><span><i style="background:var(--eog)"></i>Left eye</span><span><i style="background:var(--eog)"></i>Right eye</span>'+
+    '<span><i style="background:var(--emg)"></i>Muscle tension</span><span><i style="background:var(--eeg)"></i>Brain waves</span></div></details>'+
+  '<div class="split"><svg class="donut" viewBox="0 0 200 200" aria-hidden="true"><g class="tArcs"></g>'+
+    '<text class="big tCycles" x="100" y="97">0</text><text class="small" x="100" y="116">full cycles</text></svg>'+
+    '<ul class="legend tLegend"></ul></div>'+
+  '<div class="bars tBars"></div>'+
+  '<div class="tips"><p class="tLead"></p><div class="chips tChips"></div></div>';
+}
+
+function drawHyp(card,d){
+  const NS="http://www.w3.org/2000/svg";
+  const grid=card.querySelector(".tGrid"), ticks=card.querySelector(".tTicks"),
+        segsG=card.querySelector(".tSegs"), trace=card.querySelector(".tTrace");
+  grid.innerHTML=""; ticks.innerHTML=""; segsG.innerHTML="";
+  const span=W-PADL-PADR;
+  const x=t=>PADL+(d.sleep?(t/d.sleep)*span:0);
+  Object.keys(LEVEL).forEach(function(st){
+    const l=document.createElementNS(NS,"line");
+    l.setAttribute("x1",PADL); l.setAttribute("x2",W-PADR);
+    l.setAttribute("y1",LEVEL[st]); l.setAttribute("y2",LEVEL[st]);
+    l.setAttribute("class","grid"); grid.appendChild(l);
+    const tx=document.createElementNS(NS,"text");
+    tx.setAttribute("x",2); tx.setAttribute("y",LEVEL[st]+3);
+    tx.setAttribute("class","lbl"); tx.textContent=st; grid.appendChild(tx);
+  });
+  for(let c=d.cycle;c<d.sleep;c+=d.cycle){
+    const l=document.createElementNS(NS,"line");
+    l.setAttribute("x1",x(c)); l.setAttribute("x2",x(c));
+    l.setAttribute("y1",8); l.setAttribute("y2",126);
+    l.setAttribute("class","tick"); ticks.appendChild(l);
+    const tl=document.createElementNS(NS,"text");
+    tl.setAttribute("x",x(c)); tl.setAttribute("y",5);
+    tl.setAttribute("class","tlbl"); tl.setAttribute("text-anchor","middle");
+    tl.textContent=fmt(d.bed+d.lat+c); ticks.appendChild(tl);
+  }
+  d.segs.forEach(function(s,i){
+    const r=document.createElementNS(NS,"rect");
+    r.setAttribute("x",x(s.start)); r.setAttribute("y",136);
+    r.setAttribute("width",Math.max(0.6,x(s.start+s.len)-x(s.start)));
+    r.setAttribute("height",9); r.setAttribute("rx",1.5);
+    r.setAttribute("fill",STAGES[s.stage].raw); r.setAttribute("class","seg");
+    r.style.transitionDelay=(i*40)+"ms"; segsG.appendChild(r);
+  });
+  let dd="";
+  d.segs.forEach(function(s,i){
+    const y=LEVEL[s.stage];
+    dd+=(i===0?"M "+x(s.start)+" "+y:" L "+x(s.start)+" "+y);
+    dd+=" L "+x(s.start+s.len)+" "+y;
+  });
+  trace.setAttribute("d",dd||"M "+PADL+" 86");
+  trace.setAttribute("stroke",scoreColor(d.score));
+  const len=trace.getTotalLength();
+  trace.style.transition="none";
+  trace.style.strokeDasharray=len; trace.style.strokeDashoffset=len;
+  void trace.getBoundingClientRect();
+  trace.style.transition="";
+  requestAnimationFrame(function(){
+    trace.style.strokeDashoffset=0;
+    card.querySelector(".hyp").classList.add("go");
+  });
+  return x;
+}
+
+function drawDonut(card,d){
+  const NS="http://www.w3.org/2000/svg", g=card.querySelector(".tArcs");
+  g.innerHTML="";
+  const r=70, C=2*Math.PI*r; let offset=0;
+  ["N1","N2","N3","REM","W"].forEach(function(st,i){
+    const frac=d.sleep?d.totals[st]/d.sleep:0;
+    if(frac<=0) return;
+    const c=document.createElementNS(NS,"circle");
+    c.setAttribute("class","arc"); c.setAttribute("cx",100); c.setAttribute("cy",100); c.setAttribute("r",r);
+    c.setAttribute("stroke",STAGES[st].raw); c.setAttribute("transform","rotate(-90 100 100)");
+    c.style.strokeDasharray="0 "+C; c.style.strokeDashoffset=-offset;
+    c.style.transitionDelay=(i*130)+"ms"; g.appendChild(c);
+    const seg=frac*C;
+    requestAnimationFrame(function(){ c.style.strokeDasharray=Math.max(0,seg-1.5)+" "+C; });
+    offset+=seg;
+  });
+  countUp(card.querySelector(".tCycles"),d.cycles);
+  const ul=card.querySelector(".tLegend"); ul.innerHTML="";
+  ["N3","REM","N2","N1","W"].forEach(function(st){
+    if(d.totals[st]<=0) return;
+    const pct=d.sleep?Math.round(100*d.totals[st]/d.sleep):0;
+    const li=document.createElement("li");
+    li.innerHTML='<span class="dot" style="background:'+STAGES[st].raw+'"></span>'+
+      '<span><b>'+st+'</b><small>'+STAGES[st].note+'</small></span>'+
+      '<span class="amt">'+dur(d.totals[st])+' \u00b7 '+pct+'%</span>';
+    ul.appendChild(li);
+  });
+}
+
+function drawBars(card,d){
+  const box=card.querySelector(".tBars"); box.innerHTML="";
+  d.parts.forEach(function(p,i){
+    const e=document.createElement("div"); e.className="bar";
+    e.innerHTML='<div class="top"><span>'+p.k+'</span><span>'+p.hint+'</span></div>'+
+      '<div class="track2"><div class="fill" style="background:'+p.color+'"></div></div>';
+    box.appendChild(e);
+    const f=e.querySelector(".fill");
+    f.style.transitionDelay=(120+i*130)+"ms";
+    requestAnimationFrame(function(){ f.style.width=clamp(p.v,0,100).toFixed(1)+"%"; });
+  });
+}
+
+function drawTips(card,d){
+  card.querySelector(".tLead").textContent=d.flags.length
+    ? "What's costing points: "+d.flags.join("; ")+"."
+    : "Nothing to fix. Keep this pair.";
+  const chips=card.querySelector(".tChips"); chips.innerHTML="";
+  const opts=[];
+  for(let k=4;k<=6;k++) opts.push({label:"Wake "+fmt(d.bed+d.lat+k*d.cycle)+" ("+k+" cycles)",bed:d.bed,wake:(d.bed+d.lat+k*d.cycle)%1440});
+  const onClock=(d.idealBed+d.lat+Math.round(d.idealDur/d.cycle)*d.cycle)%1440;
+  opts.push({label:"Your window: "+fmt(d.idealBed)+" \u2192 "+fmt(onClock),bed:d.idealBed,wake:onClock});
+  opts.forEach(function(o){
+    const b=document.createElement("button");
+    b.className="chip"; b.textContent=o.label;
+    b.addEventListener("click",function(){ el("bed").value=fmt(o.bed); el("wake").value=fmt(o.wake); run(false); });
+    chips.appendChild(b);
+  });
+}
+
+const CH=[{key:"eogL",name:"Left eye",color:"#c2d95f"},{key:"eogR",name:"Right eye",color:"#c2d95f"},
+          {key:"emg",name:"Muscle",color:"#5aa9e6"},{key:"eeg",name:"Brain",color:"#ff6b6b"}];
+function recorder(card,d,xScale){
+  const cv=card.querySelector(".tCanvas"), ctx=cv.getContext("2d");
+  const scrub=card.querySelector(".tScrub"), pill=card.querySelector(".tPill"),
+        clock=card.querySelector(".tClock"), play=card.querySelector(".tPlay"),
+        head=card.querySelector(".head"), dot=card.querySelector(".headdot");
+  const N=260, buf={};
+  CH.forEach(function(c){ buf[c.key]=new Array(N).fill(0); });
+  const st={ph:0,eye:0,tg:0,hold:0,pos:0,playing:false,last:0};
+  function stageAt(t){
+    for(let i=0;i<d.segs.length;i++){ const s=d.segs[i]; if(t>=s.start&&t<s.start+s.len) return s.stage; }
+    return d.segs.length?d.segs[d.segs.length-1].stage:"N2";
+  }
+  function push(stage){
+    st.ph++; const p=st.ph;
+    let eeg,emg,amp,slow=false,jerk=false;
+    if(stage==="W"){ eeg=0.20*Math.sin(p*2.4)+0.12*rnd(); emg=0.55*rnd(); amp=0.35; }
+    else if(stage==="N1"){ eeg=0.30*Math.sin(p*0.85)+0.10*rnd(); emg=0.30*rnd(); amp=0.40; slow=true; }
+    else if(stage==="N2"){
+      const sp=(p%150)<16?0.45*Math.sin(p*1.5):0, kc=(p%300)<3?-0.8:0;
+      eeg=0.22*Math.sin(p*0.55)+0.08*rnd()+sp+kc; emg=0.22*rnd(); amp=0.05;
+    }
+    else if(stage==="N3"){ eeg=0.85*Math.sin(p*0.16)+0.06*rnd(); emg=0.14*rnd(); amp=0.03; }
+    else { eeg=0.26*Math.sin(p*1.7)+0.14*Math.sin(p*2.9)+0.09*rnd(); emg=0.04*rnd(); amp=0.85; jerk=true; }
+    if(jerk){ if(st.hold<=0){ st.tg=rnd()*amp; st.hold=6+Math.random()*22; } st.hold--; st.eye+=(st.tg-st.eye)*0.35; }
+    else if(slow){ st.eye=amp*Math.sin(p*0.06); }
+    else { st.eye=amp*rnd(); }
+    const put=function(k,v){ buf[k].push(v); buf[k].shift(); };
+    put("eogL",st.eye); put("eogR",st.eye*0.88+0.04*rnd()); put("emg",emg); put("eeg",clamp(eeg,-1.1,1.1));
+  }
+  function paint(){
+    const dpr=window.devicePixelRatio||1, w=cv.clientWidth, h=172;
+    if(!w) return;
+    if(cv.width!==Math.floor(w*dpr)||cv.height!==Math.floor(h*dpr)){ cv.width=Math.floor(w*dpr); cv.height=Math.floor(h*dpr); }
+    ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
+    const left=62, plotW=w-left-6, lane=h/CH.length;
+    ctx.font='11px "Space Grotesk", sans-serif'; ctx.textBaseline="middle";
+    CH.forEach(function(c,i){
+      const mid=lane*i+lane/2;
+      ctx.strokeStyle="rgba(255,255,255,.05)"; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(left,mid); ctx.lineTo(left+plotW,mid); ctx.stroke();
+      ctx.fillStyle="#8aa3b8"; ctx.fillText(c.name,4,mid);
+      ctx.strokeStyle=c.color; ctx.lineWidth=1.4; ctx.beginPath();
+      const b=buf[c.key], A=lane*0.36;
+      for(let j=0;j<N;j++){ const x=left+(j/(N-1))*plotW, y=mid-b[j]*A; if(j===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+      ctx.stroke();
+    });
+  }
+  function frame(now){
+    if(!card.isConnected) return;
+    const dt=Math.min(80,now-(st.last||now)); st.last=now;
+    if(st.playing){
+      st.pos+=(d.sleep/11000)*dt;
+      if(st.pos>=d.sleep){ st.pos=d.sleep; st.playing=false; play.textContent="Replay the night"; }
+      scrub.value=d.sleep?st.pos/d.sleep*100:0;
+    }
+    const stage=stageAt(st.pos);
+    pill.textContent=stage+" \u00b7 "+STAGES[stage].note;
+    pill.style.background=STAGES[stage].raw;
+    clock.textContent=fmt(d.bed+d.lat+st.pos);
+    const px=xScale(st.pos);
+    head.setAttribute("x1",px); head.setAttribute("x2",px);
+    dot.setAttribute("cx",px); dot.setAttribute("cy",LEVEL[stage]);
+    for(let i=0;i<3;i++) push(stage);
+    paint();
+    requestAnimationFrame(frame);
+  }
+  scrub.addEventListener("input",function(){ st.playing=false; play.textContent="Play the night"; st.pos=d.sleep*scrub.value/100; });
+  play.addEventListener("click",function(){ if(st.pos>=d.sleep) st.pos=0; st.playing=!st.playing; play.textContent=st.playing?"Pause":"Play the night"; });
+  card.querySelector(".tHypSvg").addEventListener("click",function(e){
+    const r=e.currentTarget.getBoundingClientRect();
+    const frac=clamp((((e.clientX-r.left)/r.width*W)-PADL)/(W-PADL-PADR),0,1);
+    st.playing=false; play.textContent="Play the night"; st.pos=frac*d.sleep; scrub.value=frac*100;
+  });
+  requestAnimationFrame(frame);
+}
+
+function paintCard(host,d){
+  host.innerHTML=cardHTML(d);
+  const prog=host.querySelector(".prog"), C=2*Math.PI*43;
+  prog.style.strokeDasharray=C; prog.style.strokeDashoffset=C;
+  prog.setAttribute("stroke",scoreColor(d.score));
+  requestAnimationFrame(function(){ prog.style.strokeDashoffset=C*(1-d.score/100); });
+  countUp(host.querySelector(".tScore"),d.score);
+  const x=drawHyp(host,d);
+  drawDonut(host,d); drawBars(host,d); drawTips(host,d); recorder(host,d,x);
+}
+
+/* ===== run ===== */
+el("lat").addEventListener("input",function(){ el("latV").textContent=el("lat").value; });
+el("cyc").addEventListener("input",function(){ el("cycV").textContent=el("cyc").value; });
+
+let mine=null;
+function run(withSound){
+  if(!el("bed").value||!el("wake").value) return;
+  const d=evaluate({
+    name:"Your night", type:el("chrono").value,
+    bed:toMin(el("bed").value), wake:toMin(el("wake").value),
+    lat:Number(el("lat").value), cycle:Number(el("cyc").value),
+    age:clamp(Number(el("age").value)||32,10,95)
+  });
+  mine=d;
+  const T=TYPES[d.type];
+  el("windowLine").innerHTML=T.name+", age "+el("age").value+": your window opens near <b style="+'"color:'+T.color+'"'+">"+fmt(d.idealBed)+
+    "</b> and you need about <b>"+dur(d.idealDur)+"</b>. You can push it "+T.tol+" minutes either way before it stops being your clock.";
+  paintCard(el("card"),d);
+  const onClock=(d.idealBed+d.lat+Math.round(d.idealDur/d.cycle)*d.cycle)%1440;
+  el("challengeLine").textContent="Hold "+fmt(d.idealBed)+" to "+fmt(onClock)+" for seven nights, then judge it. Tap a night once you've made it.";
+  buildWeek();
+  el("banner").className="banner";
+  if(withSound) setTimeout(function(){ Calls.play(d.type); },700);
+}
+["bed","wake","age","chrono","lat","cyc"].forEach(function(id){ el(id).addEventListener("change",function(){ run(false); }); });
+
+function buildWeek(){
+  const w=el("week"); if(w.dataset.built) return;
+  w.dataset.built="1";
+  for(let i=1;i<=7;i++){
+    const b=document.createElement("button");
+    b.className="night"; b.textContent="Night "+i;
+    b.addEventListener("click",function(){ b.classList.toggle("done"); });
+    w.appendChild(b);
+  }
+}
+
+el("fight").addEventListener("click",function(){
+  if(!mine) return;
+  const them=evaluate({
+    name:el("cName").value.trim()||"Colleague", type:el("cChrono").value,
+    bed:toMin(el("cBed").value), wake:toMin(el("cWake").value),
+    lat:Number(el("lat").value), cycle:Number(el("cyc").value),
+    age:clamp(Number(el("cAge").value)||29,10,95)
+  });
+  const b=el("banner"), diff=mine.score-them.score;
+  let msg, winnerType=null;
+  if(diff===0){
+    msg="<b>Dead heat at "+mine.score+".</b> Two different animals, identical damage.";
+  } else {
+    const win=diff>0?mine:them, lose=diff>0?them:mine;
+    const wn=diff>0?"You":them.name, ln=diff>0?them.name:"you";
+    winnerType=win.type;
+    const remGap=win.totals.REM-lose.totals.REM, n3Gap=win.totals.N3-lose.totals.N3;
+    const edge=Math.abs(remGap)>Math.abs(n3Gap)
+      ? Math.round(Math.abs(remGap))+" more minutes of REM"
+      : Math.round(Math.abs(n3Gap))+" more minutes of deep sleep";
+    msg="<b>"+wn+" win"+(diff>0?"":"s")+" by "+Math.abs(diff)+" points \u2014 "+win.score+" to "+lose.score+".</b> "+
+      dur(win.asleep)+" asleep against "+dur(lose.asleep)+", "+edge+", and "+
+      Math.round(win.clockOff)+" min off their own window against "+Math.round(lose.clockOff)+" for "+ln+".";
+  }
+  b.innerHTML=msg; b.className="banner show";
+  if(winnerType) setTimeout(function(){ Calls.play(winnerType); },300);
+});
+
+el("bankSize").textContent=BANK.length.toLocaleString();
+newDeck(); renderQ();
+})();
+    </script>
+  </body>
+</html>
