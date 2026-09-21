@@ -1,0 +1,69 @@
+---
+const title = 'IA Lab'
+const description = 'Interactive AI Lab'
+const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '')
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style is:global>
+      html {
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        overflow: hidden;
+      }
+      body {
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        overflow: hidden;
+        background: #fff;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      /* Hide Google Apps Script warning banner */
+      div[role="banner"] {
+        display: none !important;
+      }
+      /* Alternative selector if the above doesn't work */
+      [aria-label*="created by a Google"] {
+        display: none !important;
+      }
+      iframe {
+        width: 100vw;
+        height: 100vh;
+        border: none;
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <iframe
+      src="https://script.google.com/macros/s/AKfycbwNwQFYzIBH4ruGd9j0x-SC6bIflOmGxDHNk0bcFWFdJbnonO92QVs8XZFPTQH_myfp/exec"
+      title="IA Lab"
+      allow="camera;microphone;geolocation"
+    ></iframe>
+  </body>
+</html>
