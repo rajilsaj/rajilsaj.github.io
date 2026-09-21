@@ -1,0 +1,41 @@
+---
+import Layout from '~/layouts/Layout.astro'
+---
+
+<Layout title="Tax Forms" description="A practical guide to W-2, 1099, and tax implications for different work arrangements.">
+  <header class="mb-10">
+    <h1 class="text-2xl font-semibold tracking-tight text-heading1 sm:text-3xl">
+      What the tax forms mean in practice
+    </h1>
+  </header>
+
+  <div class="prose prose-invert max-w-prose space-y-6">
+    <section>
+      <h2 class="text-lg font-semibold text-foreground">W-2 (only the full-time job)</h2>
+      <p class="text-foreground/80">
+        Your employer withholds income tax and pays half of your Social Security and Medicare. You do nothing until you file in the spring.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-lg font-semibold text-foreground">1099 (almost everything else)</h2>
+      <p class="text-foreground/80">
+        Nobody withholds anything, so you're responsible for both income tax and self-employment tax, which runs 15.3% of net self-employment earnings. That self-employment tax generally kicks in once your self-employed work totals $400 or more for the year. You're also expected to pay in quarterly estimates rather than one lump sum in April. A common rule of thumb is to move 25–30% of every payment into a separate account the day it arrives. The upside is that you can deduct legitimate business expenses (software, hosting, part of your equipment) before the tax is calculated. North Carolina state income tax applies on top of the federal amount.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-lg font-semibold text-foreground">No form (the trap)</h2>
+      <p class="text-foreground/80">
+        This is the trap. The threshold for a platform or client to send you a 1099-NEC rose from $600 to $2,000 for payments made starting January 1, 2026, and foreign clients send no US form at all. But income is taxable whether or not it triggers a form. A client in Brazzaville paying you by wire is taxed exactly like a client in Charlotte. Keep your own records of every payment.
+      </p>
+    </section>
+
+    <section class="border-t border-separator pt-6 mt-8">
+      <h2 class="text-base font-semibold text-foreground">Important: visa and tax residency</h2>
+      <p class="text-sm text-foreground/70">
+        One important condition on all of the above: it assumes you're a US tax resident with unrestricted work authorization. If you're in the US on a visa, two things can change. First, some visa categories restrict freelance and self-employed work, which would rule out most of this tree regardless of tax, so check that before signing up anywhere. Second, your tax residency status may differ, which changes which taxes apply. I'm not a tax advisor, and with mixed W-2, 1099, and foreign income, an hour with a CPA or a free VITA tax clinic in your first year is worth it.
+      </p>
+    </section>
+  </div>
+</Layout>

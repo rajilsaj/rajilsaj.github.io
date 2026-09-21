@@ -32,7 +32,7 @@ const config: SiteConfig = {
   trailingSlashes: false,
   // The navigation links to display in the header.
   // Only About Me + Blog show in the menu. The other pages (projects, reading,
-  // lenscape, contact) still exist and are reachable by URL — just hidden here.
+  // contact) still exist and are reachable by URL — just hidden here.
   navLinks: [
     {
       name: 'Blog',
