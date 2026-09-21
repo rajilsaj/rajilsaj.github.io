@@ -1,41 +1,245 @@
 ---
 import Layout from '~/layouts/Layout.astro'
+
+const platforms = {
+  'DataAnnotation': 'https://www.dataannotation.tech',
+  'Outlier': 'https://www.outlier.ai',
+  'Mercor': 'https://www.mercor.io',
+  'Alignerr': 'https://www.alignerr.com',
+  'TELUS Digital': 'https://www.telus.com/en/digital',
+  'Appen': 'https://www.appen.com',
+  'Wyzant': 'https://www.wyzant.com',
+  'Codementor': 'https://www.codementor.io',
+  'Superprof': 'https://www.superprof.com',
+  'Preply': 'https://preply.com',
+  'Draft.dev': 'https://draft.dev',
+  'LogRocket': 'https://logrocket.com/blog',
+  'Smashing Magazine': 'https://www.smashingmagazine.com/write-for-us',
+  'Upwork': 'https://www.upwork.com',
+  'Arc': 'https://arc.dev',
+  'Braintrust': 'https://www.braintrust.com',
+  'Turing': 'https://www.turing.com',
+  'Gun.io': 'https://gun.io',
+  'Toptal': 'https://www.toptal.com',
+  'LinkedIn': 'https://www.linkedin.com',
+  'Wellfound': 'https://wellfound.com',
+  'YC Work at a Startup': 'https://www.ycombinator.com/jobs',
+  'We Work Remotely': 'https://weworkremotely.com',
+  'Malt': 'https://www.malt.com',
+  'Algora': 'https://algora.io',
+  'IssueHunt': 'https://issuehunt.io',
+  'GitHub': 'https://github.com',
+  'HackerOne': 'https://hackerone.com',
+  'Bugcrowd': 'https://www.bugcrowd.com',
+  'YesWeHack': 'https://www.yeswehack.com',
+  'Intigriti': 'https://www.intigriti.com',
+  'Gumroad': 'https://gumroad.com',
+  'Lemon Squeezy': 'https://www.lemonsqueezy.com',
+}
+
+const sections = [
+  {
+    num: 1,
+    title: 'AI training work',
+    timeframe: 'Days to 2 weeks',
+    items: [
+      {
+        name: 'Code evaluation tasks',
+        desc: 'skills test replaces experience',
+        tax: '1099',
+        platforms: ['DataAnnotation', 'Outlier', 'Mercor', 'Alignerr']
+      },
+      {
+        name: 'French-language tasks',
+        desc: 'fluency is the requirement',
+        tax: '1099',
+        platforms: ['Outlier', 'TELUS Digital', 'Appen']
+      }
+    ]
+  },
+  {
+    num: 2,
+    title: 'Teaching and writing',
+    timeframe: '1–3 weeks',
+    items: [
+      {
+        name: 'Online tutoring',
+        desc: 'degree counts as proof',
+        tax: '1099',
+        platforms: ['Wyzant', 'Codementor', 'Superprof', 'Preply']
+      },
+      {
+        name: 'Paid tech articles',
+        desc: 'writing samples matter most',
+        tax: '1099',
+        platforms: ['Draft.dev', 'LogRocket', 'Smashing Magazine']
+      }
+    ]
+  },
+  {
+    num: 3,
+    title: 'Remote work',
+    timeframe: '2–8 weeks',
+    items: [
+      {
+        name: 'Niche Upwork profile',
+        desc: 'portfolio beats years',
+        tax: '1099',
+        platforms: ['Upwork']
+      },
+      {
+        name: 'Contract marketplaces',
+        desc: 'strictest experience filters',
+        tax: '1099',
+        platforms: ['Arc', 'Braintrust', 'Turing', 'Gun.io', 'Toptal']
+      },
+      {
+        name: 'Full-time remote job',
+        desc: 'remote roles skew senior',
+        tax: 'W-2',
+        platforms: ['LinkedIn', 'Wellfound', 'YC Work at a Startup', 'We Work Remotely']
+      }
+    ]
+  },
+  {
+    num: 4,
+    title: 'Freelance clients',
+    timeframe: '1–3 months',
+    items: [
+      {
+        name: 'Productized service',
+        desc: '2–3 past projects to show',
+        tax: '1099',
+        platforms: []
+      },
+      {
+        name: 'Francophone market',
+        desc: 'trust outweighs years',
+        tax: 'No form',
+        platforms: ['Malt']
+      },
+      {
+        name: 'High-demand fields',
+        desc: 'newer field, lower bar',
+        tax: '1099',
+        platforms: []
+      }
+    ]
+  },
+  {
+    num: 5,
+    title: 'Bounties',
+    timeframe: 'Weeks to months, uneven',
+    items: [
+      {
+        name: 'Open-source bounties',
+        desc: 'no gatekeeper, code decides',
+        tax: '1099',
+        platforms: ['Algora', 'IssueHunt', 'GitHub']
+      },
+      {
+        name: 'Bug bounties',
+        desc: 'open signup, long ramp',
+        tax: '1099',
+        platforms: ['HackerOne', 'Bugcrowd', 'YesWeHack', 'Intigriti']
+      }
+    ]
+  },
+  {
+    num: 6,
+    title: 'Own products',
+    timeframe: '6–12+ months',
+    items: [
+      {
+        name: 'Marketplace plugins',
+        desc: 'nobody checks your resume',
+        tax: 'Business income',
+        platforms: ['Gumroad', 'Lemon Squeezy']
+      },
+      {
+        name: 'Templates and kits',
+        desc: 'quality is the only filter',
+        tax: 'Business income',
+        platforms: ['Gumroad', 'Lemon Squeezy']
+      },
+      {
+        name: 'SaaS product',
+        desc: 'sales skill matters more',
+        tax: 'Business income',
+        platforms: []
+      }
+    ]
+  }
+]
 ---
 
-<Layout title="Tax Forms" description="A practical guide to W-2, 1099, and tax implications for different work arrangements.">
-  <header class="mb-10">
+<Layout title="Online Income Tree" description="Ranked paths to online income for software engineers, with experience requirements and US tax implications.">
+  <header class="mb-12">
     <h1 class="text-2xl font-semibold tracking-tight text-heading1 sm:text-3xl">
-      What the tax forms mean in practice
+      Online Income Tree
     </h1>
+    <p class="mt-2 text-foreground/60">
+      Ranked by time-to-income and experience needed. Every path is taxable.
+    </p>
   </header>
 
-  <div class="prose prose-invert max-w-prose space-y-6">
-    <section>
-      <h2 class="text-lg font-semibold text-foreground">W-2 (only the full-time job)</h2>
-      <p class="text-foreground/80">
-        Your employer withholds income tax and pays half of your Social Security and Medicare. You do nothing until you file in the spring.
-      </p>
-    </section>
+  <div class="space-y-8">
+    {sections.map((section) => (
+      <section class="border-t border-separator pt-6">
+        <div class="flex items-baseline gap-3 mb-6">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full border border-separator bg-foreground/5 font-semibold text-foreground">
+            {section.num}
+          </div>
+          <h2 class="text-lg font-semibold text-heading2">{section.title}</h2>
+          <span class="text-xs font-mono text-foreground/50 ml-auto">{section.timeframe}</span>
+        </div>
 
-    <section>
-      <h2 class="text-lg font-semibold text-foreground">1099 (almost everything else)</h2>
-      <p class="text-foreground/80">
-        Nobody withholds anything, so you're responsible for both income tax and self-employment tax, which runs 15.3% of net self-employment earnings. That self-employment tax generally kicks in once your self-employed work totals $400 or more for the year. You're also expected to pay in quarterly estimates rather than one lump sum in April. A common rule of thumb is to move 25–30% of every payment into a separate account the day it arrives. The upside is that you can deduct legitimate business expenses (software, hosting, part of your equipment) before the tax is calculated. North Carolina state income tax applies on top of the federal amount.
-      </p>
-    </section>
+        <div class="ml-11 space-y-6">
+          {section.items.map((item) => (
+            <div class="border-l border-separator/50 pl-4">
+              <h3 class="font-semibold text-foreground mb-1">{item.name}</h3>
+              <p class="text-sm text-foreground/60 mb-3">{item.desc}</p>
 
-    <section>
-      <h2 class="text-lg font-semibold text-foreground">No form (the trap)</h2>
-      <p class="text-foreground/80">
-        This is the trap. The threshold for a platform or client to send you a 1099-NEC rose from $600 to $2,000 for payments made starting January 1, 2026, and foreign clients send no US form at all. But income is taxable whether or not it triggers a form. A client in Brazzaville paying you by wire is taxed exactly like a client in Charlotte. Keep your own records of every payment.
-      </p>
-    </section>
+              <div class="flex flex-wrap items-center gap-2 mb-3">
+                <span class={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-mono ${
+                  item.tax === 'W-2' ? 'bg-blue/10 text-blue' :
+                  item.tax === 'No form' ? 'bg-warning/10 text-warning' :
+                  'bg-accent/10 text-accent'
+                }`}>
+                  📋 {item.tax}
+                </span>
+              </div>
 
-    <section class="border-t border-separator pt-6 mt-8">
-      <h2 class="text-base font-semibold text-foreground">Important: visa and tax residency</h2>
-      <p class="text-sm text-foreground/70">
-        One important condition on all of the above: it assumes you're a US tax resident with unrestricted work authorization. If you're in the US on a visa, two things can change. First, some visa categories restrict freelance and self-employed work, which would rule out most of this tree regardless of tax, so check that before signing up anywhere. Second, your tax residency status may differ, which changes which taxes apply. I'm not a tax advisor, and with mixed W-2, 1099, and foreign income, an hour with a CPA or a free VITA tax clinic in your first year is worth it.
-      </p>
-    </section>
+              {item.platforms.length > 0 && (
+                <div class="flex flex-wrap gap-2">
+                  {item.platforms.map((platform, idx) => (
+                    <a
+                      href={platforms[platform] || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center gap-1.5 rounded-md border border-separator bg-foreground/[0.03] px-2.5 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-accent/40 hover:bg-accent/5 hover:text-accent no-underline"
+                    >
+                      <span class="font-mono text-foreground/50">{idx + 1}</span>
+                      {platform}
+                      <span class="text-foreground/30">→</span>
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    ))}
   </div>
+
+  <section class="mt-12 border-t border-separator pt-6">
+    <h2 class="text-base font-semibold text-heading2 mb-3">About taxes</h2>
+    <div class="space-y-3 text-sm text-foreground/70">
+      <p><strong class="text-foreground">W-2:</strong> Employer withholds income tax and pays half of Social Security and Medicare. You file in spring.</p>
+      <p><strong class="text-foreground">1099:</strong> You're responsible for income tax and self-employment tax (15.3%). Pay quarterly. Set aside 25–30% of each payment. Deduct business expenses before calculation.</p>
+      <p><strong class="text-foreground">No form:</strong> The $2,000 threshold trap—foreign clients send nothing. Income is taxable whether or not you get a form. Keep your own records.</p>
+      <p class="pt-3 text-xs text-foreground/50"><strong>Note:</strong> This assumes US tax residency with unrestricted work authorization. Visa restrictions may apply. Consult a CPA for mixed income.</p>
+    </div>
+  </section>
 </Layout>
