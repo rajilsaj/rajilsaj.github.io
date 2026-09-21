@@ -1,0 +1,56 @@
+{
+  "title": "Filtre & Sélection — Google Apps Script",
+  "version": "2.0",
+  "description": "Web app for candidate selection with Google authentication, decision tracking, and comments",
+  "deployment": {
+    "type": "Web app",
+    "executeAs": "User accessing the web app",
+    "access": "Anyone with a Google account"
+  },
+  "configuration": {
+    "adminEmails": ["svembe@gmail.com"],
+    "defaultReviewers": ["perseval@gmail.com", "guytiburce2007@gmail.com", "fabimay@gmail.com"],
+    "adminsCanOverride": true,
+    "defaultSourceUrl": "https://docs.google.com/spreadsheets/d/1bDNHIaswXofSMkQfF4ZwBAbVJ-KCLMC-x1RkpNznZeg/edit?usp=sharing",
+    "defaultTarget": 500,
+    "appTitle": "Filtre & Sélection",
+    "tabs": {
+      "selected": "Sélectionnés",
+      "rejected": "Non sélectionnés",
+      "comments": "Commentaires",
+      "list": "Candidats"
+    },
+    "columns": {
+      "row": "Ligne source",
+      "reason": "Motif de non-sélection",
+      "opinion": "Avis",
+      "evaluatedBy": "Évalué par",
+      "date": "Date de décision"
+    },
+    "defaultReasons": [
+      "Hors tranche d'âge (18–40 ans)",
+      "Dossier incomplet",
+      "CV manquant ou illisible",
+      "Hors zone de formation",
+      "Doublon de candidature",
+      "Profil non prioritaire pour cette session"
+    ]
+  },
+  "functions": {
+    "entry": ["doGet"],
+    "authentication": ["currentUser_", "requireUser_", "bootstrap"],
+    "views": ["getViews_", "saveViews"],
+    "settings": ["getConfig_", "getUsers_", "saveSettings", "shareWith_", "ensureSharing_"],
+    "lists": ["ensureDest_", "initialize", "reimportList", "importList_"],
+    "data": ["loadData", "tableFromSheet_", "loadViaCsv_", "buildTable_"],
+    "decisions": ["decisionHeaders_", "prepareDecisionTabs_", "readDecisions_", "saveDecisions"],
+    "comments": ["commentsSheet_", "readComments_", "addComment"],
+    "utilities": ["parseSheetUrl_", "rowKey_", "normalizeKey_", "removeKeys_"]
+  },
+  "keyFeature": "setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL) added to doGet() to enable iframe embedding",
+  "iframeSetup": {
+    "enabled": true,
+    "location": "doGet() function, line 72",
+    "purpose": "Allows the web app to be embedded in an iframe on rajil.me/ialab"
+  }
+}
