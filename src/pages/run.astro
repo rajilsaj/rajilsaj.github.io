@@ -1,16 +1,19 @@
 ---
-import { runsByDay, runTotals, toSec, fmtDuration, fmtPace, fmtDate, type DayRun } from '~/data/runs'
+import { runsByDay, runTotals, weightsByDate, weightOn, toSec, fmtDuration, fmtPace, fmtDate } from '~/data/runs'
 
 const title = 'Running log'
-const description = 'Day-by-day running performance'
+const description = 'Day-by-day running and weight tracker'
 const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '')
 
 const byDay = runsByDay() // oldest → newest, Day 1 first
-const sorted: DayRun[] = [...byDay].reverse() // newest first for the cards
-const { count, totalMi, totalSec, totalElev, totalCal, avgHr, avgPaceSec, longest, fastest, first } = runTotals()
-const avgPace = totalMi > 0 ? fmtPace(avgPaceSec) : '–'
+const { count, totalMi, totalSec, avgPaceSec, first } = runTotals()
 
-// change vs the previous day, for the tracker table
+const weightLog = weightsByDate()
+const latestWeight = weightLog[weightLog.length - 1] ?? null
+const firstWeight = weightLog[0] ?? null
+const weightChange = latestWeight && firstWeight && latestWeight !== firstWeight ? latestWeight.lb - firstWeight.lb : null
+
+// change vs the previous run day
 type Delta = { text: string; dir: 'up' | 'down' | 'flat' } | null
 const delta = (cur: number | undefined, prev: number | undefined, fmt: (n: number) => string, lowerIsBetter = false): Delta => {
   if (cur == null || prev == null) return null
@@ -19,23 +22,10 @@ const delta = (cur: number | undefined, prev: number | undefined, fmt: (n: numbe
   const better = lowerIsBetter ? d < 0 : d > 0
   return { text: `${d > 0 ? '+' : '−'}${fmt(Math.abs(d))}`, dir: better ? 'up' : 'down' }
 }
+const signed = (n: number, unit: string) => `${n > 0 ? '+' : '−'}${Math.abs(n).toFixed(1)} ${unit}`
 
-type Metric = { label: string; value: string; unit?: string; color: string }
-const metricsFor = (r: DayRun): Metric[] => {
-  const m: Metric[] = [
-    { label: 'Workout Time', value: r.workoutTime, color: 'yellow' },
-  ]
-  if (r.elapsedTime) m.push({ label: 'Elapsed Time', value: r.elapsedTime, color: 'yellow' })
-  m.push({ label: 'Distance', value: r.distanceMi.toFixed(2), unit: 'MI', color: 'blue' })
-  if (r.activeCal) m.push({ label: 'Active Calories', value: String(r.activeCal), unit: 'CAL', color: 'red' })
-  if (r.totalCal) m.push({ label: 'Total Calories', value: String(r.totalCal), unit: 'CAL', color: 'red' })
-  if (r.elevationFt != null) m.push({ label: 'Elevation Gain', value: String(r.elevationFt), unit: 'FT', color: 'green' })
-  if (r.avgPowerW) m.push({ label: 'Avg. Power', value: String(r.avgPowerW), unit: 'W', color: 'lime' })
-  if (r.avgCadenceSpm) m.push({ label: 'Avg. Cadence', value: String(r.avgCadenceSpm), unit: 'SPM', color: 'cyan' })
-  m.push({ label: 'Avg. Pace', value: fmtPace(toSec(r.avgPace)), unit: '/MI', color: 'cyan' })
-  if (r.avgHrBpm) m.push({ label: 'Avg. Heart Rate', value: String(r.avgHrBpm), unit: 'BPM', color: 'orange' })
-  return m
-}
+// previous logged weight before a given run date (so weight deltas work across rest-day weigh-ins)
+const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => w.date < date)?.lb
 ---
 
 <!doctype html>
@@ -56,7 +46,6 @@ const metricsFor = (r: DayRun): Metric[] => {
       :root {
         --bg: #000;
         --card: #1c1c1e;
-        --card-2: #2c2c2e;
         --line: #3a3a3c;
         --text: #fff;
         --muted: #8e8e93;
@@ -64,9 +53,9 @@ const metricsFor = (r: DayRun): Metric[] => {
         --blue: #0a84ff;
         --red: #ff375f;
         --green: #30d158;
-        --lime: #c8f542;
         --cyan: #5ac8fa;
         --orange: #ff6b3d;
+        --purple: #bf5af2;
       }
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html { background: var(--bg); color: var(--text); -webkit-text-size-adjust: 100%; }
@@ -77,56 +66,40 @@ const metricsFor = (r: DayRun): Metric[] => {
       }
       main { max-width: 760px; margin: 0 auto; padding: 28px 16px 60px; }
 
-      header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+      header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
       .badge {
-        width: 56px; height: 56px; border-radius: 50%;
+        width: 52px; height: 52px; border-radius: 50%;
         background: radial-gradient(circle at 30% 30%, #b8ff3a, #5c8a00);
-        display: grid; place-items: center; font-size: 28px; flex: none;
+        display: grid; place-items: center; font-size: 26px; flex: none;
         box-shadow: 0 0 24px rgba(184, 255, 58, 0.25);
       }
-      h1 { font-size: 1.9rem; font-weight: 800; letter-spacing: -0.02em; }
+      h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; }
       header p { color: var(--muted); font-size: 0.95rem; margin-top: 2px; }
-
-      h2 { font-size: 1.35rem; font-weight: 700; margin: 26px 0 12px; }
+      h2 { font-size: 1.2rem; font-weight: 700; margin: 26px 0 10px; }
 
       .summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      @media (min-width: 560px) { .summary { grid-template-columns: repeat(3, 1fr); } }
+      @media (min-width: 560px) { .summary { grid-template-columns: repeat(4, 1fr); } }
       .tile { background: var(--card); border-radius: 14px; padding: 14px 16px; }
-      .tile .label { color: var(--muted); font-size: 0.85rem; font-weight: 600; }
-      .tile .value { font-size: 1.7rem; font-weight: 700; letter-spacing: -0.02em; margin-top: 2px; }
+      .tile .label { color: var(--muted); font-size: 0.82rem; font-weight: 600; }
+      .tile .value { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; margin-top: 2px; white-space: nowrap; }
       .tile .value small { font-size: 0.6em; margin-left: 2px; }
       .tile .sub { color: var(--muted); font-size: 0.8rem; margin-top: 2px; }
 
-      .run { background: var(--card); border-radius: 18px; overflow: hidden; margin-bottom: 14px; }
-      .run-head { padding: 16px 18px 12px; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-      .run-head h3 { font-size: 1.15rem; font-weight: 700; }
-      .run-head .meta { color: var(--muted); font-size: 0.9rem; }
-      .run-head .meta span + span::before { content: ' · '; }
-      .metrics { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); }
-      @media (min-width: 560px) { .metrics { grid-template-columns: repeat(3, 1fr); } }
-      @media (min-width: 720px) { .metrics { grid-template-columns: repeat(5, 1fr); } }
-      .metric { padding: 12px 18px; border-bottom: 1px solid var(--line); }
-      .metric .label { color: var(--text); font-size: 0.85rem; opacity: 0.85; }
-      .metric .value { font-size: 1.55rem; font-weight: 700; letter-spacing: -0.02em; margin-top: 1px; white-space: nowrap; }
-      .metric .value small { font-size: 0.6em; font-weight: 700; margin-left: 1px; }
-      .yellow { color: var(--yellow); } .blue { color: var(--blue); } .red { color: var(--red); }
-      .green { color: var(--green); } .lime { color: var(--lime); } .cyan { color: var(--cyan); } .orange { color: var(--orange); }
-      .notes { padding: 10px 18px 14px; color: var(--muted); font-size: 0.9rem; }
-      .empty { color: var(--muted); padding: 24px; text-align: center; }
-      .lead { color: var(--muted); font-size: 0.9rem; margin: -6px 0 12px; }
-      .day { color: var(--muted); font-weight: 600; font-size: 0.85em; margin-right: 6px; }
-
-      .table-wrap { background: var(--card); border-radius: 18px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 0.92rem; }
+      .table-wrap { background: var(--card); border-radius: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 0.95rem; }
       th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: top; }
-      th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+      th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
       tr:last-child td { border-bottom: none; }
-      td span:first-child { font-weight: 700; font-size: 1.05rem; }
+      td .v { font-weight: 700; font-size: 1.1rem; }
       .daycell { font-weight: 700; }
       .datecell { color: var(--muted); }
       .delta { display: block; font-size: 0.78rem; margin-top: 2px; color: var(--muted); }
       .delta.up { color: var(--green); }
       .delta.down { color: var(--red); }
+      .yellow { color: var(--yellow); } .blue { color: var(--blue); } .red { color: var(--red); }
+      .green { color: var(--green); } .cyan { color: var(--cyan); } .orange { color: var(--orange); } .purple { color: var(--purple); }
+      .empty { color: var(--muted); padding: 20px; text-align: center; }
+      .note { color: var(--muted); font-size: 0.85rem; margin-top: 10px; }
 
       footer { color: var(--muted); font-size: 0.8rem; margin-top: 30px; text-align: center; }
       footer a { color: var(--muted); }
@@ -138,7 +111,7 @@ const metricsFor = (r: DayRun): Metric[] => {
         <div class="badge">🏃</div>
         <div>
           <h1>Running log</h1>
-          <p>Day by day, from the watch to the web.</p>
+          <p>Day by day · started {first ? fmtDate(first.date, { month: 'short', day: 'numeric', year: 'numeric' }) : '–'}</p>
         </div>
       </header>
 
@@ -146,94 +119,95 @@ const metricsFor = (r: DayRun): Metric[] => {
         <div class="tile">
           <div class="label">Runs</div>
           <div class="value">{count}</div>
-          <div class="sub">since {first ? fmtDate(first.date, { month: 'short', day: 'numeric', year: 'numeric' }) : '–'}</div>
+          <div class="sub">{fmtDuration(totalSec)} total</div>
         </div>
         <div class="tile">
-          <div class="label">Total distance</div>
-          <div class="value blue">{totalMi.toFixed(2)}<small>MI</small></div>
-          <div class="sub">longest {longest.toFixed(2)} mi</div>
-        </div>
-        <div class="tile">
-          <div class="label">Total time</div>
-          <div class="value yellow">{fmtDuration(totalSec)}</div>
-          <div class="sub">workout time</div>
+          <div class="label">Distance</div>
+          <div class="value blue">{totalMi.toFixed(1)}<small>MI</small></div>
+          <div class="sub">{count ? (totalMi / count).toFixed(2) : '–'} mi per run</div>
         </div>
         <div class="tile">
           <div class="label">Avg. pace</div>
-          <div class="value cyan">{avgPace}<small>/MI</small></div>
-          <div class="sub">best {fastest ? fmtPace(toSec(fastest.avgPace)) : '–'}/mi</div>
+          <div class="value cyan">{totalMi > 0 ? fmtPace(avgPaceSec) : '–'}<small>/MI</small></div>
+          <div class="sub">across all runs</div>
         </div>
         <div class="tile">
-          <div class="label">Elevation gain</div>
-          <div class="value green">{totalElev}<small>FT</small></div>
-          <div class="sub">total climbed</div>
-        </div>
-        <div class="tile">
-          <div class="label">Avg. heart rate</div>
-          <div class="value orange">{avgHr ?? '–'}<small>BPM</small></div>
-          <div class="sub">{totalCal} cal burned</div>
+          <div class="label">Weight</div>
+          <div class="value purple">{latestWeight ? latestWeight.lb.toFixed(1) : '–'}<small>LB</small></div>
+          <div class="sub">
+            {latestWeight
+              ? weightChange != null
+                ? `${signed(weightChange, 'lb')} since ${fmtDate(firstWeight!.date, { month: 'short', day: 'numeric' })}`
+                : `logged ${fmtDate(latestWeight.date, { month: 'short', day: 'numeric' })}`
+              : 'not logged yet'}
+          </div>
         </div>
       </section>
 
-      <h2>Day-by-day tracker</h2>
-      <p class="lead">Every run, in order, with the change from the day before.</p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Day</th><th>Date</th><th>Distance</th><th>Time</th><th>Pace</th><th>Heart rate</th><th>Elevation</th><th>Calories</th>
-            </tr>
-          </thead>
-          <tbody>
-            {byDay.map((r, i) => {
-              const p = i > 0 ? byDay[i - 1] : undefined
-              const cells: [string, string, Delta][] = [
-                [`${r.distanceMi.toFixed(2)} mi`, 'blue', delta(r.distanceMi, p?.distanceMi, (n) => n.toFixed(2))],
-                [r.workoutTime, 'yellow', delta(toSec(r.workoutTime), p ? toSec(p.workoutTime) : undefined, fmtDuration)],
-                [`${fmtPace(toSec(r.avgPace))}/mi`, 'cyan', delta(toSec(r.avgPace), p ? toSec(p.avgPace) : undefined, (n) => fmtDuration(n), true)],
-                [r.avgHrBpm ? `${r.avgHrBpm} bpm` : '–', 'orange', delta(r.avgHrBpm, p?.avgHrBpm, (n) => `${n}`, true)],
-                [r.elevationFt != null ? `${r.elevationFt} ft` : '–', 'green', delta(r.elevationFt, p?.elevationFt, (n) => `${n}`)],
-                [r.totalCal ? `${r.totalCal} cal` : '–', 'red', delta(r.totalCal, p?.totalCal, (n) => `${n}`)],
-              ]
-              return (
-                <tr>
-                  <td class="daycell">Day {r.day}</td>
-                  <td class="datecell">{fmtDate(r.date, { weekday: 'short', month: 'short', day: 'numeric' })}</td>
-                  {cells.map(([v, c, d]) => (
-                    <td>
-                      <span class={c}>{v}</span>
-                      {d && <span class={`delta ${d.dir}`}>{d.text}</span>}
-                    </td>
-                  ))}
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
-
       <h2>Day by day</h2>
-      {sorted.length === 0 && <p class="empty">No runs logged yet.</p>}
-      {sorted.map((r) => (
-        <article class="run">
-          <div class="run-head">
-            <h3><span class="day">Day {r.day}</span> {fmtDate(r.date)}</h3>
-            <div class="meta">
-              {r.time && <span>{r.time}</span>}
-              {r.location && <span>➤ {r.location}</span>}
-            </div>
+      <div class="table-wrap">
+        {byDay.length === 0 && <p class="empty">No runs logged yet.</p>}
+        {byDay.length > 0 && (
+          <table>
+            <thead>
+              <tr>
+                <th>Day</th><th>Date</th><th>Distance</th><th>Time</th><th>Pace</th><th>Heart rate</th><th>Weight</th>
+              </tr>
+            </thead>
+            <tbody>
+              {byDay.map((r, i) => {
+                const p = i > 0 ? byDay[i - 1] : undefined
+                const w = weightOn(r.date)
+                const cells: [string, string, Delta][] = [
+                  [`${r.distanceMi.toFixed(2)} mi`, 'blue', delta(r.distanceMi, p?.distanceMi, (n) => `${n.toFixed(2)} mi`)],
+                  [r.workoutTime, 'yellow', delta(toSec(r.workoutTime), p ? toSec(p.workoutTime) : undefined, fmtDuration)],
+                  [`${fmtPace(toSec(r.avgPace))}/mi`, 'cyan', delta(toSec(r.avgPace), p ? toSec(p.avgPace) : undefined, fmtDuration, true)],
+                  [r.avgHrBpm ? `${r.avgHrBpm} bpm` : '–', 'orange', delta(r.avgHrBpm, p?.avgHrBpm, (n) => `${n} bpm`, true)],
+                  [w != null ? `${w.toFixed(1)} lb` : '–', 'purple', delta(w, prevWeightBefore(r.date), (n) => `${n.toFixed(1)} lb`, true)],
+                ]
+                return (
+                  <tr>
+                    <td class="daycell">Day {r.day}</td>
+                    <td class="datecell">{fmtDate(r.date, { weekday: 'short', month: 'short', day: 'numeric' })}</td>
+                    {cells.map(([v, c, d]) => (
+                      <td>
+                        <span class={`v ${c}`}>{v}</span>
+                        {d && <span class={`delta ${d.dir}`}>{d.text}</span>}
+                      </td>
+                    ))}
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        )}
+      </div>
+      <p class="note">Green = better than the previous run (longer, faster, lower heart rate, lower weight). Weight can also be logged on rest days.</p>
+
+      {weightLog.length > 1 && (
+        <>
+          <h2>Weigh-ins</h2>
+          <div class="table-wrap">
+            <table style="min-width: 0">
+              <thead><tr><th>Date</th><th>Weight</th></tr></thead>
+              <tbody>
+                {weightLog.map((w, i) => {
+                  const d = i > 0 ? delta(w.lb, weightLog[i - 1].lb, (n) => `${n.toFixed(1)} lb`, true) : null
+                  return (
+                    <tr>
+                      <td class="datecell">{fmtDate(w.date, { weekday: 'short', month: 'short', day: 'numeric' })}</td>
+                      <td>
+                        <span class="v purple">{w.lb.toFixed(1)} lb</span>
+                        {d && <span class={`delta ${d.dir}`}>{d.text}</span>}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
-          <div class="metrics">
-            {metricsFor(r).map((m) => (
-              <div class="metric">
-                <div class="label">{m.label}</div>
-                <div class={`value ${m.color}`}>{m.value}{m.unit && <small>{m.unit}</small>}</div>
-              </div>
-            ))}
-          </div>
-          {r.notes && <p class="notes">{r.notes}</p>}
-        </article>
-      ))}
+        </>
+      )}
 
       <footer>Outdoor runs recorded with Apple Watch · <a href="/">rajil.me</a></footer>
     </main>

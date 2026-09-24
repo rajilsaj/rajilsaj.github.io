@@ -48,6 +48,16 @@ export const runs: Run[] = [
   },
 ]
 
+/**
+ * Weight log, shown at /run. One entry per weigh-in (run days or rest days).
+ * Weight in pounds.
+ */
+export type Weight = { date: string; lb: number }
+
+export const weights: Weight[] = [
+  // { date: '2026-09-23', lb: 170 },
+]
+
 // ---------- helpers shared by /run and the homepage ----------
 
 export const toSec = (t: string) => t.split(':').map(Number).reduce((a, b) => a * 60 + b, 0)
@@ -75,6 +85,12 @@ export type DayRun = Run & { day: number }
 /** Runs sorted oldest → newest, numbered Day 1, Day 2, … */
 export const runsByDay = (): DayRun[] =>
   [...runs].sort((a, b) => a.date.localeCompare(b.date)).map((r, i) => ({ ...r, day: i + 1 }))
+
+/** Weigh-ins sorted oldest → newest. */
+export const weightsByDate = (): Weight[] => [...weights].sort((a, b) => a.date.localeCompare(b.date))
+
+/** Weight logged on a given day, if any. */
+export const weightOn = (date: string): number | undefined => weights.find((w) => w.date === date)?.lb
 
 /** Aggregate totals across all runs. */
 export const runTotals = () => {
