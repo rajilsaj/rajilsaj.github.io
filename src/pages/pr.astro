@@ -71,26 +71,6 @@ const appUrl = 'https://script.google.com/macros/s/AKfycbyQBbeb6xcuP2N0UYP0cYqG1
         font-size: 0.9rem;
       }
 
-      #open {
-        position: fixed;
-        right: 12px;
-        bottom: max(12px, env(safe-area-inset-bottom));
-        z-index: 3;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
-        background: rgba(0, 0, 0, 0.55);
-        color: #fff;
-        text-decoration: none;
-        font-size: 18px;
-        opacity: 0;
-        transition: opacity 0.4s ease 0.8s;
-        backdrop-filter: blur(6px);
-      }
-      body.ready #open { opacity: 0.55; }
-      #open:hover { opacity: 1; }
 
       @media (prefers-reduced-motion: reduce) {
         .spinner { animation: none; }
@@ -117,8 +97,6 @@ const appUrl = 'https://script.google.com/macros/s/AKfycbyQBbeb6xcuP2N0UYP0cYqG1
       allow="clipboard-write; fullscreen"
       referrerpolicy="no-referrer-when-downgrade"
     ></iframe>
-
-    <a id="open" href={appUrl} target="_blank" rel="noopener noreferrer" title="Open in a new tab" aria-label="Open in a new tab">↗</a>
 
     <script>
       const frame = document.getElementById('app') as HTMLIFrameElement
