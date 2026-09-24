@@ -1,8 +1,9 @@
 ---
 import { runsByDay, runTotals, weightsByDate, weightOn, toSec, fmtDuration, fmtPace, fmtDate } from '~/data/runs'
 
-const title = 'Running log'
-const description = 'Day-by-day running and weight tracker'
+const title = '100 Days Challenge · Running Non Stop'
+const description = '100 days of running, every single day. Day-by-day tracker.'
+const CHALLENGE_DAYS = 100
 const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '')
 
 const byDay = runsByDay() // oldest → newest, Day 1 first
@@ -23,6 +24,14 @@ const delta = (cur: number | undefined, prev: number | undefined, fmt: (n: numbe
   return { text: `${d > 0 ? '+' : '−'}${fmt(Math.abs(d))}`, dir: better ? 'up' : 'down' }
 }
 const signed = (n: number, unit: string) => `${n > 0 ? '+' : '−'}${Math.abs(n).toFixed(1)} ${unit}`
+
+// challenge counter (server-side fallback; the browser recomputes it live)
+const startDate = first?.date ?? '2026-09-23'
+const endDate = new Date(startDate + 'T12:00:00')
+endDate.setDate(endDate.getDate() + CHALLENGE_DAYS - 1)
+const endIso = endDate.toISOString().slice(0, 10)
+const today = new Date()
+const dayNow = Math.min(CHALLENGE_DAYS, Math.max(1, Math.floor((today.getTime() - new Date(startDate + 'T00:00:00').getTime()) / 86400000) + 1))
 
 // previous logged weight before a given run date (so weight deltas work across rest-day weigh-ins)
 const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => w.date < date)?.lb
@@ -77,6 +86,16 @@ const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => 
       header p { color: var(--muted); font-size: 0.95rem; margin-top: 2px; }
       h2 { font-size: 1.2rem; font-weight: 700; margin: 26px 0 10px; }
 
+      .challenge { background: linear-gradient(135deg, #1c1c1e 0%, #24242a 100%); border-radius: 18px; padding: 20px 20px 18px; margin-bottom: 14px; border: 1px solid #2c2c2e; }
+      .challenge .top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+      .challenge .count { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+      .challenge .count small { font-size: 0.45em; font-weight: 600; color: var(--muted); margin-left: 4px; letter-spacing: 0; }
+      .challenge .left { color: var(--muted); font-size: 0.9rem; }
+      .bar { height: 10px; border-radius: 999px; background: #2c2c2e; overflow: hidden; margin: 14px 0 10px; }
+      .bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #30d158, #b8ff3a); width: 0; transition: width 0.8s ease; }
+      .challenge .dates { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.8rem; }
+      .challenge .dates b { color: var(--text); font-weight: 600; }
+
       .summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
       @media (min-width: 560px) { .summary { grid-template-columns: repeat(4, 1fr); } }
       .tile { background: var(--card); border-radius: 14px; padding: 14px 16px; }
@@ -110,10 +129,22 @@ const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => 
       <header>
         <div class="badge">🏃</div>
         <div>
-          <h1>Running log</h1>
-          <p>Day by day · started {first ? fmtDate(first.date, { month: 'short', day: 'numeric', year: 'numeric' }) : '–'}</p>
+          <h1>100 Days Challenge</h1>
+          <p>Running non stop · one run every day, 100 days in a row</p>
         </div>
       </header>
+
+      <section class="challenge" aria-label="Challenge progress" data-start={startDate} data-days={CHALLENGE_DAYS}>
+        <div class="top">
+          <div class="count"><span id="day-now">{dayNow}</span><small>/ {CHALLENGE_DAYS} days</small></div>
+          <div class="left"><span id="days-left">{CHALLENGE_DAYS - dayNow}</span> days to go · {count} {count === 1 ? 'run' : 'runs'} logged</div>
+        </div>
+        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax={CHALLENGE_DAYS} aria-valuenow={dayNow}><i id="bar" style={`width:${(dayNow / CHALLENGE_DAYS) * 100}%`}></i></div>
+        <div class="dates">
+          <span>Started <b>{fmtDate(startDate, { month: 'short', day: 'numeric', year: 'numeric' })}</b></span>
+          <span>Ends <b>{fmtDate(endIso, { month: 'short', day: 'numeric', year: 'numeric' })}</b></span>
+        </div>
+      </section>
 
       <section aria-label="Totals" class="summary">
         <div class="tile">
@@ -211,5 +242,20 @@ const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => 
 
       <footer>Outdoor runs recorded with Apple Watch · <a href="/">rajil.me</a></footer>
     </main>
+    <script>
+      // Keep the day counter current in the visitor's local time, no rebuild needed.
+      const el = document.querySelector<HTMLElement>('.challenge')!
+      const total = Number(el.dataset.days)
+      const [y, m, d] = el.dataset.start!.split('-').map(Number)
+      const start = new Date(y, m - 1, d)
+      const now = new Date()
+      const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+      const day = Math.min(total, Math.max(1, Math.round((todayMidnight.getTime() - start.getTime()) / 86400000) + 1))
+      document.getElementById('day-now')!.textContent = String(day)
+      document.getElementById('days-left')!.textContent = String(total - day)
+      const bar = document.getElementById('bar')!
+      bar.style.width = `${(day / total) * 100}%`
+      el.querySelector('[role=progressbar]')!.setAttribute('aria-valuenow', String(day))
+    </script>
   </body>
 </html>
