@@ -55,7 +55,7 @@ export const runs: Run[] = [
 export type Weight = { date: string; lb: number }
 
 export const weights: Weight[] = [
-  // { date: '2026-09-23', lb: 170 },
+  { date: '2026-09-24', lb: 159.7 },
 ]
 
 // ---------- helpers shared by /run and the homepage ----------
