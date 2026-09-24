@@ -47,3 +47,46 @@ export const runs: Run[] = [
     avgHrBpm: 166,
   },
 ]
+
+// ---------- helpers shared by /run and the homepage ----------
+
+export const toSec = (t: string) => t.split(':').map(Number).reduce((a, b) => a * 60 + b, 0)
+
+export const fmtDuration = (s: number) => {
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  const sec = Math.round(s % 60)
+  return h > 0
+    ? `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+    : `${m}:${String(sec).padStart(2, '0')}`
+}
+
+export const fmtPace = (secPerMi: number) => {
+  const m = Math.floor(secPerMi / 60)
+  const s = Math.round(secPerMi % 60)
+  return `${m}'${String(s).padStart(2, '0')}"`
+}
+
+export const fmtDate = (iso: string, opts: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }) =>
+  new Date(iso + 'T12:00:00').toLocaleDateString('en-US', opts)
+
+export type DayRun = Run & { day: number }
+
+/** Runs sorted oldest → newest, numbered Day 1, Day 2, … */
+export const runsByDay = (): DayRun[] =>
+  [...runs].sort((a, b) => a.date.localeCompare(b.date)).map((r, i) => ({ ...r, day: i + 1 }))
+
+/** Aggregate totals across all runs. */
+export const runTotals = () => {
+  const all = runsByDay()
+  const totalMi = all.reduce((a, r) => a + r.distanceMi, 0)
+  const totalSec = all.reduce((a, r) => a + toSec(r.workoutTime), 0)
+  const totalElev = all.reduce((a, r) => a + (r.elevationFt ?? 0), 0)
+  const totalCal = all.reduce((a, r) => a + (r.totalCal ?? 0), 0)
+  const hrRuns = all.filter((r) => r.avgHrBpm)
+  const avgHr = hrRuns.length ? Math.round(hrRuns.reduce((a, r) => a + r.avgHrBpm!, 0) / hrRuns.length) : null
+  const avgPaceSec = totalMi > 0 ? totalSec / totalMi : 0
+  const longest = all.length ? Math.max(...all.map((r) => r.distanceMi)) : 0
+  const fastest = all.length ? all.reduce((b, r) => (toSec(r.avgPace) < toSec(b.avgPace) ? r : b), all[0]) : null
+  return { count: all.length, totalMi, totalSec, totalElev, totalCal, avgHr, avgPaceSec, longest, fastest, latest: all[all.length - 1] ?? null, first: all[0] ?? null }
+}
