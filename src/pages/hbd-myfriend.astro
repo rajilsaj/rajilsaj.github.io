@@ -2,256 +2,467 @@
 const title = 'Happy Birthday, my friend! 🎂'
 const description = 'A little birthday surprise for you'
 const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '')
+const photos = [1, 2, 3, 4].map((n) => `/hbd-myfriend/photo-${n}.webp`)
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/hbd-myfriend/puppy.gif" />
+    <meta property="og:image" content="/hbd-myfriend/card-front.webp" />
     <meta name="robots" content="noindex" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" as="image" href="/hbd-myfriend/card-front.webp" />
     <style is:global>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+      :root {
+        /* card width; height follows the artwork's 2:3-ish ratio */
+        --cw: min(78vw, 340px, 36vh);
+        --ch: calc(var(--cw) * 1.48);
+        --card-in: calc(var(--ch) * 0.32);
+        --card-up: calc(var(--ch) * -0.45);
+        --env-shift: calc(var(--ch) * 0.32 - 8vh);
+        --orange: #ff6a1f;
+        --orange-dark: #e2540f;
+        --pink: #f7b5dc;
+        --paper: #fff3f8;
+        --ink: #3b2a4a;
       }
-      html,
-      body {
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
         width: 100%;
         height: 100%;
         overflow: hidden;
         font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
+        color: var(--ink);
       }
       body {
-        background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #a18cd1, #fbc2eb, #ffecd2, #fcb69f);
-        background-size: 400% 400%;
-        animation: gradient 14s ease infinite;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #3b2a4a;
-        text-align: center;
+        background: linear-gradient(160deg, #3a1c71 0%, #d76d77 55%, #ffaf7b 100%);
+        background-attachment: fixed;
       }
-      @keyframes gradient {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-
-      canvas#confetti {
+      canvas.fx {
         position: fixed;
         inset: 0;
         width: 100%;
         height: 100%;
         pointer-events: none;
-        z-index: 2;
       }
+      #snow { z-index: 1; }
+      #confetti { z-index: 6; }
+
+      /* ---------- scene ---------- */
+      .scene {
+        position: fixed;
+        inset: 0;
+        z-index: 2;
+        display: grid;
+        place-items: center;
+        perspective: 1600px;
+        transform: translateY(calc(-1 * var(--env-shift)));
+        transition: transform 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      body[data-phase='out'] .scene,
+      body[data-phase='open'] .scene { transform: translateY(0); }
 
       .stage {
         position: relative;
-        z-index: 3;
-        padding: 24px 16px;
-        max-width: 720px;
-        width: 100%;
-      }
-      h1 {
-        font-size: clamp(2.2rem, 7vw, 4.5rem);
-        line-height: 1.1;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        text-shadow: 0 4px 24px rgba(255, 255, 255, 0.6);
-        animation: pop 1.2s cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
-      }
-      h1 span {
-        display: inline-block;
-        animation: bounce 1.6s ease-in-out infinite;
-      }
-      h1 span:nth-child(2n) { animation-delay: 0.15s; }
-      h1 span:nth-child(3n) { animation-delay: 0.3s; }
-      @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-8px); }
-      }
-      @keyframes pop {
-        from { transform: scale(0.6); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
+        width: var(--cw);
+        height: var(--ch);
+        transform-style: preserve-3d;
       }
 
-      .puppy {
-        margin: 20px auto;
-        width: min(70vw, 360px);
-        aspect-ratio: 1 / 1;
-        border-radius: 50%;
-        background: #fff;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), 0 0 0 10px rgba(255, 255, 255, 0.5);
-        overflow: hidden;
-        display: grid;
-        place-items: center;
-        animation: float 3s ease-in-out infinite;
+      /* ---------- envelope ---------- */
+      .env-layer {
+        position: absolute;
+        left: calc(var(--cw) * -0.06);
+        top: calc(var(--ch) * 0.29);
+        width: calc(var(--cw) * 1.12);
+        height: calc(var(--ch) * 1.06);
+        transition: opacity 0.7s ease, transform 0.7s ease;
       }
-      .puppy img {
+      .env-back {
+        z-index: 1;
+        background: var(--pink);
+        border-radius: 8px;
+        clip-path: inset(1px 0 0 0 round 8px);
+        box-shadow: 0 24px 40px rgba(0, 0, 0, 0.35);
+      }
+      .envelope {
+        z-index: 3;
+        cursor: pointer;
+      }
+      .envelope > div { position: absolute; inset: 0; }
+      .env-front {
+        z-index: 3;
+        background: linear-gradient(180deg, var(--orange) 0%, var(--orange-dark) 100%);
+        clip-path: polygon(0 0, 50% 46%, 100% 0, 100% 100%, 0 100%);
+        border-radius: 8px;
+        transition: opacity 0.35s ease;
+      }
+      .env-front::after {
+        /* subtle fold lines */
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(to bottom right, transparent 49.6%, rgba(0, 0, 0, 0.12) 50%, transparent 50.4%) 0 0 / 50% 46% no-repeat,
+          linear-gradient(to bottom left, transparent 49.6%, rgba(0, 0, 0, 0.12) 50%, transparent 50.4%) 100% 0 / 50% 46% no-repeat;
+      }
+      .flap {
+        z-index: 4;
+        background: linear-gradient(180deg, #ff7f3f 0%, var(--orange) 100%);
+        clip-path: polygon(0 0, 100% 0, 50% 52%);
+        transform-origin: top center;
+        transform: rotateX(0deg);
+        transition: transform 0.75s cubic-bezier(0.55, 0, 0.3, 1), z-index 0s 0.38s, opacity 0.35s ease;
+        backface-visibility: visible;
+      }
+      .flap::before {
+        content: '💌';
+        position: absolute;
+        left: 50%;
+        top: 22%;
+        transform: translate(-50%, -50%);
+        font-size: calc(var(--cw) * 0.14);
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      }
+      body:not([data-phase='closed']) .flap { transform: rotateX(180deg); z-index: 0; }
+      body[data-phase='out'] .env-front,
+      body[data-phase='out'] .flap { opacity: 0; }
+      body[data-phase='out'] .env-layer,
+      body[data-phase='open'] .env-layer { opacity: 0; transform: translateY(40px) scale(0.96); pointer-events: none; }
+
+      .hint {
+        position: absolute;
+        left: 50%;
+        top: calc(var(--ch) * 1.42);
+        transform: translateX(-50%);
+        white-space: nowrap;
+        padding: 6px 12px;
+        color: #fff;
+        font-weight: 600;
+        font-size: 1.05rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+        animation: pulse 1.6s ease-in-out infinite;
+        transition: opacity 0.4s;
+        z-index: 5;
+      }
+      body:not([data-phase='closed']) .hint { opacity: 0; }
+      @keyframes pulse {
+        0%, 100% { transform: translateX(-50%) scale(1); }
+        50% { transform: translateX(-50%) scale(1.06); }
+      }
+
+      /* ---------- card ---------- */
+      .card {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        transform: translateY(var(--card-in));
+        transform-style: preserve-3d;
+        transition: transform 1.1s cubic-bezier(0.4, 0, 0.2, 1), z-index 0s 0.3s;
+        cursor: pointer;
+      }
+      body[data-phase='rise'] .card { transform: translateY(var(--card-up)); }
+      body[data-phase='out'] .card,
+      body[data-phase='open'] .card { transform: translateY(0); z-index: 5; }
+
+      .cover,
+      .inside {
+        position: absolute;
+        inset: 0;
+        border-radius: 10px;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+      }
+      .cover {
+        z-index: 2;
+        transform-origin: left center;
+        transform-style: preserve-3d;
+        transition: transform 1.5s cubic-bezier(0.55, 0, 0.25, 1), opacity 0.5s ease 0.9s;
+      }
+      body[data-phase='open'] .cover { transform: rotateY(-180deg); }
+      .face {
+        position: absolute;
+        inset: 0;
+        border-radius: 10px;
+        backface-visibility: hidden;
+        overflow: hidden;
+      }
+      .face.front img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transform: scale(1.12);
+        display: block;
       }
-      @keyframes float {
-        0%, 100% { transform: translateY(0) rotate(-2deg); }
-        50% { transform: translateY(-14px) rotate(2deg); }
+      .face.back {
+        transform: rotateY(180deg);
+        background: var(--paper);
+        display: grid;
+        place-items: center;
+        align-content: center;
+        gap: 10px;
+        padding: 20px;
+        text-align: center;
       }
+      .face.back .puppy-big {
+        width: 62%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      }
+      .face.back .puppy-big img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.12); }
+      .face.back p { font-size: clamp(0.9rem, calc(var(--cw) * 0.05), 1.15rem); font-weight: 600; color: #7a4f6a; }
 
-      .msg {
-        font-size: clamp(1.1rem, 3vw, 1.5rem);
-        font-weight: 500;
-        line-height: 1.5;
-        margin-top: 8px;
-        text-shadow: 0 2px 12px rgba(255, 255, 255, 0.6);
-      }
-
-      .controls {
-        margin-top: 22px;
+      .inside {
+        z-index: 1;
+        background: var(--paper);
         display: flex;
-        gap: 12px;
+        flex-direction: column;
+        padding: calc(var(--cw) * 0.06);
+        gap: calc(var(--cw) * 0.035);
+        overflow: hidden;
+      }
+      .inside h1 {
+        font-size: clamp(1.1rem, calc(var(--cw) * 0.085), 1.9rem);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        text-align: center;
+        background: linear-gradient(90deg, #ff6a1f, #ff3d8f, #7c3aed, #10b981);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .frame {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #222;
+        box-shadow: inset 0 0 0 4px #fff, 0 8px 20px rgba(0, 0, 0, 0.18);
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 1s ease;
+      }
+      .slide.active { opacity: 1; }
+      .slide img { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .slide .bg { object-fit: cover; filter: blur(18px) brightness(0.7); transform: scale(1.2); }
+      .slide .fg { object-fit: contain; }
+      .slide.active .fg { animation: kenburns 4.5s ease-in-out forwards; }
+      @keyframes kenburns {
+        from { transform: scale(1); }
+        to { transform: scale(1.08); }
+      }
+      .dots {
+        position: absolute;
+        bottom: 8px;
+        left: 0;
+        right: 0;
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+      }
+      .dots i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        transition: background 0.3s, transform 0.3s;
+      }
+      .dots i.on { background: #fff; transform: scale(1.3); }
+      .inside .msg {
+        text-align: center;
+        font-size: clamp(0.78rem, calc(var(--cw) * 0.042), 1rem);
+        line-height: 1.4;
+        font-weight: 500;
+      }
+      .inside .msg .puppy-mini {
+        display: inline-block;
+        vertical-align: middle;
+        width: 1.9em;
+        height: 1.9em;
+        border-radius: 50%;
+        overflow: hidden;
+        background: #fff;
+        margin-right: 4px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+      .inside .msg .puppy-mini img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.15); }
+
+      /* on wide screens the opened card is a two-page spread; centre it */
+      @media (min-width: 780px) {
+        body[data-phase='open'] .card { transform: translateY(0) translateX(50%); }
+      }
+      /* on narrow screens the flipped cover would hang off-screen; fade it away */
+      @media (max-width: 779px) {
+        body[data-phase='open'] .cover { opacity: 0; pointer-events: none; }
+      }
+
+      /* ---------- controls ---------- */
+      .controls {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: max(18px, env(safe-area-inset-bottom));
+        z-index: 7;
+        display: flex;
+        gap: 10px;
         justify-content: center;
         flex-wrap: wrap;
+        padding: 0 16px;
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity 0.5s ease 1.2s, transform 0.5s ease 1.2s;
+        pointer-events: none;
       }
+      body[data-phase='open'] .controls { opacity: 1; transform: none; pointer-events: auto; }
       button {
         appearance: none;
         border: none;
         cursor: pointer;
         font: inherit;
         font-weight: 700;
-        padding: 12px 24px;
+        font-size: 0.95rem;
+        padding: 10px 18px;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.85);
-        color: #3b2a4a;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        transition: transform 0.15s, box-shadow 0.15s;
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--ink);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        transition: transform 0.15s;
       }
-      button:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0, 0, 0, 0.2); }
+      button:hover { transform: translateY(-2px); }
       button:active { transform: translateY(0); }
 
-      .balloon {
-        position: fixed;
-        bottom: -160px;
-        width: 60px;
-        height: 76px;
-        border-radius: 50% 50% 50% 50% / 45% 45% 55% 55%;
-        opacity: 0.85;
-        z-index: 1;
-        animation: rise linear infinite;
+      @media (prefers-reduced-motion: reduce) {
+        .hint, .slide.active .fg { animation: none; }
       }
-      .balloon::after {
-        content: '';
-        position: absolute;
-        left: 50%;
-        top: 100%;
-        width: 2px;
-        height: 70px;
-        background: rgba(0, 0, 0, 0.25);
-        transform: translateX(-50%);
-      }
-      @keyframes rise {
-        from { transform: translateY(0) rotate(-4deg); }
-        to { transform: translateY(-130vh) rotate(4deg); }
-      }
-
-      #gate {
-        position: fixed;
-        inset: 0;
-        z-index: 10;
-        display: grid;
-        place-items: center;
-        background: rgba(59, 42, 74, 0.55);
-        backdrop-filter: blur(6px);
-        cursor: pointer;
-        transition: opacity 0.4s;
-      }
-      #gate.hidden { opacity: 0; pointer-events: none; }
-      #gate .card {
-        background: #fff;
-        border-radius: 20px;
-        padding: 36px 32px;
-        max-width: 360px;
-        margin: 16px;
-        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
-        animation: pop 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
-      }
-      #gate .card .emoji { font-size: 3.5rem; margin-bottom: 8px; }
-      #gate .card h2 { font-size: 1.5rem; margin-bottom: 8px; }
-      #gate .card p { color: #666; margin-bottom: 20px; line-height: 1.5; }
+      body.instant, body.instant * { transition-duration: 0s !important; transition-delay: 0s !important; }
     </style>
   </head>
-  <body>
-    <canvas id="confetti"></canvas>
+  <body data-phase="closed">
+    <canvas id="snow" class="fx"></canvas>
+    <canvas id="confetti" class="fx"></canvas>
 
-    <div id="gate" role="button" aria-label="Start the celebration">
-      <div class="card">
-        <div class="emoji">🎁</div>
-        <h2>A surprise for you!</h2>
-        <p>Turn your sound on and tap anywhere to open it.</p>
-        <button type="button">Tap to celebrate 🎉</button>
+    <div class="scene">
+      <div class="stage">
+        <div class="env-back env-layer"></div>
+        <div class="envelope env-layer" id="envelope" role="button" tabindex="0" aria-label="Open the birthday card">
+          <div class="env-front"></div>
+          <div class="flap"></div>
+        </div>
+
+        <div class="card" id="card">
+          <div class="inside">
+            <h1>Happy Birthday, my friend!</h1>
+            <div class="frame" id="frame" aria-label="Photo slideshow">
+              {photos.map((src, i) => (
+                <div class={`slide${i === 0 ? ' active' : ''}`}>
+                  <img class="bg" src={src} alt="" aria-hidden="true" loading={i === 0 ? 'eager' : 'lazy'} />
+                  <img class="fg" src={src} alt={`Memory ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} />
+                </div>
+              ))}
+              <div class="dots" id="dots">{photos.map(() => <i></i>)}</div>
+            </div>
+            <p class="msg">
+              <span class="puppy-mini"><img src="/hbd-myfriend/puppy.gif" alt="" /></span>
+              Wishing you a day full of joy, cake and adventures. 🎂🐶<br />
+              Thank you for all the laughs and memories. You deserve every good thing! 💛
+            </p>
+          </div>
+
+          <div class="cover">
+            <div class="face front">
+              <img src="/hbd-myfriend/card-front.webp" alt="Happy Birthday card with four party cats" />
+            </div>
+            <div class="face back">
+              <div class="puppy-big"><img src="/hbd-myfriend/puppy.gif" alt="A happy dancing puppy" /></div>
+              <p>Someone is very happy it's your birthday 🎉</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint">Tap the envelope to open 💌</p>
       </div>
     </div>
 
-    <main class="stage">
-      <h1 aria-label="Happy Birthday!">
-        {'Happy Birthday!'.split('').map((c) => (c === ' ' ? ' ' : <span>{c}</span>))}
-      </h1>
-      <div class="puppy">
-        <img src="/hbd-myfriend/puppy.gif" alt="A happy dancing puppy" />
-      </div>
-      <p class="msg">
-        Wishing you a day full of joy, cake, and puppy dances. 🐶🎂<br />
-        You deserve all the good things, my friend! 💛
-      </p>
-      <div class="controls">
-        <button id="mute" type="button" aria-pressed="false">🔊 Music on</button>
-        <button id="more" type="button">🎊 More confetti!</button>
-      </div>
-    </main>
+    <div class="controls">
+      <button id="mute" type="button" aria-pressed="false">🔊 Music on</button>
+      <button id="more" type="button">🎊 Confetti!</button>
+      <button id="replay" type="button">🔁 Replay</button>
+    </div>
 
     <script>
-      // ---------- Balloons ----------
-      const colors = ['#ff6b6b', '#ffd93d', '#6bcB77', '#4d96ff', '#ff8fab', '#c77dff', '#ffa94d']
-      for (let i = 0; i < 12; i++) {
-        const b = document.createElement('div')
-        b.className = 'balloon'
-        b.style.left = Math.random() * 100 + 'vw'
-        b.style.background = colors[i % colors.length]
-        b.style.animationDuration = 9 + Math.random() * 8 + 's'
-        b.style.animationDelay = -Math.random() * 14 + 's'
-        b.style.transform = `scale(${0.7 + Math.random() * 0.7})`
-        document.body.appendChild(b)
+      // ---------- Snow ----------
+      const snowCanvas = document.getElementById('snow') as HTMLCanvasElement
+      const sctx = snowCanvas.getContext('2d')!
+      type Flake = { x: number; y: number; r: number; s: number; d: number; o: number }
+      let flakes: Flake[] = []
+      let W = 0, H = 0
+      function sizeCanvas(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+        c.width = window.innerWidth * devicePixelRatio
+        c.height = window.innerHeight * devicePixelRatio
+        ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0)
       }
+      function initSnow() {
+        W = window.innerWidth
+        H = window.innerHeight
+        sizeCanvas(snowCanvas, sctx)
+        const n = Math.min(160, Math.floor((W * H) / 6000))
+        flakes = Array.from({ length: n }, () => ({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          r: 1 + Math.random() * 3,
+          s: 0.4 + Math.random() * 1.2,
+          d: Math.random() * Math.PI * 2,
+          o: 0.4 + Math.random() * 0.6,
+        }))
+      }
+      function drawSnow() {
+        sctx.clearRect(0, 0, W, H)
+        sctx.fillStyle = '#fff'
+        for (const f of flakes) {
+          f.d += 0.01
+          f.x += Math.sin(f.d) * 0.4
+          f.y += f.s
+          if (f.y > H + 5) { f.y = -5; f.x = Math.random() * W }
+          if (f.x > W + 5) f.x = -5
+          if (f.x < -5) f.x = W + 5
+          sctx.globalAlpha = f.o
+          sctx.beginPath()
+          sctx.arc(f.x, f.y, f.r, 0, Math.PI * 2)
+          sctx.fill()
+        }
+        sctx.globalAlpha = 1
+        requestAnimationFrame(drawSnow)
+      }
+      initSnow()
+      drawSnow()
 
       // ---------- Confetti ----------
+      const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff8fab', '#c77dff', '#ffa94d']
       const canvas = document.getElementById('confetti') as HTMLCanvasElement
       const ctx = canvas.getContext('2d')!
       type Piece = { x: number; y: number; w: number; h: number; c: string; vx: number; vy: number; r: number; vr: number }
       let pieces: Piece[] = []
-      function resize() {
-        canvas.width = window.innerWidth * devicePixelRatio
-        canvas.height = window.innerHeight * devicePixelRatio
-        ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0)
-      }
-      window.addEventListener('resize', resize)
-      resize()
+      sizeCanvas(canvas, ctx)
+      window.addEventListener('resize', () => { initSnow(); sizeCanvas(canvas, ctx) })
       function burst(n = 180) {
-        const W = window.innerWidth
         for (let i = 0; i < n; i++) {
           pieces.push({
-            x: Math.random() * W,
+            x: Math.random() * window.innerWidth,
             y: -20 - Math.random() * 200,
             w: 6 + Math.random() * 8,
             h: 8 + Math.random() * 10,
@@ -265,8 +476,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, ''
       }
       function tick() {
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
-        const H = window.innerHeight
-        pieces = pieces.filter((p) => p.y < H + 40)
+        const h = window.innerHeight
+        pieces = pieces.filter((p) => p.y < h + 40)
         for (const p of pieces) {
           p.x += p.vx + Math.sin(p.y / 30) * 0.6
           p.y += p.vy
@@ -284,7 +495,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, ''
 
       // ---------- Happy Birthday music (Web Audio, no file needed) ----------
       const G4 = 392.0, A4 = 440.0, B4 = 493.88, C5 = 523.25, D5 = 587.33, E5 = 659.25, F5 = 698.46, G5 = 783.99
-      // [frequency, beats]
       const melody: [number, number][] = [
         [G4, 0.75], [G4, 0.25], [A4, 1], [G4, 1], [C5, 1], [B4, 2],
         [G4, 0.75], [G4, 0.25], [A4, 1], [G4, 1], [D5, 1], [C5, 2],
@@ -292,12 +502,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, ''
         [F5, 0.75], [F5, 0.25], [E5, 1], [C5, 1], [D5, 1], [C5, 2],
         [0, 1.5],
       ]
-      const BEAT = 0.5 // seconds per beat
+      const BEAT = 0.5
       let audio: AudioContext | null = null
       let master: GainNode | null = null
-      let loopTimer: number | undefined
       let muted = false
-
       function playNote(freq: number, start: number, dur: number) {
         if (!audio || !master || freq === 0) return
         const osc = audio.createOscillator()
@@ -326,11 +534,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, ''
           playNote(f, t, beats * BEAT)
           t += beats * BEAT
         }
-        const total = (t - audio.currentTime) * 1000
-        loopTimer = window.setTimeout(scheduleSong, total - 150)
+        window.setTimeout(scheduleSong, (t - audio.currentTime) * 1000 - 150)
       }
       function startMusic() {
-        if (audio) return
+        if (audio) { audio.resume(); return }
         const Ctx = window.AudioContext || (window as any).webkitAudioContext
         audio = new Ctx()
         master = audio.createGain()
@@ -339,19 +546,64 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, ''
         scheduleSong()
       }
 
-      // ---------- Controls ----------
-      const gate = document.getElementById('gate')!
-      const muteBtn = document.getElementById('mute')!
-      const moreBtn = document.getElementById('more')!
-
-      function celebrate() {
-        gate.classList.add('hidden')
-        startMusic()
-        burst(260)
-        setTimeout(() => burst(120), 1200)
+      // ---------- Slideshow ----------
+      const slides = Array.from(document.querySelectorAll<HTMLElement>('.slide'))
+      const dots = Array.from(document.querySelectorAll<HTMLElement>('#dots i'))
+      let idx = 0
+      let slideTimer: number | undefined
+      function show(i: number) {
+        idx = (i + slides.length) % slides.length
+        slides.forEach((s, k) => s.classList.toggle('active', k === idx))
+        dots.forEach((d, k) => d.classList.toggle('on', k === idx))
       }
-      gate.addEventListener('click', celebrate)
+      function startSlides() {
+        stopSlides()
+        show(0)
+        slideTimer = window.setInterval(() => show(idx + 1), 4000)
+      }
+      function stopSlides() {
+        if (slideTimer) window.clearInterval(slideTimer)
+        slideTimer = undefined
+      }
+      show(0)
+      document.getElementById('frame')!.addEventListener('click', (e) => {
+        e.stopPropagation()
+        show(idx + 1)
+        if (slideTimer) { window.clearInterval(slideTimer); slideTimer = window.setInterval(() => show(idx + 1), 4000) }
+      })
 
+      // ---------- Opening sequence ----------
+      const body = document.body
+      const envelope = document.getElementById('envelope')!
+      const card = document.getElementById('card')!
+      let timers: number[] = []
+      function setPhase(p: string) { body.dataset.phase = p }
+      function open() {
+        if (body.dataset.phase !== 'closed') return
+        startMusic()
+        setPhase('flap')
+        timers = [
+          window.setTimeout(() => setPhase('rise'), 550),
+          window.setTimeout(() => setPhase('out'), 1500),
+          window.setTimeout(() => { setPhase('open'); burst(260) }, 2500),
+          window.setTimeout(() => { burst(120); startSlides() }, 3600),
+        ]
+      }
+      function replay() {
+        timers.forEach(clearTimeout)
+        stopSlides()
+        show(0)
+        setPhase('closed')
+      }
+      envelope.addEventListener('click', open)
+      envelope.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open() } })
+      card.addEventListener('click', () => {
+        // clicking the card before it's opened also opens the envelope
+        if (body.dataset.phase === 'closed') open()
+      })
+
+      // ---------- Controls ----------
+      const muteBtn = document.getElementById('mute')!
       muteBtn.addEventListener('click', () => {
         if (!audio || !master) return
         muted = !muted
@@ -359,13 +611,20 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, ''
         muteBtn.textContent = muted ? '🔇 Music off' : '🔊 Music on'
         muteBtn.setAttribute('aria-pressed', String(muted))
       })
-      moreBtn.addEventListener('click', () => burst(220))
-
+      document.getElementById('more')!.addEventListener('click', () => burst(220))
+      document.getElementById('replay')!.addEventListener('click', () => {
+        replay()
+        window.setTimeout(open, 900)
+      })
       document.addEventListener('visibilitychange', () => {
         if (!audio) return
         if (document.hidden) audio.suspend()
-        else audio.resume()
+        else if (!muted) audio.resume()
       })
+      // /hbd-myfriend?open opens the card straight away (music still needs a tap)
+      const params = new URLSearchParams(location.search)
+      if (params.has('instant')) body.classList.add('instant')
+      if (params.has('open')) window.setTimeout(open, 300)
     </script>
   </body>
 </html>
