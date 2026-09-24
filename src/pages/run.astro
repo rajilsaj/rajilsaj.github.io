@@ -86,7 +86,15 @@ const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => 
       header p { color: var(--muted); font-size: 0.95rem; margin-top: 2px; }
       h2 { font-size: 1.2rem; font-weight: 700; margin: 26px 0 10px; }
 
-      .challenge { background: linear-gradient(135deg, #1c1c1e 0%, #24242a 100%); border-radius: 18px; padding: 20px 20px 18px; margin-bottom: 14px; border: 1px solid #2c2c2e; }
+      .challenge { background: linear-gradient(135deg, #1c1c1e 0%, #24242a 100%); border-radius: 18px; padding: 20px 20px 18px; margin-bottom: 14px; border: 1px solid #2c2c2e; display: flex; gap: 18px; align-items: center; }
+      .challenge .body { flex: 1; min-width: 0; }
+      .mascot { flex: none; width: 118px; height: 138px; border-radius: 14px; overflow: hidden; background: #f3d24a; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35); }
+      .mascot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      @media (max-width: 559px) {
+        .challenge { padding: 16px; gap: 12px; }
+        .mascot { width: 86px; height: 100px; border-radius: 12px; }
+        .challenge .count { font-size: 2.1rem; }
+      }
       .challenge .top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
       .challenge .count { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
       .challenge .count small { font-size: 0.45em; font-weight: 600; color: var(--muted); margin-left: 4px; letter-spacing: 0; }
@@ -135,6 +143,7 @@ const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => 
       </header>
 
       <section class="challenge" aria-label="Challenge progress" data-start={startDate} data-days={CHALLENGE_DAYS}>
+        <div class="body">
         <div class="top">
           <div class="count"><span id="day-now">{dayNow}</span><small>/ {CHALLENGE_DAYS} days</small></div>
           <div class="left"><span id="days-left">{CHALLENGE_DAYS - dayNow}</span> days to go · {count} {count === 1 ? 'run' : 'runs'} logged</div>
@@ -144,6 +153,8 @@ const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => 
           <span>Started <b>{fmtDate(startDate, { month: 'short', day: 'numeric', year: 'numeric' })}</b></span>
           <span>Ends <b>{fmtDate(endIso, { month: 'short', day: 'numeric', year: 'numeric' })}</b></span>
         </div>
+        </div>
+        <div class="mascot" aria-hidden="true"><img src="/run/beep-beep.gif" alt="" loading="lazy" /></div>
       </section>
 
       <section aria-label="Totals" class="summary">
