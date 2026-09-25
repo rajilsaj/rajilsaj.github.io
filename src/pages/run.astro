@@ -166,13 +166,18 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       @container (max-width: 150px) { .tile .value { font-size: 1.35rem; } }
       @container (max-width: 120px) { .tile .value { font-size: 1.15rem; } }
 
-      .table-wrap { background: var(--card); border-radius: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 0.95rem; }
-      th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: top; }
+      .table-wrap { background: var(--card); border-radius: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+      .table-wrap::-webkit-scrollbar { height: 6px; }
+      .table-wrap::-webkit-scrollbar-track { background: transparent; }
+      .table-wrap::-webkit-scrollbar-thumb { background: var(--line); border-radius: 999px; }
+      table { border-collapse: collapse; width: 100%; min-width: 600px; font-size: 0.95rem; }
+      @media (min-width: 740px) { table { min-width: 0; } }
+      th, td { text-align: left; padding: 12px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: top; }
       th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
       tr:last-child td { border-bottom: none; }
       td .v { font-weight: 700; font-size: 1.1rem; }
       .daycell { font-weight: 700; }
+      .daycell .datesub { display: block; color: var(--muted); font-weight: 400; font-size: 0.82rem; margin-top: 2px; }
       .datecell { color: var(--muted); }
       tr.rest .daycell, tr.rest .datecell { color: var(--muted); }
       .rest-label { display: inline-block; color: var(--muted); font-size: 0.85rem; font-style: italic; }
@@ -259,7 +264,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
           <table>
             <thead>
               <tr>
-                <th>Day</th><th>Date</th><th>Distance</th><th>Time</th><th>Pace</th><th>Heart rate</th><th>Weight</th><th>Push-ups</th>
+                <th>Day</th><th>Distance</th><th>Time</th><th>Pace</th><th>Heart rate</th><th>Weight</th><th>Push-ups</th>
               </tr>
             </thead>
             <tbody>
@@ -283,8 +288,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                 ]
                 return (
                   <tr class={r ? undefined : 'rest'}>
-                    <td class="daycell">Day {d.day}</td>
-                    <td class="datecell">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</td>
+                    <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span></td>
                     {r ? (
                       runCells.map(([v, c, dl]) => (
                         <td>
