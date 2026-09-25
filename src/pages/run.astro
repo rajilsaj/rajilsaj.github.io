@@ -28,10 +28,6 @@ const delta = (cur: number | undefined, prev: number | undefined, fmt: (n: numbe
 }
 const signed = (n: number, unit: string) => `${n > 0 ? '+' : '−'}${Math.abs(n).toFixed(1)} ${unit}`
 
-// progress bar segments: one per ten-day block; each fills 0–100% as the days pass through it
-const SEGMENTS = 10
-const segmentFill = (day: number, i: number) => Math.min(1, Math.max(0, (day / CHALLENGE_DAYS) * SEGMENTS - i)) * 100
-
 // challenge counter (server-side fallback; the browser recomputes it live)
 const startDate = CHALLENGE_START
 const endDate = new Date(startDate + 'T12:00:00')
@@ -173,10 +169,19 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .challenge .range { color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
       .challenge .range b { color: var(--text); font-weight: 600; }
       /* progress: soft pill on a tinted track, fills in smoothly on load */
-      /* progress: ten segments, one per ten-day block, filled left to right */
-      .track { display: flex; gap: 6px; height: 8px; margin: 18px 0 10px; }
-      .seg { flex: 1; min-width: 0; height: 100%; border-radius: 999px; background: var(--bar-track); overflow: hidden; }
-      .seg i { --w: 0%; display: block; height: 100%; width: var(--w); border-radius: 999px; background: var(--bar); }
+      /* progress: striped lime gradient pill on a dark inset track (static, no animation) */
+      .track { --p: 0%; height: 18px; border-radius: 999px; margin: 18px 0 10px; padding: 2px; background: var(--bar-track); border: 1px solid var(--line); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.45); }
+      .fill {
+        height: 100%; width: var(--p); min-width: 14px; border-radius: 999px; position: relative; overflow: hidden;
+        background: linear-gradient(90deg, #8fc41a 0%, #b5e320 40%, #c8f22b 70%, #e4ff6a 100%);
+        box-shadow: 0 0 12px rgba(200, 242, 43, 0.35);
+      }
+      .fill::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(-45deg, rgba(0, 0, 0, 0.16) 25%, transparent 25% 50%, rgba(0, 0, 0, 0.16) 50% 75%, transparent 75%);
+        background-size: 24px 24px;
+      }
+      :root[data-theme='light'] .track { box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12); }
       .challenge .caption { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; color: var(--muted); font-size: 0.82rem; }
       .challenge .caption b { color: var(--text); font-weight: 600; }
       .challenge .caption .pct { flex: none; font-weight: 800; font-size: 0.78rem; color: var(--bar-pill-text); background: var(--bar-pill-bg); padding: 4px 10px; border-radius: 999px; line-height: 1; letter-spacing: 0.02em; }
@@ -238,10 +243,8 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
           <div class="count"><span id="day-now">{dayNow}</span><small>/ {CHALLENGE_DAYS} days</small></div>
           <div class="range"><b>{fmtDate(startDate, { month: 'short', day: 'numeric' })}</b> – <b>{fmtDate(endIso, { month: 'short', day: 'numeric', year: 'numeric' })}</b></div>
         </div>
-        <div class="track" id="track" role="progressbar" aria-valuemin="0" aria-valuemax={CHALLENGE_DAYS} aria-valuenow={dayNow} aria-label="Challenge progress">
-          {Array.from({ length: SEGMENTS }, (_, i) => (
-            <span class="seg"><i style={`--w:${segmentFill(dayNow, i)}%`}></i></span>
-          ))}
+        <div class="track" id="track" role="progressbar" aria-valuemin="0" aria-valuemax={CHALLENGE_DAYS} aria-valuenow={dayNow} aria-label="Challenge progress" style={`--p:${(dayNow / CHALLENGE_DAYS) * 100}%`}>
+          <div class="fill"></div>
         </div>
         <div class="caption">
           <span><b><span id="days-left">{CHALLENGE_DAYS - dayNow}</span> days</b> to go · {count} {count === 1 ? 'run' : 'runs'} logged</span>
@@ -385,8 +388,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       document.getElementById('day-now')!.textContent = String(day)
       document.getElementById('days-left')!.textContent = String(total - day)
       const track = document.getElementById('track')!
-      const segs = track.querySelectorAll<HTMLElement>('.seg i')
-      segs.forEach((s, i) => s.style.setProperty('--w', `${Math.min(1, Math.max(0, (day / total) * segs.length - i)) * 100}%`))
+      track.style.setProperty('--p', `${(day / total) * 100}%`)
       track.setAttribute('aria-valuenow', String(day))
       document.getElementById('pct')!.textContent = `${Math.round((day / total) * 100)}%`
 
