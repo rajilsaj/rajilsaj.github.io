@@ -80,7 +80,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         --orange: #fff;
         --purple: #fff;
         --bar: #c8f22b;
-        --bar-track: #2a323c;
+        --bar-track: rgba(200, 242, 43, 0.22);
         --bar-pill-bg: #0b0e13;
         --bar-pill-text: #c8f22b;
         color-scheme: dark;
@@ -102,7 +102,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         --orange: #0b0e13;
         --purple: #0b0e13;
         --bar: #c8f22b;
-        --bar-track: #e3e7ec;
+        --bar-track: #ebf8b8;
         --bar-pill-bg: #0b0e13;
         --bar-pill-text: #c8f22b;
         color-scheme: light;
@@ -169,19 +169,9 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .challenge .range { color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
       .challenge .range b { color: var(--text); font-weight: 600; }
       /* progress: soft pill on a tinted track, fills in smoothly on load */
-      /* progress: striped lime gradient pill on a dark inset track (static, no animation) */
-      .track { --p: 0%; height: 18px; border-radius: 999px; margin: 18px 0 10px; padding: 2px; background: var(--bar-track); border: 1px solid var(--line); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.45); }
-      .fill {
-        height: 100%; width: var(--p); min-width: 14px; border-radius: 999px; position: relative; overflow: hidden;
-        background: linear-gradient(90deg, #8fc41a 0%, #b5e320 40%, #c8f22b 70%, #e4ff6a 100%);
-        box-shadow: 0 0 12px rgba(200, 242, 43, 0.35);
-      }
-      .fill::after {
-        content: ''; position: absolute; inset: 0;
-        background: linear-gradient(-45deg, rgba(0, 0, 0, 0.16) 25%, transparent 25% 50%, rgba(0, 0, 0, 0.16) 50% 75%, transparent 75%);
-        background-size: 24px 24px;
-      }
-      :root[data-theme='light'] .track { box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12); }
+      /* progress: thin solid lime pill on a faint lime track (static) */
+      .track { --p: 0%; height: 6px; border-radius: 999px; margin: 20px 0 12px; background: var(--bar-track); overflow: hidden; }
+      .fill { height: 100%; width: var(--p); min-width: 6px; border-radius: 999px; background: var(--bar); }
       .challenge .caption { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; color: var(--muted); font-size: 0.82rem; }
       .challenge .caption b { color: var(--text); font-weight: 600; }
       .challenge .caption .pct { flex: none; font-weight: 800; font-size: 0.78rem; color: var(--bar-pill-text); background: var(--bar-pill-bg); padding: 4px 10px; border-radius: 999px; line-height: 1; letter-spacing: 0.02em; }
