@@ -91,7 +91,10 @@ export const weights: Weight[] = [
 /** Push-up log. One entry per day, total push-ups done that day. */
 export type Pushups = { date: string; count: number }
 
-export const pushups: Pushups[] = []
+export const pushups: Pushups[] = [
+  { date: '2026-09-23', count: 20 },
+  { date: '2026-09-25', count: 15 },
+]
 
 // ---------- helpers shared by /run and the homepage ----------
 
