@@ -78,8 +78,10 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         --cyan: #5ac8fa;
         --orange: #ff6b3d;
         --purple: #bf5af2;
-        --bar: #e58ad4;
-        --bar-track: rgba(229, 138, 212, 0.22);
+        --bar: #c8f22b;
+        --bar-track: rgba(200, 242, 43, 0.18);
+        --bar-pill-bg: #111;
+        --bar-pill-text: #c8f22b;
         color-scheme: dark;
       }
       :root[data-theme='light'] {
@@ -97,8 +99,10 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         --cyan: #0077b6;
         --orange: #d94a0b;
         --purple: #8a2be2;
-        --bar: #e88ad8;
-        --bar-track: #f7d4ef;
+        --bar: #c8f22b;
+        --bar-track: #e9f8b0;
+        --bar-pill-bg: #111;
+        --bar-pill-text: #c8f22b;
         color-scheme: light;
       }
       * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -159,6 +163,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       @keyframes grow { from { width: 16px; } }
       .challenge .caption { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; color: var(--muted); font-size: 0.82rem; }
       .challenge .caption b { color: var(--text); font-weight: 600; }
+      .challenge .caption .pct { flex: none; font-weight: 800; font-size: 0.78rem; color: var(--bar-pill-text); background: var(--bar-pill-bg); padding: 4px 10px; border-radius: 999px; line-height: 1; letter-spacing: 0.02em; }
       @media (prefers-reduced-motion: reduce) { .fill { animation: none; transition: none; } }
 
       /* tiles: 2 per row on phones, 3 on tablets, all 5 in one row on desktop; last row always stretches to fill */
@@ -223,7 +228,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         </div>
         <div class="caption">
           <span><b><span id="days-left">{CHALLENGE_DAYS - dayNow}</span> days</b> to go · {count} {count === 1 ? 'run' : 'runs'} logged</span>
-          <span id="pct">{Math.round((dayNow / CHALLENGE_DAYS) * 100)}%</span>
+          <span class="pct" id="pct">{Math.round((dayNow / CHALLENGE_DAYS) * 100)}%</span>
         </div>
         </div>
         <div class="mascot" aria-hidden="true"><img src="/run/beep-beep.gif" alt="" loading="lazy" /></div>
