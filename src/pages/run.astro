@@ -1,18 +1,21 @@
 ---
-import { runsByDay, runTotals, weightsByDate, weightOn, toSec, fmtDuration, fmtPace, fmtDate } from '~/data/runs'
+import { CHALLENGE_START, CHALLENGE_DAYS, challengeDays, runTotals, weightsByDate, pushupsByDate, toSec, fmtDuration, fmtPace, fmtDate } from '~/data/runs'
 
 const title = '100 Days Challenge · Running Non Stop'
 const description = '100 days of running, every single day. Day-by-day tracker.'
-const CHALLENGE_DAYS = 100
 const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '')
 
-const byDay = runsByDay() // oldest → newest, Day 1 first
-const { count, totalMi, totalSec, avgPaceSec, first } = runTotals()
+const days = challengeDays() // every calendar day since Day 1, oldest → newest
+const { count, totalMi, totalSec, avgPaceSec } = runTotals()
 
 const weightLog = weightsByDate()
 const latestWeight = weightLog[weightLog.length - 1] ?? null
 const firstWeight = weightLog[0] ?? null
 const weightChange = latestWeight && firstWeight && latestWeight !== firstWeight ? latestWeight.lb - firstWeight.lb : null
+
+const pushupLog = pushupsByDate()
+const totalPushups = pushupLog.reduce((a, p) => a + p.count, 0)
+const latestPushups = pushupLog[pushupLog.length - 1] ?? null
 
 // change vs the previous run day
 type Delta = { text: string; dir: 'up' | 'down' | 'flat' } | null
@@ -26,15 +29,16 @@ const delta = (cur: number | undefined, prev: number | undefined, fmt: (n: numbe
 const signed = (n: number, unit: string) => `${n > 0 ? '+' : '−'}${Math.abs(n).toFixed(1)} ${unit}`
 
 // challenge counter (server-side fallback; the browser recomputes it live)
-const startDate = first?.date ?? '2026-09-23'
+const startDate = CHALLENGE_START
 const endDate = new Date(startDate + 'T12:00:00')
 endDate.setDate(endDate.getDate() + CHALLENGE_DAYS - 1)
 const endIso = endDate.toISOString().slice(0, 10)
 const today = new Date()
 const dayNow = Math.min(CHALLENGE_DAYS, Math.max(1, Math.floor((today.getTime() - new Date(startDate + 'T00:00:00').getTime()) / 86400000) + 1))
 
-// previous logged weight before a given run date (so weight deltas work across rest-day weigh-ins)
+// previous logged value before a given date (so deltas work across rest days)
 const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => w.date < date)?.lb
+const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) => p.date < date)?.count
 ---
 
 <!doctype html>
@@ -105,7 +109,11 @@ const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => 
       .challenge .dates b { color: var(--text); font-weight: 600; }
 
       .summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      @media (min-width: 560px) { .summary { grid-template-columns: repeat(4, 1fr); } }
+      .summary .tile:last-child:nth-child(odd) { grid-column: 1 / -1; }
+      @media (min-width: 560px) {
+        .summary { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+        .summary .tile:last-child:nth-child(odd) { grid-column: auto; }
+      }
       .tile { background: var(--card); border-radius: 14px; padding: 14px 16px; }
       .tile .label { color: var(--muted); font-size: 0.82rem; font-weight: 600; }
       .tile .value { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; margin-top: 2px; white-space: nowrap; }
@@ -113,13 +121,15 @@ const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => 
       .tile .sub { color: var(--muted); font-size: 0.8rem; margin-top: 2px; }
 
       .table-wrap { background: var(--card); border-radius: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 0.95rem; }
+      table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 0.95rem; }
       th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: top; }
       th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
       tr:last-child td { border-bottom: none; }
       td .v { font-weight: 700; font-size: 1.1rem; }
       .daycell { font-weight: 700; }
       .datecell { color: var(--muted); }
+      tr.rest .daycell, tr.rest .datecell { color: var(--muted); }
+      .rest-label { display: inline-block; color: var(--muted); font-size: 0.85rem; font-style: italic; }
       .delta { display: block; font-size: 0.78rem; margin-top: 2px; color: var(--muted); }
       .delta.up { color: var(--green); }
       .delta.down { color: var(--red); }
@@ -184,37 +194,64 @@ const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => 
               : 'not logged yet'}
           </div>
         </div>
+        <div class="tile">
+          <div class="label">Push-ups</div>
+          <div class="value green">{totalPushups}</div>
+          <div class="sub">
+            {latestPushups
+              ? `${latestPushups.count} on ${fmtDate(latestPushups.date, { month: 'short', day: 'numeric' })}`
+              : 'not logged yet'}
+          </div>
+        </div>
       </section>
 
       <h2>Day by day</h2>
       <div class="table-wrap">
-        {byDay.length === 0 && <p class="empty">No runs logged yet.</p>}
-        {byDay.length > 0 && (
+        {days.length === 0 && <p class="empty">Nothing logged yet.</p>}
+        {days.length > 0 && (
           <table>
             <thead>
               <tr>
-                <th>Day</th><th>Date</th><th>Distance</th><th>Time</th><th>Pace</th><th>Heart rate</th><th>Weight</th>
+                <th>Day</th><th>Date</th><th>Distance</th><th>Time</th><th>Pace</th><th>Heart rate</th><th>Weight</th><th>Push-ups</th>
               </tr>
             </thead>
             <tbody>
-              {byDay.map((r, i) => {
-                const p = i > 0 ? byDay[i - 1] : undefined
-                const w = weightOn(r.date)
-                const cells: [string, string, Delta][] = [
-                  [`${r.distanceMi.toFixed(2)} mi`, 'blue', delta(r.distanceMi, p?.distanceMi, (n) => `${n.toFixed(2)} mi`)],
-                  [r.workoutTime, 'yellow', delta(toSec(r.workoutTime), p ? toSec(p.workoutTime) : undefined, fmtDuration)],
-                  [`${fmtPace(toSec(r.avgPace))}/mi`, 'cyan', delta(toSec(r.avgPace), p ? toSec(p.avgPace) : undefined, fmtDuration, true)],
-                  [r.avgHrBpm ? `${r.avgHrBpm} bpm` : '–', 'orange', delta(r.avgHrBpm, p?.avgHrBpm, (n) => `${n} bpm`, true)],
-                  [w != null ? `${w.toFixed(1)} lb` : '–', 'purple', delta(w, prevWeightBefore(r.date), (n) => `${n.toFixed(1)} lb`, true)],
+              {days.map((d, i) => {
+                const r = d.run
+                // compare against the most recent run before this day, skipping rest days
+                const p = days.slice(0, i).reverse().find((x) => x.run)?.run
+                const w = d.weight
+                const pu = d.pushups
+                const runCells: [string, string, Delta][] = r
+                  ? [
+                      [`${r.distanceMi.toFixed(2)} mi`, 'blue', delta(r.distanceMi, p?.distanceMi, (n) => `${n.toFixed(2)} mi`)],
+                      [r.workoutTime, 'yellow', delta(toSec(r.workoutTime), p ? toSec(p.workoutTime) : undefined, fmtDuration)],
+                      [`${fmtPace(toSec(r.avgPace))}/mi`, 'cyan', delta(toSec(r.avgPace), p ? toSec(p.avgPace) : undefined, fmtDuration, true)],
+                      [r.avgHrBpm ? `${r.avgHrBpm} bpm` : '–', 'orange', delta(r.avgHrBpm, p?.avgHrBpm, (n) => `${n} bpm`, true)],
+                    ]
+                  : []
+                const bodyCells: [string, string, Delta][] = [
+                  [w != null ? `${w.toFixed(1)} lb` : '–', 'purple', delta(w, prevWeightBefore(d.date), (n) => `${n.toFixed(1)} lb`, true)],
+                  [pu != null ? String(pu) : '–', 'green', delta(pu, prevPushupsBefore(d.date), (n) => String(n))],
                 ]
                 return (
-                  <tr>
-                    <td class="daycell">Day {r.day}</td>
-                    <td class="datecell">{fmtDate(r.date, { weekday: 'short', month: 'short', day: 'numeric' })}</td>
-                    {cells.map(([v, c, d]) => (
+                  <tr class={r ? undefined : 'rest'}>
+                    <td class="daycell">Day {d.day}</td>
+                    <td class="datecell">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</td>
+                    {r ? (
+                      runCells.map(([v, c, dl]) => (
+                        <td>
+                          <span class={`v ${c}`}>{v}</span>
+                          {dl && <span class={`delta ${dl.dir}`}>{dl.text}</span>}
+                        </td>
+                      ))
+                    ) : (
+                      <td colspan="4"><span class="rest-label">No run</span></td>
+                    )}
+                    {bodyCells.map(([v, c, dl]) => (
                       <td>
                         <span class={`v ${c}`}>{v}</span>
-                        {d && <span class={`delta ${d.dir}`}>{d.text}</span>}
+                        {dl && <span class={`delta ${dl.dir}`}>{dl.text}</span>}
                       </td>
                     ))}
                   </tr>
@@ -224,7 +261,7 @@ const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => 
           </table>
         )}
       </div>
-      <p class="note">Green = better than the previous run (longer, faster, lower heart rate, lower weight). Weight can also be logged on rest days.</p>
+      <p class="note">Green = better than the previous run (longer, faster, lower heart rate, lower weight, more push-ups). Weight and push-ups can also be logged on rest days.</p>
 
       {weightLog.length > 1 && (
         <>

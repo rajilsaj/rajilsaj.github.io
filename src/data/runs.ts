@@ -1,8 +1,13 @@
 /**
- * Day-by-day running log, shown at /run.
- * Add one entry per run (any order — the page sorts by date, newest first).
- * Values are copied from the Apple Fitness workout summary.
+ * 100 Days Challenge log, shown at /run.
+ * Three logs, each keyed by ISO date: runs, weigh-ins, push-ups.
+ * Add entries in any order — the page sorts by date.
  */
+
+/** Day 1 of the challenge. */
+export const CHALLENGE_START = '2026-09-23'
+export const CHALLENGE_DAYS = 100
+
 export type Run = {
   /** ISO date, e.g. '2026-09-23' */
   date: string
@@ -30,6 +35,7 @@ export type Run = {
   notes?: string
 }
 
+/** One entry per run. Values are copied from the Apple Fitness workout summary. */
 export const runs: Run[] = [
   {
     date: '2026-09-23',
@@ -48,15 +54,18 @@ export const runs: Run[] = [
   },
 ]
 
-/**
- * Weight log, shown at /run. One entry per weigh-in (run days or rest days).
- * Weight in pounds.
- */
+/** Weight log. One entry per weigh-in (run days or rest days). Weight in pounds. */
 export type Weight = { date: string; lb: number }
 
 export const weights: Weight[] = [
   { date: '2026-09-24', lb: 150.7 },
+  { date: '2026-09-25', lb: 152.1 },
 ]
+
+/** Push-up log. One entry per day, total push-ups done that day. */
+export type Pushups = { date: string; count: number }
+
+export const pushups: Pushups[] = []
 
 // ---------- helpers shared by /run and the homepage ----------
 
@@ -80,17 +89,51 @@ export const fmtPace = (secPerMi: number) => {
 export const fmtDate = (iso: string, opts: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }) =>
   new Date(iso + 'T12:00:00').toLocaleDateString('en-US', opts)
 
+const DAY_MS = 86400000
+const utc = (iso: string) => Date.parse(iso + 'T00:00:00Z')
+
+/** ISO date `n` days after `iso`. */
+export const addDays = (iso: string, n: number) => new Date(utc(iso) + n * DAY_MS).toISOString().slice(0, 10)
+
+/** Challenge day number for a date: Day 1 = CHALLENGE_START. */
+export const dayNumber = (date: string) => Math.round((utc(date) - utc(CHALLENGE_START)) / DAY_MS) + 1
+
 export type DayRun = Run & { day: number }
 
-/** Runs sorted oldest → newest, numbered Day 1, Day 2, … */
+/** Runs sorted oldest → newest, each tagged with its challenge day number. */
 export const runsByDay = (): DayRun[] =>
-  [...runs].sort((a, b) => a.date.localeCompare(b.date)).map((r, i) => ({ ...r, day: i + 1 }))
+  [...runs].sort((a, b) => a.date.localeCompare(b.date)).map((r) => ({ ...r, day: dayNumber(r.date) }))
 
 /** Weigh-ins sorted oldest → newest. */
 export const weightsByDate = (): Weight[] => [...weights].sort((a, b) => a.date.localeCompare(b.date))
 
+/** Push-up entries sorted oldest → newest. */
+export const pushupsByDate = (): Pushups[] => [...pushups].sort((a, b) => a.date.localeCompare(b.date))
+
 /** Weight logged on a given day, if any. */
 export const weightOn = (date: string): number | undefined => weights.find((w) => w.date === date)?.lb
+
+/** Push-ups logged on a given day, if any. */
+export const pushupsOn = (date: string): number | undefined => pushups.find((p) => p.date === date)?.count
+
+/** Latest date with anything logged (run, weigh-in or push-ups), or CHALLENGE_START. */
+export const latestLoggedDate = () =>
+  [CHALLENGE_START, ...runs.map((r) => r.date), ...weights.map((w) => w.date), ...pushups.map((p) => p.date)].sort().pop()!
+
+export type ChallengeDay = { day: number; date: string; run?: DayRun; weight?: number; pushups?: number }
+
+/**
+ * Every calendar day from CHALLENGE_START through the latest logged date,
+ * oldest → newest, with whatever was logged that day. Rest days have no `run`.
+ */
+export const challengeDays = (): ChallengeDay[] => {
+  const byDate = new Map(runsByDay().map((r) => [r.date, r]))
+  const last = Math.min(CHALLENGE_DAYS, dayNumber(latestLoggedDate()))
+  return Array.from({ length: last }, (_, i) => {
+    const date = addDays(CHALLENGE_START, i)
+    return { day: i + 1, date, run: byDate.get(date), weight: weightOn(date), pushups: pushupsOn(date) }
+  })
+}
 
 /** Aggregate totals across all runs. */
 export const runTotals = () => {
