@@ -18,8 +18,8 @@ export type Run = {
   workoutTime: string
   /** Elapsed time incl. pauses, 'h:mm:ss' or 'mm:ss' */
   elapsedTime?: string
-  /** Distance in miles */
-  distanceMi: number
+  /** Distance in miles (omit until the workout summary is logged) */
+  distanceMi?: number
   activeCal?: number
   totalCal?: number
   /** Elevation gain in feet */
@@ -28,12 +28,19 @@ export type Run = {
   avgPowerW?: number
   /** Average cadence in steps per minute */
   avgCadenceSpm?: number
-  /** Average pace, 'mm:ss' per mile */
-  avgPace: string
+  /** Average pace, 'mm:ss' per mile (omit until the workout summary is logged) */
+  avgPace?: string
   /** Average heart rate in bpm */
   avgHrBpm?: number
+  /** Time in heart rate zones 1–5, 'mm:ss' each, from the Heart Rate detail screen */
+  hrZones?: [string, string, string, string, string]
+  /** Post-workout heart rate: at the end, after 1 min, after 2 min (bpm) */
+  recoveryHr?: { end: number; min1: number; min2: number }
   notes?: string
 }
+
+/** Zone boundaries shown in Apple Fitness (bpm). */
+export const HR_ZONES = ['<132', '133–145', '146–157', '158–170', '171+']
 
 /** One entry per run. Values are copied from the Apple Fitness workout summary. */
 export const runs: Run[] = [
@@ -51,6 +58,16 @@ export const runs: Run[] = [
     avgCadenceSpm: 164,
     avgPace: '10:04',
     avgHrBpm: 166,
+  },
+  {
+    // Day 3 — heart rate screen logged first; distance/pace to be added from the workout summary
+    date: '2026-09-25',
+    time: '5:35 AM – 6:42 AM',
+    location: 'Fayetteville',
+    workoutTime: '57:45', // sum of the five zone times
+    avgHrBpm: 163,
+    hrZones: ['0:25', '1:49', '8:38', '34:25', '12:28'],
+    recoveryHr: { end: 152, min1: 123, min2: 119 },
   },
 ]
 
@@ -138,14 +155,17 @@ export const challengeDays = (): ChallengeDay[] => {
 /** Aggregate totals across all runs. */
 export const runTotals = () => {
   const all = runsByDay()
-  const totalMi = all.reduce((a, r) => a + r.distanceMi, 0)
+  const measured = all.filter((r) => r.distanceMi != null) // runs with a logged distance
+  const totalMi = measured.reduce((a, r) => a + r.distanceMi!, 0)
   const totalSec = all.reduce((a, r) => a + toSec(r.workoutTime), 0)
+  const measuredSec = measured.reduce((a, r) => a + toSec(r.workoutTime), 0)
   const totalElev = all.reduce((a, r) => a + (r.elevationFt ?? 0), 0)
   const totalCal = all.reduce((a, r) => a + (r.totalCal ?? 0), 0)
   const hrRuns = all.filter((r) => r.avgHrBpm)
   const avgHr = hrRuns.length ? Math.round(hrRuns.reduce((a, r) => a + r.avgHrBpm!, 0) / hrRuns.length) : null
-  const avgPaceSec = totalMi > 0 ? totalSec / totalMi : 0
-  const longest = all.length ? Math.max(...all.map((r) => r.distanceMi)) : 0
-  const fastest = all.length ? all.reduce((b, r) => (toSec(r.avgPace) < toSec(b.avgPace) ? r : b), all[0]) : null
-  return { count: all.length, totalMi, totalSec, totalElev, totalCal, avgHr, avgPaceSec, longest, fastest, latest: all[all.length - 1] ?? null, first: all[0] ?? null }
+  const avgPaceSec = totalMi > 0 ? measuredSec / totalMi : 0
+  const longest = measured.length ? Math.max(...measured.map((r) => r.distanceMi!)) : 0
+  const paced = all.filter((r) => r.avgPace)
+  const fastest = paced.length ? paced.reduce((b, r) => (toSec(r.avgPace!) < toSec(b.avgPace!) ? r : b), paced[0]) : null
+  return { count: all.length, measured: measured.length, totalMi, totalSec, totalElev, totalCal, avgHr, avgPaceSec, longest, fastest, latest: all[all.length - 1] ?? null, first: all[0] ?? null }
 }

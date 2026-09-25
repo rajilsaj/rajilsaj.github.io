@@ -1,12 +1,12 @@
 ---
-import { CHALLENGE_START, CHALLENGE_DAYS, challengeDays, runTotals, weightsByDate, pushupsByDate, toSec, fmtDuration, fmtPace, fmtDate } from '~/data/runs'
+import { CHALLENGE_START, CHALLENGE_DAYS, HR_ZONES, challengeDays, runTotals, weightsByDate, pushupsByDate, toSec, fmtDuration, fmtPace, fmtDate } from '~/data/runs'
 
 const title = '100 Days Challenge · Running Non Stop'
 const description = '100 days of running, every single day. Day-by-day tracker.'
 const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '')
 
 const days = challengeDays() // every calendar day since Day 1, oldest → newest
-const { count, totalMi, totalSec, avgPaceSec } = runTotals()
+const { count, measured, totalMi, totalSec, avgPaceSec } = runTotals()
 
 const weightLog = weightsByDate()
 const latestWeight = weightLog[weightLog.length - 1] ?? null
@@ -205,6 +205,11 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       tr.rest .daycell, tr.rest .datecell { color: var(--muted); }
       .rest-label { display: inline-block; color: var(--muted); font-size: 0.85rem; font-style: italic; }
       .delta { display: block; font-size: 0.78rem; margin-top: 2px; color: var(--muted); }
+      /* heart-rate zone strip: zones 1–5 sized by time spent, under the average heart rate */
+      .zones { display: flex; gap: 2px; height: 5px; margin-top: 6px; min-width: 96px; }
+      .zones i { display: block; flex-basis: 0; min-width: 2px; border-radius: 3px; }
+      .z1 { background: #0a84ff; } .z2 { background: #5ac8fa; } .z3 { background: #c8f22b; } .z4 { background: #ff9f0a; } .z5 { background: #ff375f; }
+      .rec { display: block; font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
       .delta.up { color: var(--green); }
       .delta.down { color: var(--red); }
       .yellow { color: var(--yellow); } .blue { color: var(--blue); } .red { color: var(--red); }
@@ -253,7 +258,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         <div class="tile">
           <div class="label">Distance</div>
           <div class="value blue">{totalMi.toFixed(1)}<small>MI</small></div>
-          <div class="sub">{count ? (totalMi / count).toFixed(2) : '–'} mi per run</div>
+          <div class="sub">{measured ? (totalMi / measured).toFixed(2) : '–'} mi per run</div>
         </div>
         <div class="tile">
           <div class="label">Avg. pace</div>
@@ -301,12 +306,14 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                 const pu = d.pushups
                 const runCells: [string, string, Delta][] = r
                   ? [
-                      [`${r.distanceMi.toFixed(2)} mi`, 'blue', delta(r.distanceMi, p?.distanceMi, (n) => `${n.toFixed(2)} mi`)],
+                      [r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : '–', 'blue', delta(r.distanceMi, p?.distanceMi, (n) => `${n.toFixed(2)} mi`)],
                       [r.workoutTime, 'yellow', delta(toSec(r.workoutTime), p ? toSec(p.workoutTime) : undefined, fmtDuration)],
-                      [`${fmtPace(toSec(r.avgPace))}/mi`, 'cyan', delta(toSec(r.avgPace), p ? toSec(p.avgPace) : undefined, fmtDuration, true)],
+                      [r.avgPace ? `${fmtPace(toSec(r.avgPace))}/mi` : '–', 'cyan', delta(r.avgPace ? toSec(r.avgPace) : undefined, p?.avgPace ? toSec(p.avgPace) : undefined, fmtDuration, true)],
                       [r.avgHrBpm ? `${r.avgHrBpm} bpm` : '–', 'orange', delta(r.avgHrBpm, p?.avgHrBpm, (n) => `${n} bpm`, true)],
                     ]
                   : []
+                const zoneSec = r?.hrZones?.map(toSec) ?? []
+                const zoneTotal = zoneSec.reduce((a, b) => a + b, 0)
                 const bodyCells: [string, string, Delta][] = [
                   [w != null ? `${w.toFixed(1)} lb` : '–', 'purple', delta(w, prevWeightBefore(d.date), (n) => `${n.toFixed(1)} lb`, true)],
                   [pu != null ? String(pu) : '–', 'green', delta(pu, prevPushupsBefore(d.date), (n) => String(n))],
@@ -315,10 +322,18 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                   <tr class={r ? undefined : 'rest'}>
                     <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span></td>
                     {r ? (
-                      runCells.map(([v, c, dl]) => (
+                      runCells.map(([v, c, dl], ci) => (
                         <td>
                           <span class={`v ${c}`}>{v}</span>
                           {dl && <span class={`delta ${dl.dir}`}>{dl.text}</span>}
+                          {ci === 3 && zoneTotal > 0 && (
+                            <span class="zones" aria-label="Time in heart rate zones">
+                              {zoneSec.map((s, zi) => (
+                                <i class={`z${zi + 1}`} style={`flex-grow:${s}`} title={`Zone ${zi + 1} · ${r.hrZones![zi]} · ${HR_ZONES[zi]} bpm`}></i>
+                              ))}
+                            </span>
+                          )}
+                          {ci === 3 && r.recoveryHr && <span class="rec" title="Post-workout heart rate: end → 1 min → 2 min">↓ {r.recoveryHr.end} · {r.recoveryHr.min1} · {r.recoveryHr.min2}</span>}
                         </td>
                       ))
                     ) : (

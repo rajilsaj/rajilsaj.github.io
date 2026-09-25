@@ -58,7 +58,7 @@ const latest = running.latest
       {
         latest && (
           <p>
-            Last run: <strong>{latest.distanceMi.toFixed(2)} mi in {latest.workoutTime}</strong> (
+            Last run: <strong>{latest.distanceMi != null ? `${latest.distanceMi.toFixed(2)} mi in ` : ''}{latest.workoutTime}</strong> (
             <a href="/run" class="no-underline hover:underline">{fmtDate(latest.date, { month: 'short', day: 'numeric' })}</a>, day {latest.day}).
           </p>
         )
@@ -78,7 +78,7 @@ const latest = running.latest
         <div class="grid grid-cols-2 gap-x-4 gap-y-4 rounded-lg border border-separator/60 p-4 sm:grid-cols-5">
           <div>
             <div class="text-xs text-foreground/45">Distance</div>
-            <div class="text-xl font-semibold text-blue">{latest.distanceMi.toFixed(2)}<span class="ml-0.5 text-xs">mi</span></div>
+            <div class="text-xl font-semibold text-blue">{latest.distanceMi != null ? latest.distanceMi.toFixed(2) : '–'}<span class="ml-0.5 text-xs">mi</span></div>
           </div>
           <div>
             <div class="text-xs text-foreground/45">Time</div>
@@ -86,7 +86,7 @@ const latest = running.latest
           </div>
           <div>
             <div class="text-xs text-foreground/45">Pace</div>
-            <div class="text-xl font-semibold text-cyan">{fmtPace(toSec(latest.avgPace))}<span class="ml-0.5 text-xs">/mi</span></div>
+            <div class="text-xl font-semibold text-cyan">{latest.avgPace ? fmtPace(toSec(latest.avgPace)) : '–'}<span class="ml-0.5 text-xs">/mi</span></div>
           </div>
           <div>
             <div class="text-xs text-foreground/45">Heart rate</div>
