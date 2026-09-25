@@ -155,8 +155,17 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         .challenge { padding: 16px; gap: 12px; }
         .mascot { width: 86px; height: 100px; border-radius: 12px; }
         .challenge .count { font-size: 2.1rem; }
-        h1 { font-size: 1.5rem; }
+        h1 { font-size: clamp(1.25rem, 6.2vw, 1.5rem); }
         .challenge .range { font-size: 0.8rem; }
+      }
+      /* small phones: mascot tucks beside the counter, bar and caption take the full card width */
+      @media (max-width: 479px) {
+        .challenge { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'top mascot' 'bar bar' 'caption caption'; gap: 0 12px; align-items: start; }
+        .challenge .body { display: contents; }
+        .challenge .top { grid-area: top; flex-direction: column; align-items: flex-start; gap: 6px; }
+        .track { grid-area: bar; margin-top: 14px; }
+        .challenge .caption { grid-area: caption; }
+        .mascot { grid-area: mascot; width: 72px; height: 84px; }
       }
       .challenge .top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
       .challenge .count { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; white-space: nowrap; }
@@ -167,11 +176,10 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       /* progress: ten segments, one per ten-day block, filled left to right */
       .track { display: flex; gap: 6px; height: 8px; margin: 18px 0 10px; }
       .seg { flex: 1; min-width: 0; height: 100%; border-radius: 999px; background: var(--bar-track); overflow: hidden; }
-      .seg i { --w: 0%; display: block; height: 100%; width: var(--w); border-radius: 999px; background: var(--bar); transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+      .seg i { --w: 0%; display: block; height: 100%; width: var(--w); border-radius: 999px; background: var(--bar); }
       .challenge .caption { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; color: var(--muted); font-size: 0.82rem; }
       .challenge .caption b { color: var(--text); font-weight: 600; }
       .challenge .caption .pct { flex: none; font-weight: 800; font-size: 0.78rem; color: var(--bar-pill-text); background: var(--bar-pill-bg); padding: 4px 10px; border-radius: 999px; line-height: 1; letter-spacing: 0.02em; }
-      @media (prefers-reduced-motion: reduce) { .seg i { transition: none; } }
 
       /* tiles: 2 per row on phones, 3 on tablets, all 5 in one row on desktop; last row always stretches to fill */
       .summary { display: flex; flex-wrap: wrap; gap: 10px; }
