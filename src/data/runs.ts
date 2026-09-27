@@ -1,6 +1,6 @@
 /**
  * 100 Days Challenge log, shown at /run.
- * Three logs, each keyed by ISO date: runs, weigh-ins, push-ups.
+ * Four logs, each keyed by ISO date: runs, weigh-ins, push-ups, rest days.
  * Add entries in any order — the page sorts by date.
  */
 
@@ -96,6 +96,14 @@ export const pushups: Pushups[] = [
   { date: '2026-09-25', count: 15 },
 ]
 
+/**
+ * Rest days with nothing else logged. Rest days between logged dates show up on
+ * their own; list a date here only when it would otherwise be missing from the page.
+ */
+export const restDays: string[] = [
+  '2026-09-26', // day 4
+]
+
 // ---------- helpers shared by /run and the homepage ----------
 
 export const toSec = (t: string) => t.split(':').map(Number).reduce((a, b) => a * 60 + b, 0)
@@ -145,9 +153,9 @@ export const weightOn = (date: string): number | undefined => weights.find((w) =
 /** Push-ups logged on a given day, if any. */
 export const pushupsOn = (date: string): number | undefined => pushups.find((p) => p.date === date)?.count
 
-/** Latest date with anything logged (run, weigh-in or push-ups), or CHALLENGE_START. */
+/** Latest date with anything logged (run, weigh-in, push-ups or rest day), or CHALLENGE_START. */
 export const latestLoggedDate = () =>
-  [CHALLENGE_START, ...runs.map((r) => r.date), ...weights.map((w) => w.date), ...pushups.map((p) => p.date)].sort().pop()!
+  [CHALLENGE_START, ...runs.map((r) => r.date), ...weights.map((w) => w.date), ...pushups.map((p) => p.date), ...restDays].sort().pop()!
 
 export type ChallengeDay = { day: number; date: string; run?: DayRun; weight?: number; pushups?: number }
 
