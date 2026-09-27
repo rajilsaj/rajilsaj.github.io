@@ -105,6 +105,43 @@ export const restDays: string[] = [
   '2026-09-26', // day 4
 ]
 
+// ---------- performance levels ----------
+
+/**
+ * Levels earned by average pace, themed on anime and movie franchises.
+ * Ordered fastest → slowest: a run earns the first level whose `under`
+ * pace (min/mi) it beats. The last level is the catch-all.
+ */
+export type Level = { name: string; from: string; icon: string; smiley: string; under: string }
+
+export const LEVELS: Level[] = [
+  { name: 'Over 9000', from: 'Dragon Ball Z', icon: 'scouter', smiley: '🤩', under: '8:30' },
+  { name: 'Super Saiyan', from: 'Dragon Ball Z', icon: 'dragonball', smiley: '😎', under: '9:00' },
+  { name: 'Pokémon Trainer', from: 'Pokémon', icon: 'pokeball', smiley: '😄', under: '9:30' },
+  { name: 'Genin', from: 'Naruto', icon: 'spiral', smiley: '😃', under: '10:00' },
+  { name: 'Padawan', from: 'Star Wars', icon: 'saber', smiley: '😊', under: '10:30' },
+  { name: 'Hobbit', from: 'The Lord of the Rings', icon: 'ring', smiley: '🙂', under: '11:00' },
+  { name: 'Muggle', from: 'Harry Potter', icon: 'bolt', smiley: '😅', under: '99:59' },
+]
+
+/** Level index for an average pace (seconds per mile). */
+export const levelIndexFor = (paceSec: number) => {
+  const i = LEVELS.findIndex((l) => paceSec < toSec(l.under))
+  return i === -1 ? LEVELS.length - 1 : i
+}
+
+/** Level earned by a run, or null when its pace is not logged yet. */
+export const levelOf = (r: Run): Level | null => (r.avgPace ? LEVELS[levelIndexFor(toSec(r.avgPace))] : null)
+
+/** The level above a given one (faster), or null at the top. */
+export const nextLevel = (level: Level): Level | null => {
+  const i = LEVELS.indexOf(level)
+  return i > 0 ? LEVELS[i - 1] : null
+}
+
+/** Most recent run with a logged pace, or null. */
+export const latestPacedRun = (): DayRun | null => [...runsByDay()].reverse().find((r) => r.avgPace) ?? null
+
 // ---------- helpers shared by /run and the homepage ----------
 
 export const toSec = (t: string) => t.split(':').map(Number).reduce((a, b) => a * 60 + b, 0)

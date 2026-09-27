@@ -1,5 +1,6 @@
 ---
-import { CHALLENGE_START, CHALLENGE_DAYS, HR_ZONES, challengeDays, runTotals, weightsByDate, pushupsByDate, toSec, fmtDuration, fmtPace, fmtDate } from '~/data/runs'
+import { CHALLENGE_START, CHALLENGE_DAYS, HR_ZONES, LEVELS, challengeDays, runTotals, weightsByDate, pushupsByDate, levelOf, nextLevel, latestPacedRun, toSec, fmtDuration, fmtPace, fmtDate } from '~/data/runs'
+import type { Level } from '~/data/runs'
 
 const title = '100 Days Challenge · Running Non Stop'
 const description = '100 days of running, every single day. Day-by-day tracker.'
@@ -35,6 +36,24 @@ endDate.setDate(endDate.getDate() + CHALLENGE_DAYS - 1)
 const endIso = endDate.toISOString().slice(0, 10)
 const today = new Date()
 const dayNow = Math.min(CHALLENGE_DAYS, Math.max(1, Math.floor((today.getTime() - new Date(startDate + 'T00:00:00').getTime()) / 86400000) + 1))
+
+// performance level: earned by average pace, themed on anime and movie franchises
+const lastPaced = latestPacedRun()
+const currentLevel = lastPaced ? levelOf(lastPaced) : null
+const upNext = currentLevel ? nextLevel(currentLevel) : null
+const isBottom = (l: Level) => l === LEVELS[LEVELS.length - 1]
+const levelTitle = (l: Level) => `${l.from} · ${isBottom(l) ? 'any pace' : `faster than ${fmtPace(toSec(l.under))}/mi`}`
+// small hand-drawn icons (24×24), one per franchise
+const star = 'M0-2.6l.8 1.6 1.8.3-1.3 1.3.3 1.8L0 1.6l-1.6.8.3-1.8-1.3-1.3 1.8-.3z'
+const ICONS: Record<string, string> = {
+  scouter: `<ellipse cx="13.5" cy="12" rx="9.5" ry="7" fill="#3ddc84" stroke="#0b6b3a" stroke-width="1.6"/><path d="M8 9.5h7" stroke="#0b6b3a" stroke-width="1.4" stroke-linecap="round" opacity=".75"/><path d="M8 12.5h4" stroke="#0b6b3a" stroke-width="1.4" stroke-linecap="round" opacity=".75"/><rect x="1" y="9.5" width="4.5" height="5" rx="1.4" fill="#6b7280"/>`,
+  dragonball: `<circle cx="12" cy="12" r="10" fill="#ff9f1a"/><circle cx="9" cy="8.5" r="2.2" fill="#fff" opacity=".35"/>${[[9, 9], [15, 9], [9, 15], [15, 15]].map(([x, y]) => `<path d="${star}" transform="translate(${x} ${y})" fill="#e5261b"/>`).join('')}`,
+  pokeball: `<circle cx="12" cy="12" r="10" fill="#fff" stroke="#22252b" stroke-width="2"/><path d="M2 12a10 10 0 0 1 20 0z" fill="#e3350d"/><path d="M2 12h20" stroke="#22252b" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="#fff" stroke="#22252b" stroke-width="2"/>`,
+  spiral: `<circle cx="12" cy="12" r="10" fill="#fff3e6"/><path d="M12 12a1 1 0 0 1 2 0a2 2 0 0 1-4 0a3 3 0 0 1 6 0a4 4 0 0 1-8 0a5 5 0 0 1 10 0a6 6 0 0 1-12 0" fill="none" stroke="#ff5e7e" stroke-width="1.8" stroke-linecap="round"/>`,
+  saber: `<path d="M7.5 16.5 20 4" stroke="#4ad6ff" stroke-width="6.5" stroke-linecap="round" opacity=".35"/><path d="M7.5 16.5 20 4" stroke="#e8fbff" stroke-width="2.6" stroke-linecap="round"/><path d="M2.5 21.5 6.5 17.5" stroke="#9aa3ad" stroke-width="4.2" stroke-linecap="round"/><path d="M4 20 5.2 18.8" stroke="#3b4048" stroke-width="1.4"/>`,
+  ring: `<circle cx="12" cy="12" r="7.5" fill="none" stroke="#e8b923" stroke-width="4"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="#fff3b0" stroke-width="1" opacity=".8"/>`,
+  bolt: `<path d="M13.5 1.5 5 13.5h5.5L9.5 22.5 19 10h-5.5z" fill="#f5c518" stroke="#b8860b" stroke-width=".8" stroke-linejoin="round"/>`,
+}
 
 // previous logged value before a given date (so deltas work across rest days)
 const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => w.date < date)?.lb
@@ -156,7 +175,8 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       }
       /* small phones: mascot tucks beside the counter, bar and caption take the full card width */
       @media (max-width: 479px) {
-        .challenge { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'top mascot' 'bar bar' 'caption caption'; gap: 0 12px; align-items: start; }
+        .challenge { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'top mascot' 'bar bar' 'caption caption' 'level level'; gap: 0 12px; align-items: start; }
+        .challenge .level { grid-area: level; }
         .challenge .body { display: contents; }
         .challenge .top { grid-area: top; flex-direction: column; align-items: flex-start; gap: 6px; }
         .track { grid-area: bar; margin-top: 14px; }
@@ -215,6 +235,24 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .green { color: var(--green); } .cyan { color: var(--cyan); } .orange { color: var(--orange); } .purple { color: var(--purple); }
       .empty { color: var(--muted); padding: 20px; text-align: center; }
 
+      /* performance level chip: icon + level name + smiley */
+      .lvl { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px 4px 6px; border-radius: 999px; background: var(--card-2); border: 1px solid var(--line); font-size: 0.78rem; font-weight: 700; color: var(--text); white-space: nowrap; line-height: 1; vertical-align: middle; }
+      .lvl svg { width: 16px; height: 16px; flex: none; }
+      .lvl .smile { font-size: 0.95rem; font-weight: 400; }
+      .daycell .lvl { margin-top: 7px; }
+      .challenge .level { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 14px; color: var(--muted); font-size: 0.82rem; }
+      .challenge .level .lvl { font-size: 0.85rem; padding: 6px 11px 6px 7px; background: var(--bar-pill-bg); border-color: transparent; color: var(--bar-pill-text); }
+      .challenge .level .lvl svg { width: 18px; height: 18px; }
+      .challenge .level .next { display: inline-flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+      .challenge .level .next svg { width: 14px; height: 14px; }
+      .challenge .level .next b { color: var(--text); font-weight: 600; }
+      .levels { display: flex; flex-wrap: wrap; gap: 8px; }
+      .levels .lvl { padding: 8px 12px 8px 9px; font-size: 0.85rem; gap: 8px; white-space: normal; }
+      .levels .lvl svg { width: 20px; height: 20px; }
+      .levels .lvl .meta { display: block; margin-top: 3px; font-weight: 400; font-size: 0.72rem; color: var(--muted); }
+      .levels .lvl.current { border-color: var(--lime); box-shadow: inset 0 0 0 1px var(--lime); }
+      .levels .lvl .smile { font-size: 1.05rem; }
+
       /* phones and small tablets: each day becomes a card with a two-column grid of labelled stats */
       @media (max-width: 739px) {
         .daylog thead { display: none; }
@@ -222,8 +260,9 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         .daylog tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 14px; padding: 14px 16px 16px; border-bottom: 1px solid var(--line); }
         .daylog tr:last-child { border-bottom: none; }
         .daylog td { display: block; padding: 0; border: 0; white-space: normal; min-width: 0; }
-        .daylog td.daycell { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 8px; font-size: 1.05rem; }
+        .daylog td.daycell { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 1.05rem; }
         .daylog td.daycell .datesub { display: inline; margin: 0; }
+        .daylog td.daycell .lvl { margin: 0 0 0 auto; }
         .daylog td[colspan] { grid-column: 1 / -1; }
         .daylog tr.rest { gap: 6px 14px; }
         .daylog tr.rest td[colspan] { margin-bottom: 4px; }
@@ -262,6 +301,23 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
           <span><b><span id="days-left">{CHALLENGE_DAYS - dayNow}</span> days</b> to go · {count} {count === 1 ? 'run' : 'runs'} logged</span>
           <span class="pct" id="pct">{Math.round((dayNow / CHALLENGE_DAYS) * 100)}%</span>
         </div>
+        {currentLevel && (
+          <div class="level">
+            <span>Level</span>
+            <span class="lvl" title={levelTitle(currentLevel)}>
+              <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONS[currentLevel.icon]} />
+              {currentLevel.name}
+              <span class="smile">{currentLevel.smiley}</span>
+            </span>
+            {upNext ? (
+              <span class="next">
+                next: <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONS[upNext.icon]} /> <b>{upNext.name}</b> under {fmtPace(toSec(upNext.under))}/mi
+              </span>
+            ) : (
+              <span class="next">top level reached 🏆</span>
+            )}
+          </div>
+        )}
         </div>
         <div class="mascot" aria-hidden="true"><img src="/run/beep-beep.gif" alt="" loading="lazy" /></div>
       </section>
@@ -321,6 +377,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                 const p = days.slice(0, i).reverse().find((x) => x.run)?.run
                 const w = d.weight
                 const pu = d.pushups
+                const lvl = r ? levelOf(r) : null
                 const runCells: [string, string, string, Delta][] = r
                   ? [
                       ['Distance', r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : '–', 'blue', delta(r.distanceMi, p?.distanceMi, (n) => `${n.toFixed(2)} mi`)],
@@ -337,7 +394,16 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                 ]
                 return (
                   <tr class={r ? undefined : 'rest'}>
-                    <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span></td>
+                    <td class="daycell">
+                      Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+                      {lvl && (
+                        <span class="lvl" title={levelTitle(lvl)}>
+                          <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONS[lvl.icon]} />
+                          {lvl.name}
+                          <span class="smile">{lvl.smiley}</span>
+                        </span>
+                      )}
+                    </td>
                     {r ? (
                       runCells.map(([label, v, c, dl], ci) => (
                         <td data-label={label}>
@@ -370,6 +436,20 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         )}
       </div>
       <p class="note">Green = better than the previous run (longer, faster, lower heart rate, lower weight, more push-ups). Weight and push-ups can also be logged on rest days.</p>
+
+      <h2>Levels</h2>
+      <div class="levels" aria-label="Performance levels by average pace">
+        {[...LEVELS].reverse().map((l) => (
+          <span class={`lvl${l === currentLevel ? ' current' : ''}`} title={l.from}>
+            <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONS[l.icon]} />
+            <span>
+              {l.name} <span class="smile">{l.smiley}</span>
+              <span class="meta">{l.from} · {isBottom(l) ? 'any pace' : `under ${fmtPace(toSec(l.under))}/mi`}</span>
+            </span>
+          </span>
+        ))}
+      </div>
+      <p class="note">Levels are earned by average pace, slowest on the left. {currentLevel ? `Latest run: ${currentLevel.name} ${currentLevel.smiley}` : ''}</p>
 
       {weightLog.length > 1 && (
         <>
