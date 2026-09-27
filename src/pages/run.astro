@@ -123,7 +123,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
 
       /* black & white theme switch */
       .theme-toggle {
-        flex: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; padding: 0;
+        flex: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; padding: 0;
         border: 2px solid var(--text);
         background: linear-gradient(90deg, #000 0 50%, #fff 50% 100%);
         box-shadow: 0 0 0 2px var(--bg), 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -193,8 +193,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .table-wrap::-webkit-scrollbar { height: 6px; }
       .table-wrap::-webkit-scrollbar-track { background: transparent; }
       .table-wrap::-webkit-scrollbar-thumb { background: var(--line); border-radius: 999px; }
-      table { border-collapse: collapse; width: 100%; min-width: 600px; font-size: 0.95rem; }
-      @media (min-width: 740px) { table { min-width: 0; } }
+      table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
       th, td { text-align: left; padding: 12px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: top; }
       th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
       tr:last-child td { border-bottom: none; }
@@ -215,6 +214,24 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .yellow { color: var(--yellow); } .blue { color: var(--blue); } .red { color: var(--red); }
       .green { color: var(--green); } .cyan { color: var(--cyan); } .orange { color: var(--orange); } .purple { color: var(--purple); }
       .empty { color: var(--muted); padding: 20px; text-align: center; }
+
+      /* phones and small tablets: each day becomes a card with a two-column grid of labelled stats */
+      @media (max-width: 739px) {
+        .daylog thead { display: none; }
+        .daylog, .daylog tbody { display: block; }
+        .daylog tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 14px; padding: 14px 16px 16px; border-bottom: 1px solid var(--line); }
+        .daylog tr:last-child { border-bottom: none; }
+        .daylog td { display: block; padding: 0; border: 0; white-space: normal; min-width: 0; }
+        .daylog td.daycell { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 8px; font-size: 1.05rem; }
+        .daylog td.daycell .datesub { display: inline; margin: 0; }
+        .daylog td[colspan] { grid-column: 1 / -1; }
+        .daylog tr.rest { gap: 6px 14px; }
+        .daylog tr.rest td[colspan] { margin-bottom: 4px; }
+        .daylog td[data-label]::before { content: attr(data-label); display: block; color: var(--muted); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
+        .daylog td .v { font-size: 1.05rem; }
+        .daylog .delta { display: inline-block; margin: 0 0 0 6px; white-space: nowrap; }
+        .daylog .zones { max-width: 160px; }
+      }
       .note { color: var(--muted); font-size: 0.85rem; margin-top: 10px; }
 
       footer { color: var(--muted); font-size: 0.8rem; margin-top: 30px; text-align: center; }
@@ -291,7 +308,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       <div class="table-wrap">
         {days.length === 0 && <p class="empty">Nothing logged yet.</p>}
         {days.length > 0 && (
-          <table>
+          <table class="daylog">
             <thead>
               <tr>
                 <th>Day</th><th>Distance</th><th>Time</th><th>Pace</th><th>Heart rate</th><th>Weight</th><th>Push-ups</th>
@@ -304,26 +321,26 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                 const p = days.slice(0, i).reverse().find((x) => x.run)?.run
                 const w = d.weight
                 const pu = d.pushups
-                const runCells: [string, string, Delta][] = r
+                const runCells: [string, string, string, Delta][] = r
                   ? [
-                      [r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : '–', 'blue', delta(r.distanceMi, p?.distanceMi, (n) => `${n.toFixed(2)} mi`)],
-                      [r.workoutTime, 'yellow', delta(toSec(r.workoutTime), p ? toSec(p.workoutTime) : undefined, fmtDuration)],
-                      [r.avgPace ? `${fmtPace(toSec(r.avgPace))}/mi` : '–', 'cyan', delta(r.avgPace ? toSec(r.avgPace) : undefined, p?.avgPace ? toSec(p.avgPace) : undefined, fmtDuration, true)],
-                      [r.avgHrBpm ? `${r.avgHrBpm} bpm` : '–', 'orange', delta(r.avgHrBpm, p?.avgHrBpm, (n) => `${n} bpm`, true)],
+                      ['Distance', r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : '–', 'blue', delta(r.distanceMi, p?.distanceMi, (n) => `${n.toFixed(2)} mi`)],
+                      ['Time', r.workoutTime, 'yellow', delta(toSec(r.workoutTime), p ? toSec(p.workoutTime) : undefined, fmtDuration)],
+                      ['Pace', r.avgPace ? `${fmtPace(toSec(r.avgPace))}/mi` : '–', 'cyan', delta(r.avgPace ? toSec(r.avgPace) : undefined, p?.avgPace ? toSec(p.avgPace) : undefined, fmtDuration, true)],
+                      ['Heart rate', r.avgHrBpm ? `${r.avgHrBpm} bpm` : '–', 'orange', delta(r.avgHrBpm, p?.avgHrBpm, (n) => `${n} bpm`, true)],
                     ]
                   : []
                 const zoneSec = r?.hrZones?.map(toSec) ?? []
                 const zoneTotal = zoneSec.reduce((a, b) => a + b, 0)
-                const bodyCells: [string, string, Delta][] = [
-                  [w != null ? `${w.toFixed(1)} lb` : '–', 'purple', delta(w, prevWeightBefore(d.date), (n) => `${n.toFixed(1)} lb`, true)],
-                  [pu != null ? String(pu) : '–', 'green', delta(pu, prevPushupsBefore(d.date), (n) => String(n))],
+                const bodyCells: [string, string, string, Delta][] = [
+                  ['Weight', w != null ? `${w.toFixed(1)} lb` : '–', 'purple', delta(w, prevWeightBefore(d.date), (n) => `${n.toFixed(1)} lb`, true)],
+                  ['Push-ups', pu != null ? String(pu) : '–', 'green', delta(pu, prevPushupsBefore(d.date), (n) => String(n))],
                 ]
                 return (
                   <tr class={r ? undefined : 'rest'}>
                     <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span></td>
                     {r ? (
-                      runCells.map(([v, c, dl], ci) => (
-                        <td>
+                      runCells.map(([label, v, c, dl], ci) => (
+                        <td data-label={label}>
                           <span class={`v ${c}`}>{v}</span>
                           {dl && <span class={`delta ${dl.dir}`}>{dl.text}</span>}
                           {ci === 3 && zoneTotal > 0 && (
@@ -339,8 +356,8 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                     ) : (
                       <td colspan="4"><span class="rest-label">No run</span></td>
                     )}
-                    {bodyCells.map(([v, c, dl]) => (
-                      <td>
+                    {bodyCells.map(([label, v, c, dl]) => (
+                      <td data-label={label}>
                         <span class={`v ${c}`}>{v}</span>
                         {dl && <span class={`delta ${dl.dir}`}>{dl.text}</span>}
                       </td>
