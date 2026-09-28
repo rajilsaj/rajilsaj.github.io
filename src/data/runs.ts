@@ -142,56 +142,6 @@ export const nextLevel = (level: Level): Level | null => {
 /** Most recent run with a logged pace, or null. */
 export const latestPacedRun = (): DayRun | null => [...runsByDay()].reverse().find((r) => r.avgPace) ?? null
 
-// ---------- Bingo Book grade ----------
-
-/** Letter grade per level, parallel to LEVELS (fastest first). */
-export const GRADES = ['S', 'A', 'B', 'C', 'D', 'E', 'F'] as const
-export const gradeOf = (level: Level) => GRADES[LEVELS.indexOf(level)]
-
-/** How many recent paced runs the Bingo Book grade looks at. */
-export const BINGO_WINDOW = 5
-
-export type BingoSample = { run: DayRun; weight: number; paceSec: number }
-export type BingoGrade = {
-  /** Recency-weighted average pace, seconds per mile */
-  paceSec: number
-  level: Level
-  grade: (typeof GRADES)[number]
-  /** Runs in the window, oldest → newest, with their weights */
-  samples: BingoSample[]
-  sumWeights: number
-  /** Level above the current grade, or null at the top */
-  next: Level | null
-  /** Pace the next run must beat to lift the grade to `next` (seconds per mile), or null */
-  nextNeededSec: number | null
-}
-
-/**
- * The Bingo Book algorithm. Takes the last BINGO_WINDOW paced runs and averages
- * their pace with linear recency weights: the newest run weighs n, the one before
- * n−1, … down to 1. The grade is the level that weighted pace earns.
- * Also works out the pace the next run needs to reach the level above.
- */
-export const bingoGrade = (): BingoGrade | null => {
-  const paced = runsByDay().filter((r) => r.avgPace).slice(-BINGO_WINDOW)
-  const n = paced.length
-  if (!n) return null
-  const samples: BingoSample[] = paced.map((run, i) => ({ run, weight: i + 1, paceSec: toSec(run.avgPace!) }))
-  const sumWeights = (n * (n + 1)) / 2
-  const paceSec = samples.reduce((a, s) => a + s.weight * s.paceSec, 0) / sumWeights
-  const level = LEVELS[levelIndexFor(paceSec)]
-  const next = nextLevel(level)
-  let nextNeededSec: number | null = null
-  if (next) {
-    const m = Math.min(n + 1, BINGO_WINDOW) // window size after the next run
-    const kept = paced.slice(-(m - 1)) // existing runs that stay in the window, oldest → newest
-    const keptSum = kept.reduce((a, r, i) => a + (i + 1) * toSec(r.avgPace!), 0)
-    const totalWeights = (m * (m + 1)) / 2
-    nextNeededSec = (toSec(next.under) * totalWeights - keptSum) / m
-  }
-  return { paceSec, level, grade: gradeOf(level), samples, sumWeights, next, nextNeededSec }
-}
-
 // ---------- helpers shared by /run and the homepage ----------
 
 export const toSec = (t: string) => t.split(':').map(Number).reduce((a, b) => a * 60 + b, 0)

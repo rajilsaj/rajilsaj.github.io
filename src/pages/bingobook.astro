@@ -1,71 +1,45 @@
 ---
 import ChallengeLayout from '~/layouts/ChallengeLayout.astro'
-import { LEVELS, BINGO_WINDOW, runsByDay, levelOf, gradeOf, bingoGrade, latestPacedRun, toSec, fmtPace, fmtDate } from '~/data/runs'
+import { LEVELS, runsByDay, levelOf, nextLevel, latestPacedRun, toSec, fmtPace, fmtDate } from '~/data/runs'
 import type { Level } from '~/data/runs'
 import { ICONS } from '~/data/levelIcons'
 
 const title = 'Bingo Book · 100 Days Challenge'
-const description = 'The Bingo Book grade of the 100 Days Challenge: a recency-weighted pace across recent runs, and the level ladder it maps to.'
+const description = 'The level ladder of the 100 Days Challenge: what each rank means and how to earn it.'
 
 const runs = runsByDay()
-const book = bingoGrade() // the grade: recency-weighted pace over recent runs
 const lastPaced = latestPacedRun()
-const latestLevel = lastPaced ? levelOf(lastPaced) : null
+const current = lastPaced ? levelOf(lastPaced) : null
+const upNext = current ? nextLevel(current) : null
 const isBottom = (l: Level) => l === LEVELS[LEVELS.length - 1]
 
-// ladder from slowest (level 1) to fastest, with the runs that earned each level
+// ladder from slowest (entry 1) to fastest, with the runs that earned each level
 const ladder = [...LEVELS].reverse().map((l, i) => ({
   level: l,
   no: i + 1,
-  grade: gradeOf(l),
   earned: runs.filter((r) => levelOf(r) === l),
+  rank: LEVELS.length - i, // 1 = top
 }))
 const req = (l: Level) => (isBottom(l) ? 'Any average pace' : `Average pace under ${fmtPace(toSec(l.under))} per mile`)
-const secs = (n: number) => `${Math.round(n)} s`
 ---
 
-<ChallengeLayout title={title} description={description} badge="📖" heading="Bingo Book" subtitle="Your grade, the algorithm behind it, and the level ladder">
+<ChallengeLayout title={title} description={description} badge="📖" heading="Bingo Book" subtitle="Every level of the 100 Days Challenge and how to earn it">
   <style is:global>
-    /* header card: grade + algorithm */
-    .algo { background: linear-gradient(135deg, var(--card) 0%, var(--card-2) 100%); border: 1px solid var(--track); border-radius: 18px; padding: 18px 20px; margin-bottom: 14px; }
-    .grade-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-    .grade-letter { flex: none; width: 76px; height: 76px; border-radius: 20px; background: var(--bar-pill-bg); color: var(--bar-pill-text); display: grid; place-items: center; font-size: 2.6rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; box-shadow: 0 0 28px rgba(200, 242, 43, 0.25); }
-    .grade-letter small { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: -4px; opacity: 0.8; }
-    .grade-main { flex: 1 1 200px; min-width: 0; }
-    .grade-main .lvl { font-size: 0.95rem; padding: 7px 12px 7px 8px; }
-    .grade-main .lvl svg { width: 20px; height: 20px; }
-    .grade-main .pace { margin-top: 8px; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
-    .grade-main .pace small { font-size: 0.55em; font-weight: 600; color: var(--muted); margin-left: 4px; }
-    .grade-main .basis { color: var(--muted); font-size: 0.82rem; margin-top: 6px; }
-    .grade-main .basis b { color: var(--text); font-weight: 600; }
+    .intro { background: linear-gradient(135deg, var(--card) 0%, var(--card-2) 100%); border: 1px solid var(--track); border-radius: 18px; padding: 18px 20px; margin-bottom: 14px; }
+    .intro p { color: var(--muted); font-size: 0.92rem; line-height: 1.45; }
+    .intro p + p { margin-top: 8px; }
+    .intro b { color: var(--text); font-weight: 600; }
+    .status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 14px; color: var(--muted); font-size: 0.85rem; }
+    .status .lvl { font-size: 0.85rem; padding: 6px 11px 6px 7px; background: var(--bar-pill-bg); border-color: transparent; color: var(--bar-pill-text); }
+    .status .lvl svg { width: 18px; height: 18px; }
+    .status b { color: var(--text); font-weight: 600; }
 
-    .algo h3 { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 18px 0 8px; }
-    .algo p { color: var(--muted); font-size: 0.9rem; line-height: 1.45; }
-    .algo p b { color: var(--text); font-weight: 600; }
-    .formula { display: block; margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.82rem; line-height: 1.5; color: var(--text); white-space: normal; overflow-wrap: anywhere; }
-    .formula i { font-style: normal; color: var(--lime); }
-    .calc { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.85rem; }
-    .calc th, .calc td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
-    .calc th { color: var(--muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
-    .calc td.num, .calc th.num { text-align: right; font-variant-numeric: tabular-nums; }
-    .calc tr:last-child td { border-bottom: none; font-weight: 700; }
-    .calc .muted { color: var(--muted); font-weight: 400; }
-    .calc .sub-date { display: block; font-size: 0.75rem; }
-    .calc-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .target { margin-top: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 14px; border-radius: 14px; background: var(--bg); border: 1px dashed var(--track); font-size: 0.88rem; color: var(--muted); }
-    .target b { color: var(--text); font-weight: 700; }
-    .target .lvl { font-size: 0.8rem; }
-    .target .big { font-size: 1.15rem; font-weight: 800; color: var(--lime); }
-
-    /* ladder */
     .book { display: grid; grid-template-columns: 1fr; gap: 10px; }
     @media (min-width: 600px) { .book { grid-template-columns: 1fr 1fr; } }
     .entry { position: relative; display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 4px 14px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; min-width: 0; }
-    .entry .icon { grid-row: 1 / span 4; width: 56px; height: 56px; border-radius: 14px; background: var(--card-2); display: grid; place-items: center; position: relative; }
+    .entry .icon { grid-row: 1 / span 4; width: 56px; height: 56px; border-radius: 14px; background: var(--card-2); display: grid; place-items: center; }
     .entry .icon svg { width: 34px; height: 34px; }
-    .entry .icon .g { position: absolute; right: -6px; bottom: -6px; width: 24px; height: 24px; border-radius: 8px; background: var(--bar-pill-bg); color: var(--bar-pill-text); font-size: 0.8rem; font-weight: 900; display: grid; place-items: center; border: 1px solid var(--track); }
-    .entry .no, .entry .name, .entry .from, .entry .req, .entry .tags { grid-column: 2; min-width: 0; }
-    .entry .no { color: var(--muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding-right: 96px; }
+    .entry .no { color: var(--muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
     .entry .name { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .entry .name .smile { font-size: 1.2rem; font-weight: 400; }
     .entry .from { color: var(--muted); font-size: 0.82rem; }
@@ -74,126 +48,53 @@ const secs = (n: number) => `${Math.round(n)} s`
     .entry .earned { grid-column: 1 / -1; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.82rem; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
     .entry .earned .day { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 999px; background: var(--card-2); border: 1px solid var(--line); color: var(--text); font-weight: 600; font-size: 0.78rem; white-space: nowrap; }
     .entry .earned .day small { color: var(--muted); font-weight: 400; }
-    .entry.locked .icon svg { filter: grayscale(1) brightness(0.9); opacity: 0.55; }
+    .entry.locked .icon { filter: grayscale(1) brightness(0.9); opacity: 0.55; }
     .entry.locked .name { color: var(--muted); }
     .entry.current { border-color: var(--lime); box-shadow: inset 0 0 0 1px var(--lime); }
-    .tags { position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; }
-    .tag { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 8px; border-radius: 999px; background: var(--bar-pill-bg); color: var(--bar-pill-text); white-space: nowrap; }
+    .tag { position: absolute; top: 12px; right: 12px; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 8px; border-radius: 999px; background: var(--bar-pill-bg); color: var(--bar-pill-text); }
     .tag.next { background: transparent; color: var(--muted); border: 1px dashed var(--line); }
-    .tag.latest { background: var(--card-2); color: var(--text); border: 1px solid var(--line); }
     .actions { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 10px; }
-    @media (max-width: 479px) {
-      .grade-letter { width: 64px; height: 64px; font-size: 2.2rem; border-radius: 16px; }
-      .entry .no { padding-right: 0; }
-      .tags { position: static; order: -1; margin-bottom: 4px; flex-wrap: wrap; }
-      .calc th, .calc td { padding: 6px 5px; font-size: 0.8rem; }
-    }
-    @media (max-width: 359px) {
-      .calc th, .calc td { padding: 6px 3px; font-size: 0.74rem; }
-      .calc td:first-child { white-space: normal; }
-      .algo { padding: 16px; }
-    }
   </style>
 
-  <section class="algo" aria-label="Bingo Book grade and algorithm">
-    {book ? (
-      <>
-        <div class="grade-row">
-          <div class="grade-letter" aria-label={`Grade ${book.grade}`}>{book.grade}<small>grade</small></div>
-          <div class="grade-main">
-            <span class="lvl" title={book.level.from}>
-              <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONS[book.level.icon]} />
-              {book.level.name}
-              <span class="smile">{book.level.smiley}</span>
-            </span>
-            <div class="pace">{fmtPace(book.paceSec)}<small>/MI · Bingo pace</small></div>
-            <div class="basis">
-              Weighted over your last <b>{book.samples.length}</b> {book.samples.length === 1 ? 'run' : 'runs'}
-              {latestLevel && latestLevel !== book.level && (
-                <> · latest run alone: <b>{latestLevel.name} {latestLevel.smiley}</b></>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <h3>The algorithm</h3>
-        <p>
-          The Bingo Book does not grade a single run. It takes your last <b>{BINGO_WINDOW} paced runs</b> and averages how fast you complete a mile, with <b>linear recency weights</b>: the newest run weighs {BINGO_WINDOW}, the one before {BINGO_WINDOW - 1}, and so on down to 1. The grade is the level whose pace limit that weighted average beats.
-        </p>
-        <code class="formula">Bingo pace = Σ (<i>weight</i> × <i>pace</i>) ÷ Σ <i>weight</i> &nbsp;→&nbsp; {book.samples.map((s) => `${s.weight}×${fmtPace(s.paceSec)}`).join(' + ')} ÷ {book.sumWeights} = <i>{fmtPace(book.paceSec)}/mi</i></code>
-
-        <div class="calc-wrap">
-          <table class="calc" aria-label="Runs used by the algorithm">
-            <thead><tr><th>Run</th><th class="num">Pace / mi</th><th class="num">Weight</th><th class="num">W × pace</th></tr></thead>
-            <tbody>
-              {book.samples.map((s) => (
-                <tr>
-                  <td>Day {s.run.day}<span class="muted sub-date">{fmtDate(s.run.date, { month: 'short', day: 'numeric' })}</span></td>
-                  <td class="num">{fmtPace(s.paceSec)}</td>
-                  <td class="num">{s.weight}</td>
-                  <td class="num">{secs(s.weight * s.paceSec)}</td>
-                </tr>
-              ))}
-              <tr>
-                <td>Bingo pace</td>
-                <td class="num">{fmtPace(book.paceSec)}</td>
-                <td class="num">{book.sumWeights}</td>
-                <td class="num">{secs(book.samples.reduce((a, s) => a + s.weight * s.paceSec, 0))}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {book.next && book.nextNeededSec != null && (
-          <div class="target">
-            <span>Next grade</span>
-            <span class="lvl" title={book.next.from}>
-              <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONS[book.next.icon]} />
-              {gradeOf(book.next)} · {book.next.name}
-              <span class="smile">{book.next.smiley}</span>
-            </span>
-            {book.nextNeededSec > 4 * 60 ? (
-              <span>needs a Bingo pace under <b>{fmtPace(toSec(book.next.under))}/mi</b>, so the next run must be faster than <span class="big">{fmtPace(book.nextNeededSec)}/mi</span></span>
-            ) : (
-              <span>needs a Bingo pace under <b>{fmtPace(toSec(book.next.under))}/mi</b>. One run can't get there yet, keep stacking fast runs.</span>
-            )}
-          </div>
+  <section class="intro" aria-label="How levels work">
+    <p>Every run in the challenge earns a level from its <b>average pace</b>. Faster pace, higher level. The ladder borrows its ranks from Dragon Ball Z, Harry Potter, Star Wars, Naruto, Pokémon and The Lord of the Rings.</p>
+    <p>A level is <b>unlocked</b> the first time a run beats its pace. The current level is always the one earned by the latest run, so it can go down as well as up.</p>
+    {current ? (
+      <div class="status">
+        <span>Current level</span>
+        <span class="lvl">
+          <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONS[current.icon]} />
+          {current.name}
+          <span class="smile">{current.smiley}</span>
+        </span>
+        {upNext ? (
+          <span>next: <b>{upNext.name}</b> under {fmtPace(toSec(upNext.under))}/mi</span>
+        ) : (
+          <span>top level reached 🏆</span>
         )}
-        {!book.next && <div class="target">Top grade reached 🏆</div>}
-      </>
+      </div>
     ) : (
-      <p>No paced run logged yet. The Bingo Book grades the recency-weighted pace of your last {BINGO_WINDOW} runs.</p>
+      <div class="status"><span>No paced run logged yet.</span></div>
     )}
   </section>
 
   <h2>The ladder</h2>
   <div class="book" aria-label="Levels, slowest to fastest">
-    {ladder.map(({ level: l, no, grade, earned }) => {
-      const isCurrent = book?.level === l
-      const isNext = book?.next === l
-      const isLatest = latestLevel === l
-      const state = isCurrent ? 'current' : earned.length ? 'unlocked' : 'locked'
+    {ladder.map(({ level: l, no, earned, rank }) => {
+      const state = l === current ? 'current' : earned.length ? 'unlocked' : 'locked'
       return (
-        <article class={`entry ${state}`} aria-label={`Grade ${grade}: ${l.name}`}>
-          <div class="icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONS[l.icon]} />
-            <span class="g" aria-hidden="true">{grade}</span>
-          </div>
-          <div class="no">Grade {grade} · level {no} of {LEVELS.length}</div>
+        <article class={`entry ${state}`} aria-label={`Level ${no}: ${l.name}`}>
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONS[l.icon]} /></div>
+          <div class="no">Level {no} of {LEVELS.length} · rank {rank}</div>
           <div class="name">{l.name} <span class="smile" aria-label="mood">{l.smiley}</span></div>
           <div class="from">{l.from}</div>
           <div class="req"><b>{req(l)}</b></div>
-          {(isCurrent || isNext || isLatest) && (
-            <div class="tags">
-              {isCurrent && <span class="tag">Your grade</span>}
-              {isNext && <span class="tag next">Next grade</span>}
-              {isLatest && !isCurrent && <span class="tag latest">Latest run</span>}
-            </div>
-          )}
+          {l === current && <span class="tag">Current</span>}
+          {l === upNext && <span class="tag next">Next target</span>}
           <div class="earned">
             {earned.length ? (
               <>
-                <span>Run at this level on</span>
+                <span>Unlocked on</span>
                 {earned.map((r) => (
                   <span class="day">
                     Day {r.day} <small>{fmtDate(r.date, { month: 'short', day: 'numeric' })} · {fmtPace(toSec(r.avgPace!))}/mi</small>
@@ -201,14 +102,14 @@ const secs = (n: number) => `${Math.round(n)} s`
                 ))}
               </>
             ) : (
-              <span>🔒 No run at this level yet</span>
+              <span>🔒 Locked · not reached yet</span>
             )}
           </div>
         </article>
       )
     })}
   </div>
-  <p class="note">Pace limits are strict: a pace exactly on the limit earns the level below. The main board on the challenge page shows the level of the latest run only; the grade here smooths it over recent runs.</p>
+  <p class="note">Pace thresholds are strict: a run at exactly the limit earns the level below.</p>
 
   <div class="actions">
     <a class="btn" href="/run">← Back to the challenge</a>
