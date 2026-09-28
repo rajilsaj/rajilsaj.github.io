@@ -1,5 +1,5 @@
 ---
-import { CHALLENGE_START, CHALLENGE_DAYS, HR_ZONES, LEVELS, challengeDays, runTotals, weightsByDate, pushupsByDate, levelOf, nextLevel, latestPacedRun, toSec, fmtDuration, fmtPace, fmtDate } from '~/data/runs'
+import { CHALLENGE_START, CHALLENGE_DAYS, HR_ZONES, LEVELS, challengeDays, runTotals, weightsByDate, pushupsByDate, levelOf, nextLevel, latestPacedRun, bingoGrade, toSec, fmtDuration, fmtPace, fmtDate } from '~/data/runs'
 import type { Level } from '~/data/runs'
 import { ICONS, BOOK_ICON } from '~/data/levelIcons'
 import ChallengeLayout from '~/layouts/ChallengeLayout.astro'
@@ -42,6 +42,7 @@ const dayNow = Math.min(CHALLENGE_DAYS, Math.max(1, Math.floor((today.getTime() 
 const lastPaced = latestPacedRun()
 const currentLevel = lastPaced ? levelOf(lastPaced) : null
 const upNext = currentLevel ? nextLevel(currentLevel) : null
+const book = bingoGrade() // Bingo Book grade: recency-weighted pace over recent runs
 const isBottom = (l: Level) => l === LEVELS[LEVELS.length - 1]
 const levelTitle = (l: Level) => `${l.from} · ${isBottom(l) ? 'any pace' : `faster than ${fmtPace(toSec(l.under))}/mi`}`
 
@@ -164,6 +165,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .lvlsub .sum-hint { margin-left: auto; color: var(--muted); font-size: 0.8rem; text-align: right; }
       .lvlsub-body { padding: 0 16px 16px; }
       .lvlsub-body p { color: var(--muted); font-size: 0.88rem; line-height: 1.45; margin-bottom: 14px; }
+      .lvlsub-body p b { color: var(--text); font-weight: 600; }
       .challenge .level a.lvl { text-decoration: none; }
       .challenge .level a.lvl:hover { border-color: var(--lime); }
       @media (max-width: 479px) { .lvlsub .sum-hint { display: none; } }
@@ -185,7 +187,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         </div>
         {currentLevel && (
           <div class="level">
-            <span>Level</span>
+            <span>Last run</span>
             <a class="lvl" href="/bingobook" title={`${levelTitle(currentLevel)} · open the Bingo Book`}>
               <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONS[currentLevel.icon]} />
               {currentLevel.name}
@@ -322,10 +324,10 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       <details class="lvlsub" id="levels">
         <summary>
           <span class="sum-title">What do the levels mean?</span>
-          <span class="sum-hint">{currentLevel ? `Latest run: ${currentLevel.name} ${currentLevel.smiley}` : 'Earned by average pace'}</span>
+          <span class="sum-hint">{book ? `Bingo grade ${book.grade} · ${book.level.name} ${book.level.smiley}` : 'Earned by average pace'}</span>
         </summary>
         <div class="lvlsub-body">
-          <p>Every run earns a level from its average pace, with ranks borrowed from Dragon Ball Z, Harry Potter, Star Wars, Naruto, Pokémon and The Lord of the Rings. The full ladder, the pace needed for each rank and which days unlocked them live in the Bingo Book.</p>
+          <p>The level on the board above is the one earned by the <b>latest run</b>, from its average pace. The Bingo Book grades you differently: it weighs your recent runs together, newest first, and turns that into a grade from F to S. The algorithm, the full ladder and the pace each rank needs live there.</p>
           <a class="btn" href="/bingobook">
             <svg viewBox="0 0 24 24" aria-hidden="true" set:html={BOOK_ICON} />
             Open the Bingo Book
