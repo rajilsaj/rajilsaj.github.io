@@ -5,7 +5,8 @@ const title = '100 Days Challenge · Running Non Stop'
 const description = '100 days of running, every single day. Day-by-day tracker.'
 const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '')
 
-const days = challengeDays() // every calendar day since Day 1, oldest → newest
+const days = challengeDays() // every calendar day since Day 1 through today, oldest → newest (rendered newest first)
+const lastDay = days[days.length - 1]?.day ?? 1
 const { count, measured, totalMi, totalSec, avgPaceSec } = runTotals()
 
 const weightLog = weightsByDate()
@@ -308,14 +309,15 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       <div class="table-wrap">
         {days.length === 0 && <p class="empty">Nothing logged yet.</p>}
         {days.length > 0 && (
-          <table class="daylog">
+          <table class="daylog" id="daylog" data-last-day={lastDay}>
             <thead>
               <tr>
                 <th>Day</th><th>Distance</th><th>Time</th><th>Pace</th><th>Heart rate</th><th>Weight</th><th>Push-ups</th>
               </tr>
             </thead>
             <tbody>
-              {days.map((d, i) => {
+              {[...days].reverse().map((d) => {
+                const i = d.day - 1 // index in the oldest → newest array
                 const r = d.run
                 // compare against the most recent run before this day, skipping rest days
                 const p = days.slice(0, i).reverse().find((x) => x.run)?.run
@@ -378,7 +380,8 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
             <table style="min-width: 0">
               <thead><tr><th>Date</th><th>Weight</th></tr></thead>
               <tbody>
-                {weightLog.map((w, i) => {
+                {[...weightLog].reverse().map((w) => {
+                  const i = weightLog.indexOf(w) // index in the oldest → newest array
                   const d = i > 0 ? delta(w.lb, weightLog[i - 1].lb, (n) => `${n.toFixed(1)} lb`, true) : null
                   return (
                     <tr>
@@ -413,6 +416,26 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       track.style.setProperty('--p', `${(day / total) * 100}%`)
       track.setAttribute('aria-valuenow', String(day))
       document.getElementById('pct')!.textContent = `${Math.round((day / total) * 100)}%`
+
+      // The day-by-day list is built through the deploy date; add a "No run" row for
+      // each day that has passed since, newest at the top, so it keeps counting up daily.
+      const daylog = document.getElementById('daylog')
+      const tbody = daylog?.querySelector('tbody')
+      if (daylog && tbody) {
+        const lastBuilt = Number(daylog.dataset.lastDay)
+        for (let n = lastBuilt + 1; n <= day; n++) {
+          const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + n - 1)
+          const tr = document.createElement('tr')
+          tr.className = 'rest'
+          tr.innerHTML =
+            `<td class="daycell">Day ${n}<span class="datesub"></span></td>` +
+            `<td colspan="4"><span class="rest-label">No run</span></td>` +
+            `<td data-label="Weight"><span class="v purple">–</span></td>` +
+            `<td data-label="Push-ups"><span class="v green">–</span></td>`
+          tr.querySelector('.datesub')!.textContent = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+          tbody.prepend(tr)
+        }
+      }
 
       // Black & white switch: toggles between dark (default) and light, remembered per browser.
       const root = document.documentElement

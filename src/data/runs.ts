@@ -98,8 +98,8 @@ export const pushups: Pushups[] = [
 ]
 
 /**
- * Rest days with nothing else logged. Rest days between logged dates show up on
- * their own; list a date here only when it would otherwise be missing from the page.
+ * Rest days with nothing else logged. Every day through today is listed anyway,
+ * so this is only a record of days that were deliberately skipped.
  */
 export const restDays: string[] = [
   '2026-09-26', // day 4
@@ -158,15 +158,20 @@ export const pushupsOn = (date: string): number | undefined => pushups.find((p) 
 export const latestLoggedDate = () =>
   [CHALLENGE_START, ...runs.map((r) => r.date), ...weights.map((w) => w.date), ...pushups.map((p) => p.date), ...restDays].sort().pop()!
 
+/** Today as an ISO date (at build time; the browser adds any days that pass before the next build). */
+export const todayIso = () => new Date().toISOString().slice(0, 10)
+
 export type ChallengeDay = { day: number; date: string; run?: DayRun; weight?: number; pushups?: number }
 
 /**
- * Every calendar day from CHALLENGE_START through the latest logged date,
- * oldest → newest, with whatever was logged that day. Rest days have no `run`.
+ * Every calendar day from CHALLENGE_START through today (or the latest logged
+ * date, whichever is later), oldest → newest, with whatever was logged that day.
+ * Days with nothing logged are still included, so the list grows by one every day.
  */
 export const challengeDays = (): ChallengeDay[] => {
   const byDate = new Map(runsByDay().map((r) => [r.date, r]))
-  const last = Math.min(CHALLENGE_DAYS, dayNumber(latestLoggedDate()))
+  const lastDate = [latestLoggedDate(), todayIso()].sort().pop()!
+  const last = Math.min(CHALLENGE_DAYS, Math.max(1, dayNumber(lastDate)))
   return Array.from({ length: last }, (_, i) => {
     const date = addDays(CHALLENGE_START, i)
     return { day: i + 1, date, run: byDate.get(date), weight: weightOn(date), pushups: pushupsOn(date) }
