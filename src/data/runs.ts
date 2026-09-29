@@ -54,7 +54,9 @@ export const weights: Weight[] = [
 /** Push-up log. One entry per day, total push-ups done that day. */
 export type Pushups = { date: string; count: number }
 
-export const pushups: Pushups[] = []
+export const pushups: Pushups[] = [
+  { date: '2026-09-29', count: 21 },
+]
 
 /**
  * Rest days with nothing else logged. Every day through today is listed anyway,
