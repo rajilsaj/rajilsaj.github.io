@@ -77,15 +77,18 @@ const tools = [
         width: 100%;
         max-width: 320px;
       }
-      /* Tube buttons: rounded pill, outlined by default; the fill sweeps in on hover */
+      /* Tube buttons. On hover the blue pill morphs: a filled button shrinks into a
+         circle holding an arrow, an outlined one grows from that circle to full. */
       .tube {
+        --h: 60px;
+        --bw: 2.5px;
         position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 60px;
+        height: var(--h);
         padding: 0 32px;
-        border: 2.5px solid var(--ialab-blue);
+        border: var(--bw) solid var(--ialab-blue);
         border-radius: 999px;
         background: transparent;
         color: var(--ialab-blue);
@@ -95,36 +98,72 @@ const tools = [
         text-transform: uppercase;
         letter-spacing: 0.18em;
         text-decoration: none;
-        overflow: hidden;
         isolation: isolate;
-        transition: color 0.3s ease, transform 0.15s ease, box-shadow 0.3s ease;
+        transition: color 0.4s ease, transform 0.15s ease;
       }
       .tube::before {
         content: '';
         position: absolute;
-        inset: 0;
+        top: calc(-1 * var(--bw));
+        bottom: calc(-1 * var(--bw));
+        left: calc(-1 * var(--bw));
         z-index: -1;
+        width: 0;
+        border-radius: 999px;
         background: var(--ialab-blue);
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+        transition: width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
       }
-      .tube.primary,
+      .tube .label {
+        transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+      }
+      .tube .arrow {
+        position: absolute;
+        left: calc(var(--h) / 2 - var(--bw) - 10px);
+        width: 20px;
+        height: 20px;
+        color: #fff;
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: opacity 0.3s ease, transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+      }
+      /* Outlined -> filled */
+      .tube:hover::before,
+      .tube:focus-visible::before {
+        width: calc(100% + 2 * var(--bw));
+      }
       .tube:hover,
       .tube:focus-visible {
         color: #fff;
       }
-      .tube.primary::before,
-      .tube:hover::before,
-      .tube:focus-visible::before {
-        transform: scaleX(1);
+      /* Filled (primary) -> outlined with a circle */
+      .tube.primary {
+        color: #fff;
       }
-      .tube:hover {
-        box-shadow: 0 8px 20px rgba(57, 133, 209, 0.3);
+      .tube.primary::before {
+        width: calc(100% + 2 * var(--bw));
+      }
+      .tube.primary:hover::before,
+      .tube.primary:focus-visible::before {
+        width: var(--h);
+      }
+      .tube.primary:hover,
+      .tube.primary:focus-visible {
+        color: var(--ialab-blue);
+      }
+      /* Both: arrow slides in, label makes room */
+      .tube:hover .arrow,
+      .tube:focus-visible .arrow {
+        opacity: 1;
+        transform: translateX(0);
+        transition-delay: 0.15s, 0s;
+      }
+      .tube:hover .label,
+      .tube:focus-visible .label {
+        transform: translateX(14px);
       }
       .tube:focus-visible {
         outline: 3px solid rgba(57, 133, 209, 0.35);
-        outline-offset: 3px;
+        outline-offset: 4px;
       }
       .tube:active {
         transform: scale(0.97);
@@ -143,7 +182,9 @@ const tools = [
       }
       @media (prefers-reduced-motion: reduce) {
         .tube,
-        .tube::before {
+        .tube::before,
+        .tube .label,
+        .tube .arrow {
           transition: none;
         }
       }
@@ -162,7 +203,10 @@ const tools = [
         {tools.map((t) =>
           t.href ? (
             <a href={t.href} target="_blank" rel="noopener noreferrer" class:list={['tube', { primary: t.primary }]}>
-              {t.label}
+              <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+              <span class="label">{t.label}</span>
             </a>
           ) : (
             <span class="tube soon" aria-disabled="true">
