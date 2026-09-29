@@ -4,8 +4,9 @@ const description = 'Interactive AI Lab - Candidate selection and evaluation too
 const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '')
 const appUrl =
   'https://script.google.com/macros/s/AKfycbzE1MLVDl7YWS-VZTdIbbxW94YMPWpHkgxMCSqaz28CXS3lQqcChHZ3OfGc_u2XUmM/exec'
-// Checklist and Rapport have no app URL yet.
-const checklistUrl = ''
+const checklistUrl =
+  'https://script.google.com/macros/s/AKfycbzFz1azMYEbuDo8-ghYB3CnS73Q_3E4KAjNfOLEUMoX8ofXBj_67S5Bm1Xzh5bKoC5O/exec'
+// Rapport has no app URL yet.
 const reportUrl = ''
 // `locked` tools are shown greyed and not clickable; their href is kept for later.
 const groups = [
@@ -14,7 +15,7 @@ const groups = [
     layout: 'trio',
     items: [
       { label: 'Le Casting', sub: 'sélection des candidats', href: appUrl, locked: true },
-      { label: 'Tour de contrôle', sub: 'checklist', href: checklistUrl, locked: true },
+      { label: 'Tour de contrôle', sub: 'checklist', href: checklistUrl },
       { label: 'Le Grand Bilan', sub: 'rapport', href: reportUrl, locked: true },
     ],
   },
