@@ -4,13 +4,14 @@ const description = 'Interactive AI Lab - Candidate selection and evaluation too
 const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '')
 const appUrl =
   'https://script.google.com/macros/s/AKfycbzE1MLVDl7YWS-VZTdIbbxW94YMPWpHkgxMCSqaz28CXS3lQqcChHZ3OfGc_u2XUmM/exec'
-// TODO: set the Checklist and Rapport app URLs; an empty URL shows the button as "bientôt".
+// Checklist and Rapport have no app URL yet.
 const checklistUrl = ''
 const reportUrl = ''
+// `locked` tools are shown greyed and not clickable; their href is kept for later.
 const tools = [
-  { label: 'Sélection', href: appUrl, primary: true },
-  { label: 'Checklist', href: checklistUrl },
-  { label: 'Rapport', href: reportUrl },
+  { label: 'Le Casting', sub: 'sélection des candidats', href: appUrl, locked: true },
+  { label: 'Tour de contrôle', sub: 'checklist', href: checklistUrl, locked: true },
+  { label: 'Le Grand Bilan', sub: 'rapport', href: reportUrl, locked: true },
   {
     label: 'Compte rendu de session',
     sub: 'par les formateurs',
@@ -262,17 +263,26 @@ const tools = [
       .tube:active {
         transform: scale(0.97);
       }
-      .tube.soon {
-        border-style: dashed;
-        opacity: 0.45;
+      /* Locked: greyed, no hover morph, a padlock where the arrow would be */
+      .tube.locked {
+        --c: #c3c8cf;
+        --ink: #9aa1ab;
         cursor: not-allowed;
-        pointer-events: none;
+        user-select: none;
       }
-      .tube .soon-tag {
-        margin-left: 0.6em;
-        font-size: 0.65em;
-        letter-spacing: 0.08em;
-        text-transform: none;
+      .tube.locked:hover::before {
+        width: 0;
+      }
+      .tube.locked:hover {
+        color: var(--ink);
+      }
+      .tube.locked:hover .label {
+        transform: none;
+      }
+      .tube.locked .arrow {
+        color: var(--ink);
+        opacity: 1;
+        transform: none;
       }
       @media (prefers-reduced-motion: reduce) {
         .tube,
@@ -300,7 +310,7 @@ const tools = [
         <div class="tubes">
           {
             tools.map((t) =>
-              t.href ? (
+              t.href && !t.locked ? (
                 <a
                   href={t.href}
                   target="_blank"
@@ -325,9 +335,29 @@ const tools = [
                   </span>
                 </a>
               ) : (
-                <span class="tube soon" aria-disabled="true">
-                  {t.label}
-                  <span class="soon-tag">bientôt</span>
+                <span
+                  class="tube locked"
+                  aria-disabled="true"
+                  title="Accès fermé"
+                  data-href={t.href || undefined}
+                >
+                  <svg
+                    class="arrow"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <rect x="5" y="11" width="14" height="10" rx="2" />
+                    <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                  </svg>
+                  <span class="label">
+                    {t.label}
+                    {t.sub && <span class="sub">{t.sub}</span>}
+                  </span>
                 </span>
               ),
             )
