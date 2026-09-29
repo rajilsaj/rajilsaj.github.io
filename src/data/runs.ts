@@ -35,6 +35,13 @@ export type Run = {
   hrZones?: [string, string, string, string, string]
   /** Post-workout heart rate: at the end, after 1 min, after 2 min (bpm) */
   recoveryHr?: { end: number; min1: number; min2: number }
+  /** Apple Fitness effort rating, 1–10 */
+  effort?: number
+  /** Weather at the start of the run */
+  tempF?: number
+  humidityPct?: number
+  /** Per-mile splits from the Splits screen: time for that mile ('mm:ss') and average heart rate */
+  splits?: { time: string; hr?: number }[]
   notes?: string
 }
 
@@ -57,7 +64,17 @@ export const runs: Run[] = [
     avgPace: '10:57',
     avgHrBpm: 146,
     hrZones: ['1:58', '35:01', '38:42', '1:57', '0:00'],
-    notes: '59°F, 92% humidity · effort 5 (moderate) · 10K Run award',
+    effort: 5,
+    tempF: 59,
+    humidityPct: 92,
+    splits: [
+      { time: '10:36', hr: 138 },
+      { time: '10:30', hr: 147 },
+      { time: '10:57', hr: 144 },
+      { time: '11:35', hr: 147 },
+      { time: '11:11', hr: 146 },
+    ],
+    notes: '10K Run award',
   },
 ]
 
@@ -221,6 +238,9 @@ export const challengeYear = (year: number): ChallengeMonth[] =>
     const len = daysBetween(from, addMonths(CHALLENGE_START, month + 1))
     return { month: month + 1, from, dates: Array.from({ length: len }, (_, d) => addDays(from, d)) }
   })
+
+/** Apple Fitness effort scale: 1–3 easy, 4–6 moderate, 7–8 hard, 9–10 all out. */
+export const effortLabel = (n: number) => (n <= 3 ? 'Easy' : n <= 6 ? 'Moderate' : n <= 8 ? 'Hard' : 'All out')
 
 /** Aggregate totals across all runs. */
 export const runTotals = () => {
