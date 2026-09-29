@@ -1,12 +1,11 @@
 /**
- * 100 Days Challenge log, shown at /run.
+ * Day by Day Challenge log, shown at /run. No finish line: it counts up for good.
  * Four logs, each keyed by ISO date: runs, weigh-ins, push-ups, rest days.
  * Add entries in any order — the page sorts by date.
  */
 
-/** Day 0 of the challenge (restarted from zero). The last day is Day CHALLENGE_DAYS. */
+/** Day 0 of the challenge (restarted from zero). */
 export const CHALLENGE_START = '2026-09-29'
-export const CHALLENGE_DAYS = 100
 
 export type Run = {
   /** ISO date, e.g. '2026-09-23' */
@@ -127,12 +126,77 @@ export type ChallengeDay = { day: number; date: string; run?: DayRun; weight?: n
 export const challengeDays = (): ChallengeDay[] => {
   const byDate = new Map(runsByDay().map((r) => [r.date, r]))
   const lastDate = [latestLoggedDate(), todayIso()].sort().pop()!
-  const last = Math.min(CHALLENGE_DAYS, Math.max(0, dayNumber(lastDate)))
+  const last = Math.max(0, dayNumber(lastDate))
   return Array.from({ length: last + 1 }, (_, i) => {
     const date = addDays(CHALLENGE_START, i)
     return { day: i, date, run: byDate.get(date), weight: weightOn(date), pushups: pushupsOn(date) }
   })
 }
+
+/** ISO date `n` calendar months after `iso`, clamped to the month's last day (Jan 31 + 1 month = Feb 28). */
+export const addMonths = (iso: string, n: number) => {
+  const [y, m, d] = iso.split('-').map(Number)
+  const lastOfMonth = new Date(Date.UTC(y, m - 1 + n + 1, 0)).getUTCDate()
+  return new Date(Date.UTC(y, m - 1 + n, Math.min(d, lastOfMonth))).toISOString().slice(0, 10)
+}
+
+/** Day counts worth celebrating; past the last one, every 500 days. */
+const MILESTONES = [7, 30, 50, 100, 150, 200, 250, 300, 365, 500, 750, 1000]
+
+const daysBetween = (a: string, b: string) => Math.round((utc(b) - utc(a)) / DAY_MS)
+const clamp01 = (n: number) => Math.min(1, Math.max(0, n))
+
+export type Progress = {
+  /** Current day number (Day 0 = CHALLENGE_START) */
+  day: number
+  /** Next day milestone and how far along the way there (0–1) */
+  milestone: number
+  milestonePct: number
+  /** Whole months / years completed, and progress (0–1) through the current one */
+  months: number
+  monthPct: number
+  daysToNextMonth: number
+  years: number
+  yearPct: number
+  daysToNextYear: number
+}
+
+/** Where the challenge stands on a given date: days, months and years completed. */
+export const progressOn = (today: string): Progress => {
+  const day = Math.max(0, dayNumber(today))
+  const prevMilestone = [...MILESTONES].reverse().find((m) => m <= day) ?? (day >= 1000 ? Math.floor(day / 500) * 500 : 0)
+  const milestone = MILESTONES.find((m) => m > day) ?? (Math.floor(day / 500) + 1) * 500
+  let months = 0
+  while (addMonths(CHALLENGE_START, months + 1) <= today) months++
+  const years = Math.floor(months / 12)
+  const monthFrom = addMonths(CHALLENGE_START, months)
+  const monthTo = addMonths(CHALLENGE_START, months + 1)
+  const yearFrom = addMonths(CHALLENGE_START, years * 12)
+  const yearTo = addMonths(CHALLENGE_START, (years + 1) * 12)
+  const from = today < CHALLENGE_START ? CHALLENGE_START : today
+  return {
+    day,
+    milestone,
+    milestonePct: clamp01((day - prevMilestone) / (milestone - prevMilestone)),
+    months,
+    monthPct: clamp01(daysBetween(monthFrom, from) / daysBetween(monthFrom, monthTo)),
+    daysToNextMonth: daysBetween(from, monthTo),
+    years,
+    yearPct: clamp01(daysBetween(yearFrom, from) / daysBetween(yearFrom, yearTo)),
+    daysToNextYear: daysBetween(from, yearTo),
+  }
+}
+
+export type ChallengeMonth = { month: number; from: string; dates: string[] }
+
+/** The 12 challenge months of challenge year `year` (0-based), each with its calendar dates. */
+export const challengeYear = (year: number): ChallengeMonth[] =>
+  Array.from({ length: 12 }, (_, i) => {
+    const month = year * 12 + i
+    const from = addMonths(CHALLENGE_START, month)
+    const len = daysBetween(from, addMonths(CHALLENGE_START, month + 1))
+    return { month: month + 1, from, dates: Array.from({ length: len }, (_, d) => addDays(from, d)) }
+  })
 
 /** Aggregate totals across all runs. */
 export const runTotals = () => {
