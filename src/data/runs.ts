@@ -4,8 +4,8 @@
  * Add entries in any order — the page sorts by date.
  */
 
-/** Day 1 of the challenge. */
-export const CHALLENGE_START = '2026-09-23'
+/** Day 0 of the challenge (restarted from zero). The last day is Day CHALLENGE_DAYS. */
+export const CHALLENGE_START = '2026-09-29'
 export const CHALLENGE_DAYS = 100
 
 export type Run = {
@@ -43,67 +43,23 @@ export type Run = {
 export const HR_ZONES = ['<132', '133–145', '146–157', '158–170', '171+']
 
 /** One entry per run. Values are copied from the Apple Fitness workout summary. */
-export const runs: Run[] = [
-  {
-    date: '2026-09-23',
-    time: '5:32 AM – 6:42 AM',
-    location: 'Fayetteville',
-    workoutTime: '1:03:26',
-    elapsedTime: '1:09:33',
-    distanceMi: 6.3,
-    activeCal: 714,
-    totalCal: 809,
-    elevationFt: 415,
-    avgPowerW: 194,
-    avgCadenceSpm: 164,
-    avgPace: '10:04',
-    avgHrBpm: 166,
-    hrZones: ['0:53', '4:14', '10:25', '18:42', '29:11'],
-    recoveryHr: { end: 148, min1: 133, min2: 127 },
-  },
-  {
-    date: '2026-09-25',
-    time: '5:35 AM – 6:42 AM',
-    location: 'Fayetteville',
-    workoutTime: '1:00:52',
-    elapsedTime: '1:06:49',
-    distanceMi: 6.35,
-    activeCal: 679,
-    totalCal: 770,
-    elevationFt: 401,
-    avgPowerW: 205,
-    avgCadenceSpm: 167,
-    avgPace: '9:34',
-    avgHrBpm: 163,
-    hrZones: ['0:25', '1:49', '8:38', '34:25', '12:28'],
-    recoveryHr: { end: 152, min1: 123, min2: 119 },
-  },
-]
+export const runs: Run[] = []
 
 /** Weight log. One entry per weigh-in (run days or rest days). Weight in pounds. */
 export type Weight = { date: string; lb: number }
 
-export const weights: Weight[] = [
-  { date: '2026-09-24', lb: 150.7 },
-  { date: '2026-09-25', lb: 152.1 },
-  { date: '2026-09-27', lb: 151.2 },
-]
+export const weights: Weight[] = []
 
 /** Push-up log. One entry per day, total push-ups done that day. */
 export type Pushups = { date: string; count: number }
 
-export const pushups: Pushups[] = [
-  { date: '2026-09-23', count: 20 },
-  { date: '2026-09-25', count: 15 },
-]
+export const pushups: Pushups[] = []
 
 /**
  * Rest days with nothing else logged. Every day through today is listed anyway,
  * so this is only a record of days that were deliberately skipped.
  */
-export const restDays: string[] = [
-  '2026-09-26', // day 4
-]
+export const restDays: string[] = []
 
 // ---------- helpers shared by /run and the homepage ----------
 
@@ -133,8 +89,8 @@ const utc = (iso: string) => Date.parse(iso + 'T00:00:00Z')
 /** ISO date `n` days after `iso`. */
 export const addDays = (iso: string, n: number) => new Date(utc(iso) + n * DAY_MS).toISOString().slice(0, 10)
 
-/** Challenge day number for a date: Day 1 = CHALLENGE_START. */
-export const dayNumber = (date: string) => Math.round((utc(date) - utc(CHALLENGE_START)) / DAY_MS) + 1
+/** Challenge day number for a date: Day 0 = CHALLENGE_START. */
+export const dayNumber = (date: string) => Math.round((utc(date) - utc(CHALLENGE_START)) / DAY_MS)
 
 export type DayRun = Run & { day: number }
 
@@ -171,10 +127,10 @@ export type ChallengeDay = { day: number; date: string; run?: DayRun; weight?: n
 export const challengeDays = (): ChallengeDay[] => {
   const byDate = new Map(runsByDay().map((r) => [r.date, r]))
   const lastDate = [latestLoggedDate(), todayIso()].sort().pop()!
-  const last = Math.min(CHALLENGE_DAYS, Math.max(1, dayNumber(lastDate)))
-  return Array.from({ length: last }, (_, i) => {
+  const last = Math.min(CHALLENGE_DAYS, Math.max(0, dayNumber(lastDate)))
+  return Array.from({ length: last + 1 }, (_, i) => {
     const date = addDays(CHALLENGE_START, i)
-    return { day: i + 1, date, run: byDate.get(date), weight: weightOn(date), pushups: pushupsOn(date) }
+    return { day: i, date, run: byDate.get(date), weight: weightOn(date), pushups: pushupsOn(date) }
   })
 }
 

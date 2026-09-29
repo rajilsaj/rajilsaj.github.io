@@ -5,8 +5,8 @@ const title = '100 Days Challenge · Running Non Stop'
 const description = '100 days of running, every single day. Day-by-day tracker.'
 const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '')
 
-const days = challengeDays() // every calendar day since Day 1 through today, oldest → newest (rendered newest first)
-const lastDay = days[days.length - 1]?.day ?? 1
+const days = challengeDays() // every calendar day since Day 0 through today, oldest → newest (rendered newest first)
+const lastDay = days[days.length - 1]?.day ?? 0
 const { count, measured, totalMi, totalSec, avgPaceSec } = runTotals()
 
 const weightLog = weightsByDate()
@@ -32,10 +32,10 @@ const signed = (n: number, unit: string) => `${n > 0 ? '+' : '−'}${Math.abs(n)
 // challenge counter (server-side fallback; the browser recomputes it live)
 const startDate = CHALLENGE_START
 const endDate = new Date(startDate + 'T12:00:00')
-endDate.setDate(endDate.getDate() + CHALLENGE_DAYS - 1)
+endDate.setDate(endDate.getDate() + CHALLENGE_DAYS)
 const endIso = endDate.toISOString().slice(0, 10)
 const today = new Date()
-const dayNow = Math.min(CHALLENGE_DAYS, Math.max(1, Math.floor((today.getTime() - new Date(startDate + 'T00:00:00').getTime()) / 86400000) + 1))
+const dayNow = Math.min(CHALLENGE_DAYS, Math.max(0, Math.floor((today.getTime() - new Date(startDate + 'T00:00:00').getTime()) / 86400000)))
 
 // previous logged value before a given date (so deltas work across rest days)
 const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => w.date < date)?.lb
@@ -317,7 +317,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
             </thead>
             <tbody>
               {[...days].reverse().map((d) => {
-                const i = d.day - 1 // index in the oldest → newest array
+                const i = d.day // index in the oldest → newest array
                 const r = d.run
                 // compare against the most recent run before this day, skipping rest days
                 const p = days.slice(0, i).reverse().find((x) => x.run)?.run
@@ -409,7 +409,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       const start = new Date(y, m - 1, d)
       const now = new Date()
       const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-      const day = Math.min(total, Math.max(1, Math.round((todayMidnight.getTime() - start.getTime()) / 86400000) + 1))
+      const day = Math.min(total, Math.max(0, Math.round((todayMidnight.getTime() - start.getTime()) / 86400000)))
       document.getElementById('day-now')!.textContent = String(day)
       document.getElementById('days-left')!.textContent = String(total - day)
       const track = document.getElementById('track')!
@@ -424,7 +424,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       if (daylog && tbody) {
         const lastBuilt = Number(daylog.dataset.lastDay)
         for (let n = lastBuilt + 1; n <= day; n++) {
-          const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + n - 1)
+          const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + n)
           const tr = document.createElement('tr')
           tr.className = 'rest'
           tr.innerHTML =
