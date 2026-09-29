@@ -59,6 +59,18 @@ const monthLabels = Array.from({ length: weekCount }, (_, w) => {
   const first = cells.slice(w * 7, w * 7 + 7).find((d) => d?.endsWith('-01'))
   return first ? fmtDate(first, { month: 'short' }) : ''
 })
+// two half-year boards: side by side on wide screens, stacked on phones, squares scale to fit (no scrolling)
+const half = Math.ceil(weekCount / 2)
+const halves = [
+  [0, half],
+  [half, weekCount],
+].map(([from, to]) => {
+  const hc = cells.slice(from * 7, to * 7)
+  // no label in the last two columns (it would run off the edge); a half that opens mid-month names that month
+  const labels = monthLabels.slice(from, to).map((l, i, all) => (i >= all.length - 2 ? '' : l))
+  if (!labels[0] && !labels[1]) labels[0] = fmtDate(hc.find((d) => d)!, { month: 'short' })
+  return { weeks: to - from, labels, cells: hc }
+})
 const rings = [
   { key: 'days', value: prog.day, label: prog.day === 1 ? 'day' : 'days', pct: prog.milestonePct, sub: `next stop: Day ${prog.milestone}` },
   { key: 'months', value: prog.months, label: prog.months === 1 ? 'month' : 'months', pct: prog.monthPct, sub: `${prog.daysToNextMonth} ${prog.daysToNextMonth === 1 ? 'day' : 'days'} to month ${prog.months + 1}` },
@@ -207,7 +219,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .ring-num { position: absolute; top: 0; left: 0; right: 0; aspect-ratio: 1; max-width: 104px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
       .ring-num b { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em; }
       .ring-num span { font-size: 0.68rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 3px; }
-      .ring-sub { color: var(--muted); font-size: 0.74rem; margin-top: 8px; line-height: 1.25; }
+      .ring-sub { color: var(--muted); font-size: 0.74rem; margin-top: 8px; line-height: 1.25; text-wrap: balance; }
       @media (max-width: 399px) { .ring-num b { font-size: 1.3rem; } .ring-num span { font-size: 0.6rem; } }
 
       /* year board, GitHub contributions style: week columns, weekday rows, squares shaded by distance */
@@ -215,13 +227,24 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .yg-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
       .yg-head h2 { margin: 0; font-size: 1rem; }
       .yg-sum { color: var(--muted); font-size: 0.8rem; }
-      .yg-scroll { position: relative; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--line) transparent; padding: 2px 0 4px; }
-      .yg { --cell: 10px; --gap: 3px; display: grid; grid-template-columns: 22px auto; grid-template-rows: 16px auto; column-gap: var(--gap); width: max-content; margin: 0 auto; }
-      .yg-months { grid-column: 2; display: grid; grid-template-columns: repeat(var(--weeks), var(--cell)); gap: var(--gap); font-size: 0.68rem; color: var(--muted); }
-      .yg-months span { white-space: nowrap; }
-      .yg-wd { grid-column: 1; grid-row: 2; display: grid; grid-template-rows: repeat(7, var(--cell)); gap: var(--gap); font-size: 0.6rem; color: var(--muted); line-height: var(--cell); }
-      .yg-cells { grid-column: 2; grid-row: 2; display: grid; grid-template-rows: repeat(7, var(--cell)); grid-auto-flow: column; grid-auto-columns: var(--cell); gap: var(--gap); }
+      .yg { display: flex; gap: 6px; }
+      .yg-half { --wd: 24px; --gap: 3px; flex: 1 1 0; min-width: 0; }
+      .yg-half + .yg-half { --wd: 0px; }
+      .yg-half + .yg-half .wd { visibility: hidden; }
+      .yg-months, .yg-cells { display: grid; grid-template-columns: var(--wd) repeat(var(--weeks), minmax(0, 1fr)); column-gap: var(--gap); }
+      .yg-months { font-size: 0.68rem; color: var(--muted); height: 16px; }
+      .yg-months span { white-space: nowrap; overflow: visible; }
+      .yg-cells { grid-template-rows: repeat(7, auto); grid-auto-flow: column; row-gap: var(--gap); }
+      .wd { font-size: 0.6rem; color: var(--muted); align-self: center; line-height: 1; overflow: hidden; }
       .cell { display: block; width: 10px; height: 10px; border-radius: 2px; background: var(--track); }
+      .yg-cells .cell { width: auto; height: auto; aspect-ratio: 1; }
+      /* tablets and phones: stack the two halves, each full width */
+      @media (max-width: 699px) {
+        .yg { flex-direction: column; gap: 12px; max-width: 480px; margin: 0 auto; }
+        .yg-half + .yg-half { --wd: 24px; }
+        .yg-half + .yg-half .wd { visibility: visible; }
+      }
+      @media (max-width: 399px) { .yg-half, .yg-half + .yg-half { --gap: 2px; --wd: 22px; } .yeargrid { padding: 14px 12px 12px; } }
       .cell.pad { background: transparent; }
       .cell.l1 { background: rgba(200, 242, 43, 0.3); }
       .cell.l2 { background: rgba(200, 242, 43, 0.55); }
@@ -334,20 +357,22 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
           <h2>Year {prog.years + 1}</h2>
           <span class="yg-sum">{yearRuns} {yearRuns === 1 ? 'run' : 'runs'} in year {prog.years + 1}</span>
         </div>
-        <div class="yg-scroll" id="yg-scroll">
-          <div class="yg" style={`--weeks:${weekCount}`}>
-            <div class="yg-months" aria-hidden="true">{monthLabels.map((l) => <span>{l}</span>)}</div>
-            <div class="yg-wd" aria-hidden="true"><span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span></div>
-            <div class="yg-cells">
-              {cells.map((date) =>
-                date ? (
-                  <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday }]} data-date={date} title={cellTitle(date)}></i>
-                ) : (
-                  <i class="cell pad"></i>
-                ),
-              )}
+        <div class="yg">
+          {halves.map((h) => (
+            <div class="yg-half" style={`--weeks:${h.weeks}`}>
+              <div class="yg-months" aria-hidden="true"><span></span>{h.labels.map((l) => <span>{l}</span>)}</div>
+              <div class="yg-cells">
+                <span class="wd"></span><span class="wd">Mon</span><span class="wd"></span><span class="wd">Wed</span><span class="wd"></span><span class="wd">Fri</span><span class="wd"></span>
+                {h.cells.map((date) =>
+                  date ? (
+                    <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday }]} data-date={date} title={cellTitle(date)}></i>
+                  ) : (
+                    <i class="cell pad"></i>
+                  ),
+                )}
+              </div>
             </div>
-          </div>
+          ))}
         </div>
         <div class="yg-foot">
           <span>Shaded by distance, under 3 mi to 7+ mi</span>
@@ -518,10 +543,6 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         cell.classList.toggle('future', cell.dataset.date! > today)
         cell.classList.toggle('today', cell.dataset.date === today)
       }
-      // on narrow screens, scroll the board so today is in view
-      const board = document.getElementById('yg-scroll')
-      const todayCell = board?.querySelector<HTMLElement>('.cell.today')
-      if (board && todayCell && board.scrollWidth > board.clientWidth) board.scrollLeft = todayCell.offsetLeft - board.clientWidth / 2
 
       // The day-by-day list is built through the deploy date; add a "No run" row for
       // each day that has passed since, newest at the top, so it keeps counting up daily.
