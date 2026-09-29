@@ -8,35 +8,52 @@ const appUrl =
 const checklistUrl = ''
 const reportUrl = ''
 // `locked` tools are shown greyed and not clickable; their href is kept for later.
-const tools = [
-  { label: 'Le Casting', sub: 'sélection des candidats', href: appUrl, locked: true },
-  { label: 'Tour de contrôle', sub: 'checklist', href: checklistUrl, locked: true },
-  { label: 'Le Grand Bilan', sub: 'rapport', href: reportUrl, locked: true },
+const groups = [
   {
-    label: 'Compte rendu de session',
-    sub: 'par les formateurs',
-    href: 'https://script.google.com/macros/s/AKfycbxmP6veZ9pfXPhZhM2FvGUv1yyRjd-GW9VDxSeoiVjr8qSi-yxhrE65WDUybv7Idb_mDA/exec',
-    color: 'yellow',
+    title: 'Pilotage',
+    items: [
+      { label: 'Le Casting', sub: 'sélection des candidats', href: appUrl, locked: true },
+      { label: 'Tour de contrôle', sub: 'checklist', href: checklistUrl, locked: true },
+      { label: 'Le Grand Bilan', sub: 'rapport', href: reportUrl, locked: true },
+    ],
   },
   {
-    label: 'Feedback Module 1',
-    href: 'https://script.google.com/macros/s/AKfycbwL6T1JP7OV28c6SZh4RSnuBoOT-JieT2FjsQI-EyKEwvXBDcI6-u9qFGaFlToBkV3A/exec',
+    title: 'Espace formateurs',
+    audience: 'Réservé aux formateurs',
+    items: [
+      {
+        label: 'Compte rendu de session',
+        sub: 'par les formateurs',
+        href: 'https://script.google.com/macros/s/AKfycbxmP6veZ9pfXPhZhM2FvGUv1yyRjd-GW9VDxSeoiVjr8qSi-yxhrE65WDUybv7Idb_mDA/exec',
+        color: 'yellow',
+      },
+    ],
   },
   {
-    label: 'Feedback Module 2',
-    href: 'https://script.google.com/macros/s/AKfycbwCoMGLfHJ46hT5yWmi9HsTLFCb_bGz2VHI2Wv5gE53dWibvROhVIaB7ICC87Jw2m30hw/exec',
-  },
-  {
-    label: 'Feedback Module 3',
-    href: 'https://script.google.com/macros/s/AKfycbxUszTmn70GdNRJ_kfJZj4vFtpWUGXXMEtBoR2jplp5j7nlQ6k8NUUg20GdwdS2zRqX/exec',
-  },
-  {
-    label: 'Feedback Module 4',
-    href: 'https://script.google.com/macros/s/AKfycbxHyMkor8abWNwbJnehwIshF35t6DPrgSJ8VyOl6OlIjzdGhZ9loCyFDwQjaN9ph3Y/exec',
-  },
-  {
-    label: 'Feedback Module 5',
-    href: 'https://script.google.com/macros/s/AKfycbxlhaKm6grIJXTLFDlQ5ODklmT-Vk6fRaLBT3LB9H8ZeCxhZsgIEz1g6LMno_06WAH1qA/exec',
+    title: 'Espace apprenants',
+    audience: 'Réservé aux apprenants',
+    items: [
+      {
+        label: 'Feedback Module 1',
+        href: 'https://script.google.com/macros/s/AKfycbwL6T1JP7OV28c6SZh4RSnuBoOT-JieT2FjsQI-EyKEwvXBDcI6-u9qFGaFlToBkV3A/exec',
+      },
+      {
+        label: 'Feedback Module 2',
+        href: 'https://script.google.com/macros/s/AKfycbwCoMGLfHJ46hT5yWmi9HsTLFCb_bGz2VHI2Wv5gE53dWibvROhVIaB7ICC87Jw2m30hw/exec',
+      },
+      {
+        label: 'Feedback Module 3',
+        href: 'https://script.google.com/macros/s/AKfycbxUszTmn70GdNRJ_kfJZj4vFtpWUGXXMEtBoR2jplp5j7nlQ6k8NUUg20GdwdS2zRqX/exec',
+      },
+      {
+        label: 'Feedback Module 4',
+        href: 'https://script.google.com/macros/s/AKfycbxHyMkor8abWNwbJnehwIshF35t6DPrgSJ8VyOl6OlIjzdGhZ9loCyFDwQjaN9ph3Y/exec',
+      },
+      {
+        label: 'Feedback Module 5',
+        href: 'https://script.google.com/macros/s/AKfycbxlhaKm6grIJXTLFDlQ5ODklmT-Vk6fRaLBT3LB9H8ZeCxhZsgIEz1g6LMno_06WAH1qA/exec',
+      },
+    ],
   },
 ]
 ---
@@ -128,6 +145,42 @@ const tools = [
         color: #555;
         margin-bottom: 32px;
         line-height: 1.6;
+      }
+      .group {
+        width: 100%;
+        max-width: 360px;
+        margin-bottom: 30px;
+      }
+      .group-title {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 14px;
+        font-family:
+          'Nunito',
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+        font-size: 0.8em;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: #8a929c;
+      }
+      .audience {
+        padding: 3px 10px;
+        border-radius: 999px;
+        background: #eef3fa;
+        color: var(--ialab-blue);
+        font-size: 0.85em;
+        letter-spacing: 0.06em;
+        text-transform: none;
+      }
+      .group:has(.yellow) .audience {
+        background: #faf3de;
+        color: #8a6a12;
       }
       .tubes {
         display: flex;
@@ -292,11 +345,6 @@ const tools = [
           transition: none;
         }
       }
-      .note {
-        font-size: 0.9em;
-        color: #999;
-        margin-top: 28px;
-      }
     </style>
   </head>
   <body>
@@ -307,66 +355,70 @@ const tools = [
           Outil de sélection et d'évaluation des candidats avec collaboration en temps
           réel et suivi
         </p>
-        <div class="tubes">
-          {
-            tools.map((t) =>
-              t.href && !t.locked ? (
-                <a
-                  href={t.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class:list={['tube', t.color, { primary: t.primary }]}
-                >
-                  <svg
-                    class="arrow"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                  <span class="label">
-                    {t.label}
-                    {t.sub && <span class="sub">{t.sub}</span>}
-                  </span>
-                </a>
-              ) : (
-                <span
-                  class="tube locked"
-                  aria-disabled="true"
-                  title="Accès fermé"
-                  data-href={t.href || undefined}
-                >
-                  <svg
-                    class="arrow"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                  >
-                    <rect x="5" y="11" width="14" height="10" rx="2" />
-                    <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-                  </svg>
-                  <span class="label">
-                    {t.label}
-                    {t.sub && <span class="sub">{t.sub}</span>}
-                  </span>
-                </span>
-              ),
-            )
-          }
-        </div>
-        <div class="note">
-          S'ouvre dans une nouvelle fenêtre. Connectez-vous avec votre compte Google pour
-          accéder.
-        </div>
+        {
+          groups.map((g) => (
+            <section class="group">
+              <h2 class="group-title">
+                {g.title}
+                {g.audience && <span class="audience">{g.audience}</span>}
+              </h2>
+              <div class="tubes">
+                {g.items.map((t) =>
+                  t.href && !t.locked ? (
+                    <a
+                      href={t.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class:list={['tube', t.color, { primary: t.primary }]}
+                    >
+                      <svg
+                        class="arrow"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                      </svg>
+                      <span class="label">
+                        {t.label}
+                        {t.sub && <span class="sub">{t.sub}</span>}
+                      </span>
+                    </a>
+                  ) : (
+                    <span
+                      class="tube locked"
+                      aria-disabled="true"
+                      title="Accès fermé"
+                      data-href={t.href || undefined}
+                    >
+                      <svg
+                        class="arrow"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <rect x="5" y="11" width="14" height="10" rx="2" />
+                        <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                      </svg>
+                      <span class="label">
+                        {t.label}
+                        {t.sub && <span class="sub">{t.sub}</span>}
+                      </span>
+                    </span>
+                  ),
+                )}
+              </div>
+            </section>
+          ))
+        }
       </div>
     </main>
     <footer>
