@@ -187,17 +187,19 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .runner circle { fill: currentColor; }
       .runner g { transform-box: view-box; }
       .runner .back { opacity: 0.5; }
-      .runner .body { animation: run-bob 0.32s ease-in-out infinite; }
-      .runner .thigh { transform-origin: 28px 38px; animation: run-thigh 0.64s linear infinite; }
-      .runner .shin { transform-origin: 28px 49px; animation: run-shin 0.64s linear infinite; }
-      .runner .arm { transform-origin: 31.5px 23px; animation: run-arm 0.64s ease-in-out infinite; }
-      .runner .back .thigh, .runner .back .shin, .runner .back.arm { animation-delay: -0.32s; }
-      .runner .shadow { fill: currentColor; opacity: 0.15; transform-origin: 30px 62px; animation: run-shadow 0.32s ease-in-out infinite; }
-      @keyframes run-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5px); } }
-      @keyframes run-thigh { 0%, 100% { transform: rotate(-38deg); } 50% { transform: rotate(32deg); } }
-      @keyframes run-shin { 0%, 100% { transform: rotate(12deg); } 30% { transform: rotate(18deg); } 50% { transform: rotate(40deg); } 70% { transform: rotate(95deg); } 85% { transform: rotate(50deg); } }
-      @keyframes run-arm { 0%, 100% { transform: rotate(40deg); } 50% { transform: rotate(-40deg); } }
-      @keyframes run-shadow { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.8); } }
+      /* sprint cycle: forward lean, high knee drive, heel kick, bent arms pumping; 0.5s per stride pair */
+      .runner { --stride: 0.5s; }
+      .runner .body { animation: run-bob calc(var(--stride) / 2) ease-in-out infinite; }
+      .runner .thigh { transform-origin: 28px 38px; animation: run-thigh var(--stride) linear infinite; }
+      .runner .shin { transform-origin: 28px 49px; animation: run-shin var(--stride) linear infinite; }
+      .runner .arm { transform-origin: 33px 24px; animation: run-arm var(--stride) ease-in-out infinite; }
+      .runner .back .thigh, .runner .back .shin, .runner .back.arm { animation-delay: calc(var(--stride) / -2); }
+      .runner .shadow { fill: currentColor; opacity: 0.15; transform-origin: 30px 62px; animation: run-shadow calc(var(--stride) / 2) ease-in-out infinite; }
+      @keyframes run-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3.5px); } }
+      @keyframes run-thigh { 0%, 100% { transform: rotate(-45deg); } 25% { transform: rotate(-5deg); } 50% { transform: rotate(42deg); } 65% { transform: rotate(28deg); } 85% { transform: rotate(-70deg); } }
+      @keyframes run-shin { 0%, 100% { transform: rotate(15deg); } 25% { transform: rotate(20deg); } 50% { transform: rotate(35deg); } 65% { transform: rotate(125deg); } 85% { transform: rotate(105deg); } }
+      @keyframes run-arm { 0%, 100% { transform: rotate(55deg); } 50% { transform: rotate(-50deg); } }
+      @keyframes run-shadow { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.75); } }
       @media (prefers-reduced-motion: reduce) { .runner * { animation-play-state: paused !important; } }
       h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; }
       header p { color: var(--muted); font-size: 0.95rem; margin-top: 2px; }
@@ -338,12 +340,12 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
           <svg viewBox="0 0 64 64">
             <ellipse class="shadow" cx="30" cy="62" rx="12" ry="1.8" />
             <g class="body">
-              <g class="back arm"><polyline points="31.5,23 31.5,30.5 37.5,34" /></g>
+              <g class="back arm"><polyline points="33,24 33,31.5 39.5,28.5" /></g>
               <g class="back"><g class="thigh"><line x1="28" y1="38" x2="28" y2="49" /><g class="shin"><line x1="28" y1="49" x2="28" y2="59" /></g></g></g>
-              <line x1="28" y1="38" x2="32" y2="21" />
-              <circle cx="34.5" cy="12.5" r="6" />
+              <line x1="28" y1="38" x2="34" y2="22" />
+              <circle cx="37.5" cy="14" r="6" />
               <g class="front"><g class="thigh"><line x1="28" y1="38" x2="28" y2="49" /><g class="shin"><line x1="28" y1="49" x2="28" y2="59" /></g></g></g>
-              <g class="arm"><polyline points="31.5,23 31.5,30.5 37.5,34" /></g>
+              <g class="arm"><polyline points="33,24 33,31.5 39.5,28.5" /></g>
             </g>
           </svg>
         </div>
