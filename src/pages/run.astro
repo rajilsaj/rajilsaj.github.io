@@ -81,10 +81,6 @@ const rings = [
 const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => w.date < date)?.lb
 const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) => p.date < date)?.count
 
-// per-run averages, for the "vs your average" comparisons in each day's details
-const hrRuns = days.filter((d) => d.run?.avgHrBpm).map((d) => d.run!.avgHrBpm!)
-const avgHrAll = hrRuns.length ? hrRuns.reduce((a, b) => a + b, 0) / hrRuns.length : undefined
-const avgMiAll = measured ? totalMi / measured : undefined
 ---
 
 <!doctype html>
@@ -334,7 +330,7 @@ const avgMiAll = measured ? totalMi / measured : undefined
         .daylog .zones { max-width: 160px; }
       }
 
-      /* click a day to open its details: effort, derived metrics, comparisons, heart-rate zones, splits */
+      /* click a day to open its details: heart-rate zones up front, a few key numbers, mile splits */
       .daylog tr.expandable { cursor: pointer; }
       .daylog tr.expandable:hover td, .daylog tr.expandable[aria-expanded='true'] td { background: var(--card-2); }
       .daylog tr.expandable:focus-visible { outline: 2px solid var(--bar); outline-offset: -2px; }
@@ -343,42 +339,39 @@ const avgMiAll = measured ? totalMi / measured : undefined
       tr[aria-expanded='true'] .chev { transform: rotate(180deg); }
       .daylog tr.details[hidden] { display: none; }
       .daylog tr.details td { background: var(--card-2); white-space: normal; padding: 4px 16px 18px; }
-      .dt-head { font-weight: 700; font-size: 0.9rem; margin-bottom: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
-      .effort { background: var(--bar-track); color: var(--text); font-size: 0.72rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
-      .dt-stats small { display: block; color: var(--muted); font-size: 0.7rem; margin-top: 2px; }
-      .dt-block { margin-bottom: 16px; }
-      .dt-block h3 { font-size: 0.8rem; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
-      table.cmp { width: auto; font-size: 0.82rem; }
-      table.cmp th, table.cmp td { padding: 4px 18px 4px 0; border: 0; background: none !important; white-space: nowrap; }
-      table.cmp th { font-size: 0.68rem; }
-      table.cmp td:first-child { font-weight: 600; }
-      table.cmp .delta { display: inline; margin: 0; font-weight: 700; font-size: 0.82rem; }
-      .srow { display: grid; grid-template-columns: 56px minmax(0, 1fr) 46px 76px; align-items: center; gap: 10px; font-size: 0.8rem; padding: 3px 0; }
-      .srow .zbar i { background: var(--muted); }
-      .srow.fast .zbar i { background: var(--green); } .srow.fast .zt { color: var(--green); }
-      .srow.slow .zbar i { background: var(--red); } .srow.slow .zt { color: var(--red); }
-      .dt-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-bottom: 16px; }
-      .dt-stats div { background: var(--card); border-radius: 10px; padding: 9px 11px; }
-      .dt-stats span { display: block; color: var(--muted); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
-      .dt-stats b { font-size: 1rem; }
-      .zrow { display: grid; grid-template-columns: 56px minmax(0, 1fr) 46px 76px; align-items: center; gap: 10px; font-size: 0.8rem; padding: 3px 0; }
-      .zl { font-weight: 600; }
-      .zbar { height: 8px; border-radius: 999px; background: var(--track); overflow: hidden; }
-      .zbar i { display: block; height: 100%; border-radius: 999px; min-width: 2px; }
-      .zt { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
-      .zr { color: var(--muted); text-align: right; font-size: 0.72rem; white-space: nowrap; }
-      .dt-line { color: var(--muted); font-size: 0.82rem; margin-bottom: 12px; }
+      .dt-meta { color: var(--muted); font-size: 0.8rem; margin-bottom: 14px; }
+      /* heart-rate zones: one stacked bar, five-column legend */
+      .hz { background: var(--card); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; }
+      .hz-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 0.85rem; color: var(--muted); }
+      .hz-top b { font-size: 1.5rem; color: var(--text); letter-spacing: -0.02em; margin-right: 2px; }
+      .hz-avg { font-weight: 600; white-space: nowrap; }
+      .hz-bar { display: flex; gap: 3px; height: 14px; margin: 12px 0; }
+      .hz-bar i { display: block; flex-basis: 0; min-width: 4px; border-radius: 999px; }
+      .hz-legend { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+      .hz-item { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+      .hz-item.off { opacity: 0.4; }
+      .hz-name { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; font-weight: 700; color: var(--muted); }
+      .hz-name i { width: 8px; height: 8px; border-radius: 50%; display: block; }
+      .hz-item b { font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+      .hz-pct { font-size: 0.72rem; color: var(--muted); }
+      /* three key numbers and the splits, kept on single quiet lines */
+      .dt-keys { display: flex; flex-wrap: wrap; gap: 8px 24px; padding: 2px 4px 12px; }
+      .dt-keys div { display: flex; align-items: baseline; gap: 6px; }
+      .dt-keys b { font-size: 1.05rem; }
+      .dt-keys span, .dt-label { color: var(--muted); font-size: 0.78rem; }
+      .dt-splits { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 0 4px; }
+      .dt-label { margin-right: 4px; }
+      .split { font-size: 0.8rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--card); font-variant-numeric: tabular-nums; }
+      .split.fast { color: #0b0e13; background: var(--green); }
+      .split.slow { color: #fff; background: var(--red); }
       @media (max-width: 739px) {
         .daylog tr.details { display: block; padding: 0; }
         .daylog tr.expandable:hover td, .daylog tr.expandable[aria-expanded='true'] td { background: none; }
         .daylog tr.expandable[aria-expanded='true'] { background: var(--card-2); }
         .daylog tr.details td { display: block; padding: 14px 16px 16px; }
         .daylog .more { margin-top: 0; margin-left: auto; }
-        .zrow, .srow { grid-template-columns: 46px minmax(0, 1fr) 40px 72px; gap: 8px; }
-        .daylog table.cmp { display: table; } .daylog table.cmp thead { display: table-header-group; } .daylog table.cmp tbody { display: table-row-group; }
-        .daylog table.cmp tr { display: table-row; padding: 0; border: 0; } .daylog table.cmp td, .daylog table.cmp th { display: table-cell; padding: 4px 14px 4px 0; }
-        .daylog table.cmp td[data-label]::before { content: none; }
-        .zr { font-size: 0.66rem; }
+        .hz { padding: 12px; }
+        .hz-item b { font-size: 0.85rem; }
       }
 
       footer { color: var(--muted); font-size: 0.8rem; margin-top: 30px; text-align: center; }
@@ -529,36 +522,21 @@ const avgMiAll = measured ? totalMi / measured : undefined
                   ['Push-ups', pu != null ? String(pu) : '–', 'green', delta(pu, prevPushupsBefore(d.date), (n) => String(n))],
                 ]
                 const hasDetails = !!r
-                // metrics derived from the watch summary, to track fitness run over run
+                // details panel: zones first, then three key numbers and the splits
                 const sec = r ? toSec(r.workoutTime) : 0
                 const mi = r?.distanceMi
-                const paceSec = r?.avgPace ? toSec(r.avgPace) : undefined
-                const zoneShare = (from: number, to: number) => (zoneTotal ? Math.round((zoneSec.slice(from, to).reduce((a, b) => a + b, 0) / zoneTotal) * 100) : undefined)
-                const aerobic = zoneShare(1, 3)
-                const hard = zoneShare(3, 5)
-                const metrics: [string, string | undefined, string][] = r
+                const zonePct = zoneSec.map((z) => (zoneTotal ? Math.round((z / zoneTotal) * 100) : 0))
+                const aerobic = zonePct[1] + zonePct[2]
+                const keyStats: [string, string | undefined][] = r
                   ? [
-                      ['Beats per mile', r.avgHrBpm && mi ? `${Math.round((r.avgHrBpm * sec) / 60 / mi)}` : undefined, 'lower = fitter heart'],
-                      ['Aerobic (Z2–Z3)', aerobic != null ? `${aerobic}%` : undefined, hard != null ? `${hard}% in Z4–Z5` : ''],
-                      ['Stride length', mi && r.avgCadenceSpm ? `${((mi * 5280) / ((sec * r.avgCadenceSpm) / 60)).toFixed(2)} ft` : undefined, r.avgCadenceSpm ? `${r.avgCadenceSpm} spm cadence` : ''],
-                      ['Calories per mile', mi && r.activeCal ? `${Math.round(r.activeCal / mi)}` : undefined, r.totalCal ? `${r.activeCal} active · ${r.totalCal} total` : ''],
-                      ['Climb per mile', mi && r.elevationFt != null ? `${Math.round(r.elevationFt / mi)} ft` : undefined, r.elevationFt != null ? `${r.elevationFt} ft gain` : ''],
-                      ['Avg. power', r.avgPowerW != null ? `${r.avgPowerW} W` : undefined, mi && r.avgPowerW ? `${(r.avgPowerW / (mi / (sec / 3600))).toFixed(1)} W per mph` : ''],
-                      ['Elapsed', r.elapsedTime, r.elapsedTime ? `${fmtDuration(toSec(r.elapsedTime) - sec)} paused` : ''],
+                      ['beats / mile', r.avgHrBpm && mi ? String(Math.round((r.avgHrBpm * sec) / 60 / mi)) : undefined],
+                      ['steps / min', r.avgCadenceSpm != null ? String(r.avgCadenceSpm) : undefined],
+                      ['ft climbed', r.elevationFt != null ? String(r.elevationFt) : undefined],
                     ]
                   : []
-                // compare with the previous run and with the average of all runs
-                const compare: [string, Delta, Delta][] = r
-                  ? [
-                      ['Pace', delta(paceSec, p?.avgPace ? toSec(p.avgPace) : undefined, fmtDuration, true), count > 1 ? delta(paceSec, avgPaceSec || undefined, fmtDuration, true) : null],
-                      ['Distance', delta(mi, p?.distanceMi, (n) => `${n.toFixed(2)} mi`), count > 1 ? delta(mi, avgMiAll, (n) => `${n.toFixed(2)} mi`) : null],
-                      ['Heart rate', delta(r.avgHrBpm, p?.avgHrBpm, (n) => `${Math.round(n)} bpm`, true), count > 1 ? delta(r.avgHrBpm, avgHrAll, (n) => `${Math.round(n)} bpm`, true) : null],
-                    ]
-                  : []
-                const hasCompare = compare.some(([, a, b]) => a || b)
                 const splitSec = r?.splits?.map((sp) => toSec(sp.time)) ?? []
-                const fastest = splitSec.length ? Math.min(...splitSec) : 0
-                const slowest = splitSec.length ? Math.max(...splitSec) : 0
+                const fastest = Math.min(...splitSec)
+                const slowest = Math.max(...splitSec)
                 return (
                   <>
                   <tr
@@ -598,63 +576,45 @@ const avgMiAll = measured ? totalMi / measured : undefined
                     <tr class="details" id={`details-${d.date}`} hidden>
                       <td colspan="7">
                         {r && (
-                          <p class="dt-head">
-                            {[r.time, r.location, r.tempF != null && `${r.tempF}°F`, r.humidityPct != null && `${r.humidityPct}% humidity`].filter(Boolean).join(' · ')}
-                            {r.effort != null && <span class="effort">Effort {r.effort} · {effortLabel(r.effort)}</span>}
+                          <p class="dt-meta">
+                            {[r.time, r.location, r.tempF != null && `${r.tempF}°F`, r.humidityPct != null && `${r.humidityPct}% humidity`, r.effort != null && `effort ${r.effort} · ${effortLabel(r.effort).toLowerCase()}`].filter(Boolean).join(' · ')}
                           </p>
                         )}
-                        {r && (
-                          <div class="dt-stats">
-                            {metrics.filter(([, v]) => v).map(([label, v, sub]) => (
-                              <div><span>{label}</span><b>{v}</b>{sub && <small>{sub}</small>}</div>
-                            ))}
-                          </div>
-                        )}
-                        {hasCompare && (
-                          <div class="dt-block">
-                            <h3>Compared with</h3>
-                            <table class="cmp">
-                              <thead><tr><th></th><th>Previous run</th>{count > 1 && <th>Your average</th>}</tr></thead>
-                              <tbody>
-                                {compare.map(([label, a, b]) => (
-                                  <tr>
-                                    <td>{label}</td>
-                                    <td>{a ? <span class={`delta ${a.dir}`}>{a.text}</span> : '–'}</td>
-                                    {count > 1 && <td>{b ? <span class={`delta ${b.dir}`}>{b.text}</span> : '–'}</td>}
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
                         {r && zoneTotal > 0 && (
-                          <div class="dt-block">
-                            <h3>Heart rate zones · avg {r.avgHrBpm} bpm</h3>
-                            {zoneSec.map((s, zi) => (
-                              <div class="zrow">
-                                <span class="zl">Zone {zi + 1}</span>
-                                <span class="zbar"><i class={`z${zi + 1}`} style={`width:${(s / zoneTotal) * 100}%`}></i></span>
-                                <span class="zt">{r.hrZones![zi]}</span>
-                                <span class="zr">{HR_ZONES[zi]} bpm</span>
-                              </div>
+                          <div class="hz">
+                            <div class="hz-top">
+                              <span><b>{aerobic}%</b> aerobic · zones 2–3</span>
+                              <span class="hz-avg">avg {r.avgHrBpm} bpm</span>
+                            </div>
+                            <div class="hz-bar" aria-hidden="true">
+                              {zoneSec.map((z, zi) => z > 0 && <i class={`z${zi + 1}`} style={`flex-grow:${z}`}></i>)}
+                            </div>
+                            <div class="hz-legend">
+                              {zoneSec.map((_, zi) => (
+                                <div class:list={['hz-item', { off: zoneSec[zi] === 0 }]} title={`${HR_ZONES[zi]} bpm`}>
+                                  <span class="hz-name"><i class={`z${zi + 1}`}></i>Z{zi + 1}</span>
+                                  <b>{r.hrZones![zi]}</b>
+                                  <span class="hz-pct">{zonePct[zi]}%</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {r && keyStats.some(([, v]) => v) && (
+                          <div class="dt-keys">
+                            {keyStats.filter(([, v]) => v).map(([label, v]) => (
+                              <div><b>{v}</b><span>{label}</span></div>
                             ))}
                           </div>
                         )}
-                        {r?.splits && r.splits.length > 0 && (
-                          <div class="dt-block">
-                            <h3>Mile splits · fastest in green, slowest in red</h3>
-                            {r.splits.map((sp, si) => (
-                              <div class:list={['srow', { fast: splitSec[si] === fastest && fastest !== slowest, slow: splitSec[si] === slowest && fastest !== slowest }]}>
-                                <span class="zl">Mile {si + 1}</span>
-                                <span class="zbar"><i style={`width:${(fastest / splitSec[si]) * 100}%`}></i></span>
-                                <span class="zt">{fmtPace(splitSec[si])}</span>
-                                <span class="zr">{sp.hr ? `${sp.hr} bpm` : ''}</span>
-                              </div>
+                        {splitSec.length > 0 && (
+                          <div class="dt-splits">
+                            <span class="dt-label">Mile splits</span>
+                            {splitSec.map((sp) => (
+                              <span class:list={['split', { fast: sp === fastest && fastest !== slowest, slow: sp === slowest && fastest !== slowest }]}>{fmtPace(sp)}</span>
                             ))}
                           </div>
                         )}
-                        {r?.recoveryHr && <p class="dt-line">Recovery heart rate: {r.recoveryHr.end} bpm at the end → {r.recoveryHr.min1} after 1 min → {r.recoveryHr.min2} after 2 min (a bigger drop = better recovery)</p>}
-                        {r?.notes && <p class="dt-line">{r.notes}</p>}
                       </td>
                     </tr>
                   )}
