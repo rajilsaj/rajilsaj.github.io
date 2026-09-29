@@ -92,7 +92,6 @@ for (const [path, mod] of Object.entries(shotFiles).sort(([a], [b]) => a.localeC
   const name = file.replace(/\.\w+$/, '').replace(/^\d+-/, '').replace(/-/g, ' ')
   shotsByDate.set(date, [...(shotsByDate.get(date) ?? []), { img: mod.default, name }])
 }
-const shotDates = [...shotsByDate.keys()].sort().reverse()
 ---
 
 <!doctype html>
@@ -342,16 +341,37 @@ const shotDates = [...shotsByDate.keys()].sort().reverse()
         .daylog .zones { max-width: 160px; }
       }
 
-      /* workout screenshots, one collapsible group per day */
-      .shot-link { display: block; width: max-content; margin-top: 6px; font-size: 0.72rem; font-weight: 600; color: var(--muted); text-decoration: none; }
-      .shot-link:hover { color: var(--text); }
-      .daylog .shot-link { margin-top: 0; }
-      .shots { background: var(--card); border-radius: 16px; margin-bottom: 10px; scroll-margin-top: 16px; }
-      .shots summary { cursor: pointer; padding: 14px 16px; font-size: 0.92rem; display: flex; align-items: baseline; gap: 6px; list-style: none; }
-      .shots summary::-webkit-details-marker { display: none; }
-      .shots summary::before { content: '▸'; color: var(--muted); transition: transform 0.2s; }
-      .shots[open] summary::before { transform: rotate(90deg); }
-      .shots summary span { margin-left: auto; color: var(--muted); font-size: 0.8rem; }
+      /* click a day to open its details: extra stats, heart-rate zones, notes, screenshots */
+      .daylog tr.expandable { cursor: pointer; }
+      .daylog tr.expandable:hover td, .daylog tr.expandable[aria-expanded='true'] td { background: var(--card-2); }
+      .daylog tr.expandable:focus-visible { outline: 2px solid var(--bar); outline-offset: -2px; }
+      .more { display: block; width: max-content; margin-top: 6px; font-size: 0.72rem; font-weight: 600; color: var(--muted); }
+      .chev { display: inline-block; font-style: normal; margin-left: 4px; transition: transform 0.2s; }
+      tr[aria-expanded='true'] .chev { transform: rotate(180deg); }
+      .daylog tr.details[hidden] { display: none; }
+      .daylog tr.details td { background: var(--card-2); white-space: normal; padding: 4px 16px 18px; }
+      .dt-head { font-weight: 700; font-size: 0.92rem; margin-bottom: 12px; }
+      .dt-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-bottom: 16px; }
+      .dt-stats div { background: var(--card); border-radius: 10px; padding: 9px 11px; }
+      .dt-stats span { display: block; color: var(--muted); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+      .dt-stats b { font-size: 1rem; }
+      .dt-zones { margin-bottom: 14px; }
+      .dt-zones h3 { font-size: 0.8rem; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
+      .zrow { display: grid; grid-template-columns: 56px minmax(0, 1fr) 46px 76px; align-items: center; gap: 10px; font-size: 0.8rem; padding: 3px 0; }
+      .zl { font-weight: 600; }
+      .zbar { height: 8px; border-radius: 999px; background: var(--track); overflow: hidden; }
+      .zbar i { display: block; height: 100%; border-radius: 999px; min-width: 2px; }
+      .zt { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+      .zr { color: var(--muted); text-align: right; font-size: 0.72rem; white-space: nowrap; }
+      .dt-line { color: var(--muted); font-size: 0.82rem; margin-bottom: 12px; }
+      .daylog tr.details .shot-grid { padding: 0; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+      @media (max-width: 739px) {
+        .daylog tr.details { display: block; padding: 0; }
+        .daylog tr.details td { display: block; padding: 14px 16px 16px; }
+        .daylog .more { margin-top: 0; margin-left: auto; }
+        .zrow { grid-template-columns: 46px minmax(0, 1fr) 40px 72px; gap: 8px; }
+        .zr { font-size: 0.66rem; }
+      }
       .shot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding: 0 16px 16px; }
       @media (max-width: 559px) { .shot-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0 12px 12px; } }
       .shot-grid a { display: block; text-decoration: none; color: var(--muted); font-size: 0.72rem; min-width: 0; }
@@ -506,9 +526,28 @@ const shotDates = [...shotsByDate.keys()].sort().reverse()
                   ['Weight', w != null ? `${w.toFixed(1)} lb` : '–', 'purple', delta(w, prevWeightBefore(d.date), (n) => `${n.toFixed(1)} lb`, true)],
                   ['Push-ups', pu != null ? String(pu) : '–', 'green', delta(pu, prevPushupsBefore(d.date), (n) => String(n))],
                 ]
+                const shots = shotsByDate.get(d.date)
+                const hasDetails = !!r || !!shots
+                const extra: [string, string | undefined][] = r
+                  ? [
+                      ['Elapsed', r.elapsedTime],
+                      ['Active calories', r.activeCal != null ? `${r.activeCal} cal` : undefined],
+                      ['Total calories', r.totalCal != null ? `${r.totalCal} cal` : undefined],
+                      ['Elevation gain', r.elevationFt != null ? `${r.elevationFt} ft` : undefined],
+                      ['Avg. power', r.avgPowerW != null ? `${r.avgPowerW} W` : undefined],
+                      ['Avg. cadence', r.avgCadenceSpm != null ? `${r.avgCadenceSpm} spm` : undefined],
+                    ]
+                  : []
                 return (
-                  <tr class={r ? undefined : 'rest'}>
-                    <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span>{d.day === GOAL_DAY && <span class="goal-tag">🏆 Challenge {GOAL_DAY} achieved</span>}{shotsByDate.has(d.date) && <a class="shot-link" href={`#shots-${d.date}`}>📸 {shotsByDate.get(d.date)!.length} screenshots</a>}</td>
+                  <>
+                  <tr
+                    class:list={[{ rest: !r, expandable: hasDetails }]}
+                    data-details={hasDetails ? d.date : undefined}
+                    tabindex={hasDetails ? 0 : undefined}
+                    aria-expanded={hasDetails ? 'false' : undefined}
+                    aria-controls={hasDetails ? `details-${d.date}` : undefined}
+                  >
+                    <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span>{d.day === GOAL_DAY && <span class="goal-tag">🏆 Challenge {GOAL_DAY} achieved</span>}{hasDetails && <span class="more">{shots ? `📸 ${shots.length} · ` : ''}details<i class="chev" aria-hidden="true">▾</i></span>}</td>
                     {r ? (
                       runCells.map(([label, v, c, dl], ci) => (
                         <td data-label={label}>
@@ -534,34 +573,52 @@ const shotDates = [...shotsByDate.keys()].sort().reverse()
                       </td>
                     ))}
                   </tr>
+                  {hasDetails && (
+                    <tr class="details" id={`details-${d.date}`} hidden>
+                      <td colspan="7">
+                        {r && <p class="dt-head">🏃 Outdoor run{r.time && ` · ${r.time}`}{r.location && ` · ${r.location}`}</p>}
+                        {r && (
+                          <div class="dt-stats">
+                            {extra.filter(([, v]) => v).map(([label, v]) => (
+                              <div><span>{label}</span><b>{v}</b></div>
+                            ))}
+                          </div>
+                        )}
+                        {r && zoneTotal > 0 && (
+                          <div class="dt-zones">
+                            <h3>Heart rate zones · avg {r.avgHrBpm} bpm</h3>
+                            {zoneSec.map((s, zi) => (
+                              <div class="zrow">
+                                <span class="zl">Zone {zi + 1}</span>
+                                <span class="zbar"><i class={`z${zi + 1}`} style={`width:${(s / zoneTotal) * 100}%`}></i></span>
+                                <span class="zt">{r.hrZones![zi]}</span>
+                                <span class="zr">{HR_ZONES[zi]} bpm</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {r?.recoveryHr && <p class="dt-line">Recovery heart rate: {r.recoveryHr.end} bpm at the end → {r.recoveryHr.min1} after 1 min → {r.recoveryHr.min2} after 2 min</p>}
+                        {r?.notes && <p class="dt-line">{r.notes}</p>}
+                        {shots && (
+                          <div class="shot-grid">
+                            {shots.map((sh) => (
+                              <a href={sh.img.src} target="_blank" rel="noopener">
+                                <Image src={sh.img} widths={[240, 480]} sizes="(max-width: 600px) 33vw, 160px" alt={`Day ${d.day} ${sh.name}`} loading="lazy" />
+                                <span>{sh.name}</span>
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                  </>
                 )
               })}
             </tbody>
           </table>
         )}
       </div>
-
-      {shotDates.length > 0 && (
-        <>
-          <h2>Screenshots</h2>
-          {shotDates.map((date, i) => (
-            <details class="shots" id={`shots-${date}`} open={i === 0}>
-              <summary>
-                <b>Day {dayNumber(date)}</b> · {fmtDate(date, { weekday: 'short', month: 'short', day: 'numeric' })}
-                <span>{shotsByDate.get(date)!.length} photos</span>
-              </summary>
-              <div class="shot-grid">
-                {shotsByDate.get(date)!.map((s) => (
-                  <a href={s.img.src} target="_blank" rel="noopener">
-                    <Image src={s.img} widths={[240, 480]} sizes="(max-width: 600px) 33vw, 180px" alt={`Day ${dayNumber(date)} ${s.name}`} loading="lazy" />
-                    <span>{s.name}</span>
-                  </a>
-                ))}
-              </div>
-            </details>
-          ))}
-        </>
-      )}
 
       {weightLog.length > 1 && (
         <>
@@ -620,6 +677,22 @@ const shotDates = [...shotsByDate.keys()].sort().reverse()
       for (const cell of document.querySelectorAll<HTMLElement>('.yg-cells .cell[data-date]')) {
         cell.classList.toggle('future', cell.dataset.date! > today)
         cell.classList.toggle('today', cell.dataset.date === today)
+      }
+
+      // Click (or Enter/Space on) a day to drop down its details.
+      for (const row of document.querySelectorAll<HTMLElement>('.daylog tr[data-details]')) {
+        const panel = document.getElementById(`details-${row.dataset.details}`)!
+        const toggle = () => {
+          panel.hidden = !panel.hidden
+          row.setAttribute('aria-expanded', String(!panel.hidden))
+        }
+        row.addEventListener('click', toggle)
+        row.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            toggle()
+          }
+        })
       }
 
       // The day-by-day list is built through the deploy date; add a "No run" row for
