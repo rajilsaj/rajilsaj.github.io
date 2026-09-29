@@ -32,11 +32,14 @@ const tools = [
         padding: 0;
         box-sizing: border-box;
       }
+      :root {
+        --ialab-blue: #3985d1;
+      }
       html, body {
         width: 100%;
-        height: 100%;
+        min-height: 100%;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #fff;
       }
       body {
         display: flex;
@@ -45,132 +48,74 @@ const tools = [
         padding: 20px;
       }
       .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
-        background: white;
-        border-radius: 12px;
-        padding: 60px 40px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        max-width: 720px;
         width: 100%;
+        max-width: 420px;
       }
-      h1 {
-        font-size: 2.5em;
-        color: #333;
-        margin-bottom: 16px;
-        font-weight: 700;
+      .logo {
+        width: 100%;
+        max-width: 320px;
+        height: auto;
+        margin-bottom: 20px;
       }
       p {
-        font-size: 1.1em;
-        color: #666;
+        font-size: 1.05em;
+        color: #555;
         margin-bottom: 32px;
         line-height: 1.6;
       }
       .tubes {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 16px;
+        flex-direction: column;
+        gap: 14px;
+        width: 100%;
+        max-width: 300px;
       }
-      /* Tube buttons: capsule shape with cylindrical shading and a glass highlight */
+      /* Tube buttons: flat capsule in the logo blue */
       .tube {
-        position: relative;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        min-width: 170px;
         padding: 16px 28px;
         border-radius: 999px;
-        color: white;
+        background: var(--ialab-blue);
+        color: #fff;
         text-decoration: none;
         font-weight: 600;
         font-size: 1.05em;
         letter-spacing: 0.02em;
-        background: linear-gradient(
-          180deg,
-          #8fa2f5 0%,
-          #667eea 22%,
-          #5a4fc4 55%,
-          #764ba2 85%,
-          #5b3a80 100%
-        );
-        border: 1px solid rgba(80, 60, 160, 0.6);
-        box-shadow:
-          inset 0 -4px 8px rgba(0, 0, 0, 0.25),
-          inset 0 2px 2px rgba(255, 255, 255, 0.35),
-          0 6px 16px rgba(102, 126, 234, 0.45);
-        overflow: hidden;
-        transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
-      }
-      .tube::before {
-        content: '';
-        position: absolute;
-        top: 3px;
-        left: 14px;
-        right: 14px;
-        height: 42%;
-        border-radius: 999px;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
-        pointer-events: none;
+        transition: filter 0.2s, transform 0.2s;
       }
       .tube:hover {
-        transform: translateY(-2px);
-        filter: brightness(1.08);
-        box-shadow:
-          inset 0 -4px 8px rgba(0, 0, 0, 0.25),
-          inset 0 2px 2px rgba(255, 255, 255, 0.35),
-          0 10px 22px rgba(102, 126, 234, 0.6);
+        filter: brightness(1.1);
+        transform: translateY(-1px);
       }
       .tube:active {
         transform: translateY(0);
       }
       .tube.soon {
-        filter: grayscale(0.7);
-        opacity: 0.6;
+        opacity: 0.45;
         cursor: not-allowed;
         pointer-events: none;
       }
       .tube .soon-tag {
-        font-size: 0.7em;
+        font-size: 0.75em;
         font-weight: 500;
-        opacity: 0.9;
-      }
-      .icon {
-        font-size: 3em;
-        margin-bottom: 20px;
       }
       .note {
         font-size: 0.9em;
         color: #999;
-        margin-top: 24px;
-        padding-top: 24px;
-        border-top: 1px solid #eee;
-      }
-      @media (max-width: 600px) {
-        .container {
-          padding: 40px 24px;
-        }
-        h1 {
-          font-size: 2em;
-        }
-        p {
-          font-size: 1em;
-        }
-        .tubes {
-          flex-direction: column;
-          align-items: stretch;
-        }
-        .tube {
-          padding: 14px 24px;
-          font-size: 1em;
-        }
+        margin-top: 28px;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <div class="icon">🔬</div>
-      <h1>IA Lab</h1>
+      <img class="logo" src="/ialab-logo.png" alt="ia.lab" width="768" height="237" />
       <p>Outil de sélection et d'évaluation des candidats avec collaboration en temps réel et suivi</p>
       <div class="tubes">
         {tools.map((t) =>
