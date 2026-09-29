@@ -42,7 +42,24 @@ export type Run = {
 export const HR_ZONES = ['<132', '133–145', '146–157', '158–170', '171+']
 
 /** One entry per run. Values are copied from the Apple Fitness workout summary. */
-export const runs: Run[] = []
+export const runs: Run[] = [
+  {
+    date: '2026-09-29',
+    time: '5:36 AM – 6:53 AM',
+    location: 'Fayetteville',
+    workoutTime: '1:17:39',
+    distanceMi: 7.09,
+    activeCal: 795,
+    totalCal: 911,
+    elevationFt: 394,
+    avgPowerW: 181,
+    avgCadenceSpm: 163,
+    avgPace: '10:57',
+    avgHrBpm: 146,
+    hrZones: ['1:58', '35:01', '38:42', '1:57', '0:00'],
+    notes: '59°F, 92% humidity · effort 5 (moderate) · 10K Run award',
+  },
+]
 
 /** Weight log. One entry per weigh-in (run days or rest days). Weight in pounds. */
 export type Weight = { date: string; lb: number }
