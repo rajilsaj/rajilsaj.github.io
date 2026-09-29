@@ -7,9 +7,9 @@ const appUrl = 'https://script.google.com/macros/s/AKfycbzE1MLVDl7YWS-VZTdIbbxW9
 const checklistUrl = ''
 const reportUrl = ''
 const tools = [
-  { label: 'Sélection', icon: '🧑‍🔬', href: appUrl },
-  { label: 'Checklist', icon: '✅', href: checklistUrl },
-  { label: 'Rapport', icon: '📊', href: reportUrl },
+  { label: 'Sélection', href: appUrl, primary: true },
+  { label: 'Checklist', href: checklistUrl },
+  { label: 'Rapport', href: reportUrl },
 ]
 ---
 
@@ -26,6 +26,9 @@ const tools = [
     <meta property="og:type" content="website" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap" rel="stylesheet" />
     <style is:global>
       * {
         margin: 0;
@@ -70,41 +73,79 @@ const tools = [
       .tubes {
         display: flex;
         flex-direction: column;
-        gap: 14px;
+        gap: 18px;
         width: 100%;
-        max-width: 300px;
+        max-width: 320px;
       }
-      /* Tube buttons: flat capsule in the logo blue */
+      /* Tube buttons: rounded pill, outlined by default; the fill sweeps in on hover */
       .tube {
-        display: inline-flex;
+        position: relative;
+        display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        padding: 16px 28px;
+        min-height: 60px;
+        padding: 0 32px;
+        border: 2.5px solid var(--ialab-blue);
         border-radius: 999px;
-        background: var(--ialab-blue);
-        color: #fff;
-        text-decoration: none;
-        font-weight: 600;
+        background: transparent;
+        color: var(--ialab-blue);
+        font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-weight: 700;
         font-size: 1.05em;
-        letter-spacing: 0.02em;
-        transition: filter 0.2s, transform 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        text-decoration: none;
+        overflow: hidden;
+        isolation: isolate;
+        transition: color 0.3s ease, transform 0.15s ease, box-shadow 0.3s ease;
+      }
+      .tube::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: var(--ialab-blue);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+      }
+      .tube.primary,
+      .tube:hover,
+      .tube:focus-visible {
+        color: #fff;
+      }
+      .tube.primary::before,
+      .tube:hover::before,
+      .tube:focus-visible::before {
+        transform: scaleX(1);
       }
       .tube:hover {
-        filter: brightness(1.1);
-        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(57, 133, 209, 0.3);
+      }
+      .tube:focus-visible {
+        outline: 3px solid rgba(57, 133, 209, 0.35);
+        outline-offset: 3px;
       }
       .tube:active {
-        transform: translateY(0);
+        transform: scale(0.97);
       }
       .tube.soon {
+        border-style: dashed;
         opacity: 0.45;
         cursor: not-allowed;
         pointer-events: none;
       }
       .tube .soon-tag {
-        font-size: 0.75em;
-        font-weight: 500;
+        margin-left: 0.6em;
+        font-size: 0.65em;
+        letter-spacing: 0.08em;
+        text-transform: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .tube,
+        .tube::before {
+          transition: none;
+        }
       }
       .note {
         font-size: 0.9em;
@@ -120,12 +161,12 @@ const tools = [
       <div class="tubes">
         {tools.map((t) =>
           t.href ? (
-            <a href={t.href} target="_blank" rel="noopener noreferrer" class="tube">
-              <span>{t.icon}</span> {t.label}
+            <a href={t.href} target="_blank" rel="noopener noreferrer" class:list={['tube', { primary: t.primary }]}>
+              {t.label}
             </a>
           ) : (
             <span class="tube soon" aria-disabled="true">
-              <span>{t.icon}</span> {t.label} <span class="soon-tag">(bientôt)</span>
+              {t.label}<span class="soon-tag">bientôt</span>
             </span>
           ),
         )}
