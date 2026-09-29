@@ -142,8 +142,11 @@ export const addMonths = (iso: string, n: number) => {
   return new Date(Date.UTC(y, m - 1 + n, Math.min(d, lastOfMonth))).toISOString().slice(0, 10)
 }
 
+/** First big goal: reaching Day 90 marks "Challenge 90 achieved" on /run. */
+export const GOAL_DAY = 90
+
 /** Day counts worth celebrating; past the last one, every 500 days. */
-const MILESTONES = [7, 30, 50, 100, 150, 200, 250, 300, 365, 500, 750, 1000]
+const MILESTONES = [7, 30, 50, GOAL_DAY, 100, 150, 200, 250, 300, 365, 500, 750, 1000]
 
 const daysBetween = (a: string, b: string) => Math.round((utc(b) - utc(a)) / DAY_MS)
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n))
