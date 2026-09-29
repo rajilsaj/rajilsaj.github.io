@@ -1,5 +1,5 @@
 ---
-import { CHALLENGE_START, HR_ZONES, challengeDays, challengeYear, progressOn, todayIso, runTotals, weightsByDate, pushupsByDate, toSec, fmtDuration, fmtPace, fmtDate } from '~/data/runs'
+import { CHALLENGE_START, HR_ZONES, challengeDays, challengeYear, dayNumber, progressOn, todayIso, runTotals, weightsByDate, pushupsByDate, toSec, fmtDuration, fmtPace, fmtDate } from '~/data/runs'
 
 const title = 'Day by Day Challenge · Running Non Stop'
 const description = 'Running every single day, no finish line. Days, months and years completed.'
@@ -33,8 +33,32 @@ const signed = (n: number, unit: string) => `${n > 0 ? '+' : '−'}${Math.abs(n)
 const startDate = CHALLENGE_START
 const prog = progressOn(todayIso())
 const dayNow = prog.day
-const runDates = new Set(days.filter((d) => d.run).map((d) => d.date))
-const yearGrid = challengeYear(prog.years) // one row per challenge month of the current year
+const buildToday = todayIso()
+
+// GitHub-style board for the current challenge year: one column per week (Sun → Sat), one square per day,
+// shaded by distance run that day
+const runOn = new Map(days.filter((d) => d.run).map((d) => [d.date, d.run!]))
+const level = (date: string) => {
+  if (!runOn.has(date)) return 0
+  const mi = runOn.get(date)!.distanceMi
+  if (mi == null) return 2
+  return mi < 3 ? 1 : mi < 5 ? 2 : mi < 7 ? 3 : 4
+}
+const cellTitle = (date: string) => {
+  const r = runOn.get(date)
+  const what = r ? (r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : 'Run') : 'No run'
+  return `${what} · Day ${dayNumber(date)} · ${fmtDate(date, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
+}
+const yearDates = challengeYear(prog.years).flatMap((m) => m.dates)
+const yearRuns = yearDates.filter((d) => runOn.has(d)).length
+const cells: (string | null)[] = [...Array(new Date(yearDates[0] + 'T00:00:00Z').getUTCDay()).fill(null), ...yearDates]
+while (cells.length % 7) cells.push(null)
+const weekCount = cells.length / 7
+// label a week column with the month whose 1st falls in it (like GitHub)
+const monthLabels = Array.from({ length: weekCount }, (_, w) => {
+  const first = cells.slice(w * 7, w * 7 + 7).find((d) => d?.endsWith('-01'))
+  return first ? fmtDate(first, { month: 'short' }) : ''
+})
 const rings = [
   { key: 'days', value: prog.day, label: prog.day === 1 ? 'day' : 'days', pct: prog.milestonePct, sub: `next stop: Day ${prog.milestone}` },
   { key: 'months', value: prog.months, label: prog.months === 1 ? 'month' : 'months', pct: prog.monthPct, sub: `${prog.daysToNextMonth} ${prog.daysToNextMonth === 1 ? 'day' : 'days'} to month ${prog.months + 1}` },
@@ -186,25 +210,29 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .ring-sub { color: var(--muted); font-size: 0.74rem; margin-top: 8px; line-height: 1.25; }
       @media (max-width: 399px) { .ring-num b { font-size: 1.3rem; } .ring-num span { font-size: 0.6rem; } }
 
-      /* year grid: one row per challenge month, one dot per day */
-      .yeargrid { background: var(--card); border-radius: 16px; padding: 14px 16px 16px; margin-bottom: 14px; }
+      /* year board, GitHub contributions style: week columns, weekday rows, squares shaded by distance */
+      .yeargrid { background: var(--card); border-radius: 16px; padding: 14px 16px 12px; margin-bottom: 14px; }
       .yg-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
       .yg-head h2 { margin: 0; font-size: 1rem; }
-      .legend { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 0.72rem; flex-wrap: wrap; }
-      .legend .dot { width: 9px; margin-left: 6px; }
-      .yg-row { display: grid; grid-template-columns: 58px minmax(0, 1fr) 40px; align-items: center; gap: 8px; padding: 3px 0; }
-      .yg-label { font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
-      .yg-label small { color: var(--muted); font-weight: 500; margin-left: 5px; }
-      .yg-dots { display: grid; grid-template-columns: repeat(31, minmax(0, 1fr)); gap: 3px; }
-      .yg-count { font-size: 0.72rem; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
-      .yg-row.complete .yg-count { color: var(--green); font-weight: 800; }
-      .dot { display: block; aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--track); background: transparent; max-width: 11px; }
-      .dot.done { background: var(--track); border-color: var(--track); }
-      .dot.ran { background: var(--bar); border-color: var(--bar); }
-      .dot.today { border: 2px solid var(--bar); animation: pulse 1.6s ease-in-out infinite; }
-      @keyframes pulse { 50% { box-shadow: 0 0 0 3px var(--bar-track); } }
-      @media (prefers-reduced-motion: reduce) { .dot.today { animation: none; } .ring-fg { transition: none; } }
-      @media (max-width: 479px) { .yg-row { grid-template-columns: 30px minmax(0, 1fr) 34px; gap: 6px; } .yg-label small { display: none; } .yg-dots { gap: 2px; } }
+      .yg-sum { color: var(--muted); font-size: 0.8rem; }
+      .yg-scroll { position: relative; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--line) transparent; padding: 2px 0 4px; }
+      .yg { --cell: 10px; --gap: 3px; display: grid; grid-template-columns: 22px auto; grid-template-rows: 16px auto; column-gap: var(--gap); width: max-content; margin: 0 auto; }
+      .yg-months { grid-column: 2; display: grid; grid-template-columns: repeat(var(--weeks), var(--cell)); gap: var(--gap); font-size: 0.68rem; color: var(--muted); }
+      .yg-months span { white-space: nowrap; }
+      .yg-wd { grid-column: 1; grid-row: 2; display: grid; grid-template-rows: repeat(7, var(--cell)); gap: var(--gap); font-size: 0.6rem; color: var(--muted); line-height: var(--cell); }
+      .yg-cells { grid-column: 2; grid-row: 2; display: grid; grid-template-rows: repeat(7, var(--cell)); grid-auto-flow: column; grid-auto-columns: var(--cell); gap: var(--gap); }
+      .cell { display: block; width: 10px; height: 10px; border-radius: 2px; background: var(--track); }
+      .cell.pad { background: transparent; }
+      .cell.l1 { background: rgba(200, 242, 43, 0.3); }
+      .cell.l2 { background: rgba(200, 242, 43, 0.55); }
+      .cell.l3 { background: rgba(200, 242, 43, 0.8); }
+      .cell.l4 { background: var(--bar); }
+      .cell.future { opacity: 0.4; }
+      .cell.today { outline: 2px solid var(--text); outline-offset: -1px; }
+      .yg-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; color: var(--muted); font-size: 0.72rem; }
+      .legend { display: inline-flex; align-items: center; gap: 3px; }
+      .legend .cell { margin: 0 1px; }
+      @media (prefers-reduced-motion: reduce) { .ring-fg { transition: none; } }
 
       /* tiles: 2 per row on phones, 3 on tablets, all 5 in one row on desktop; last row always stretches to fill */
       .summary { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -301,22 +329,30 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         <div class="mascot" aria-hidden="true"><img src="/run/beep-beep.gif" alt="" loading="lazy" /></div>
       </section>
 
-      <section class="yeargrid" aria-label={`Year ${prog.years + 1}, one dot per day`}>
+      <section class="yeargrid" aria-label={`Year ${prog.years + 1}, one square per day`}>
         <div class="yg-head">
           <h2>Year {prog.years + 1}</h2>
-          <div class="legend"><i class="dot ran"></i>run <i class="dot done"></i>no run <i class="dot today"></i>today <i class="dot"></i>ahead</div>
+          <span class="yg-sum">{yearRuns} {yearRuns === 1 ? 'run' : 'runs'} in year {prog.years + 1}</span>
         </div>
-        {yearGrid.map((m) => (
-          <div class="yg-row">
-            <span class="yg-label" title={`Month ${m.month} starts ${fmtDate(m.from, { month: 'short', day: 'numeric', year: 'numeric' })}`}>M{m.month}<small>{fmtDate(m.from, { month: 'short' })}</small></span>
-            <span class="yg-dots">
-              {m.dates.map((date) => (
-                <i class:list={['dot', { ran: runDates.has(date) }]} data-date={date} title={fmtDate(date, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}></i>
-              ))}
-            </span>
-            <span class="yg-count"></span>
+        <div class="yg-scroll" id="yg-scroll">
+          <div class="yg" style={`--weeks:${weekCount}`}>
+            <div class="yg-months" aria-hidden="true">{monthLabels.map((l) => <span>{l}</span>)}</div>
+            <div class="yg-wd" aria-hidden="true"><span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span></div>
+            <div class="yg-cells">
+              {cells.map((date) =>
+                date ? (
+                  <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday }]} data-date={date} title={cellTitle(date)}></i>
+                ) : (
+                  <i class="cell pad"></i>
+                ),
+              )}
+            </div>
           </div>
-        ))}
+        </div>
+        <div class="yg-foot">
+          <span>Shaded by distance, under 3 mi to 7+ mi</span>
+          <span class="legend">Less <i class="cell l0"></i><i class="cell l1"></i><i class="cell l2"></i><i class="cell l3"></i><i class="cell l4"></i> More</span>
+        </div>
       </section>
 
       <section aria-label="Totals" class="summary">
@@ -478,18 +514,14 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         ring.querySelector('[data-s]')!.textContent = sub
         ring.querySelector<SVGElement>('.ring-fg')!.style.strokeDashoffset = String(100 - pct * 100)
       }
-      for (const row of document.querySelectorAll<HTMLElement>('.yg-row')) {
-        const dots = [...row.querySelectorAll<HTMLElement>('.dot')]
-        let done = 0
-        for (const dot of dots) {
-          const date = dot.dataset.date!
-          dot.classList.toggle('done', date < today)
-          dot.classList.toggle('today', date === today)
-          if (date <= today) done++
-        }
-        row.classList.toggle('complete', done === dots.length)
-        row.querySelector('.yg-count')!.textContent = done === dots.length ? '✓' : done ? `${done}/${dots.length}` : ''
+      for (const cell of document.querySelectorAll<HTMLElement>('.yg-cells .cell[data-date]')) {
+        cell.classList.toggle('future', cell.dataset.date! > today)
+        cell.classList.toggle('today', cell.dataset.date === today)
       }
+      // on narrow screens, scroll the board so today is in view
+      const board = document.getElementById('yg-scroll')
+      const todayCell = board?.querySelector<HTMLElement>('.cell.today')
+      if (board && todayCell && board.scrollWidth > board.clientWidth) board.scrollLeft = todayCell.offsetLeft - board.clientWidth / 2
 
       // The day-by-day list is built through the deploy date; add a "No run" row for
       // each day that has passed since, newest at the top, so it keeps counting up daily.
