@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
 import { CHALLENGE_START, GOAL_DAY, HR_ZONES, challengeDays, challengeYear, dayNumber, progressOn, todayIso, runTotals, weightsByDate, pushupsByDate, toSec, fmtDuration, fmtPace, fmtDate } from '~/data/runs'
 
 const title = 'Day by Day Challenge · Running Non Stop'
@@ -80,6 +82,17 @@ const rings = [
 // previous logged value before a given date (so deltas work across rest days)
 const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => w.date < date)?.lb
 const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) => p.date < date)?.count
+
+// Workout screenshots: drop them in src/assets/run/<YYYY-MM-DD>/ (e.g. 01-summary.png) and they show up under that day
+const shotFiles = import.meta.glob<{ default: ImageMetadata }>('/src/assets/run/*/*.{png,PNG,jpg,JPG,jpeg,webp}', { eager: true })
+const shotsByDate = new Map<string, { img: ImageMetadata; name: string }[]>()
+for (const [path, mod] of Object.entries(shotFiles).sort(([a], [b]) => a.localeCompare(b))) {
+  const [, date, file] = path.match(/run\/(\d{4}-\d{2}-\d{2})\/(.+)$/) ?? []
+  if (!date) continue
+  const name = file.replace(/\.\w+$/, '').replace(/^\d+-/, '').replace(/-/g, ' ')
+  shotsByDate.set(date, [...(shotsByDate.get(date) ?? []), { img: mod.default, name }])
+}
+const shotDates = [...shotsByDate.keys()].sort().reverse()
 ---
 
 <!doctype html>
@@ -329,6 +342,23 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         .daylog .zones { max-width: 160px; }
       }
 
+      /* workout screenshots, one collapsible group per day */
+      .shot-link { display: block; width: max-content; margin-top: 6px; font-size: 0.72rem; font-weight: 600; color: var(--muted); text-decoration: none; }
+      .shot-link:hover { color: var(--text); }
+      .daylog .shot-link { margin-top: 0; }
+      .shots { background: var(--card); border-radius: 16px; margin-bottom: 10px; scroll-margin-top: 16px; }
+      .shots summary { cursor: pointer; padding: 14px 16px; font-size: 0.92rem; display: flex; align-items: baseline; gap: 6px; list-style: none; }
+      .shots summary::-webkit-details-marker { display: none; }
+      .shots summary::before { content: '▸'; color: var(--muted); transition: transform 0.2s; }
+      .shots[open] summary::before { transform: rotate(90deg); }
+      .shots summary span { margin-left: auto; color: var(--muted); font-size: 0.8rem; }
+      .shot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding: 0 16px 16px; }
+      @media (max-width: 559px) { .shot-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0 12px 12px; } }
+      .shot-grid a { display: block; text-decoration: none; color: var(--muted); font-size: 0.72rem; min-width: 0; }
+      .shot-grid span::first-letter { text-transform: uppercase; }
+      .shot-grid img { display: block; width: 100%; height: auto; aspect-ratio: 9 / 14; object-fit: cover; object-position: top; border-radius: 10px; border: 1px solid var(--line); background: var(--card-2); }
+      .shot-grid span { display: block; margin-top: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
       footer { color: var(--muted); font-size: 0.8rem; margin-top: 30px; text-align: center; }
       footer a { color: var(--muted); }
     </style>
@@ -478,7 +508,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                 ]
                 return (
                   <tr class={r ? undefined : 'rest'}>
-                    <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span>{d.day === GOAL_DAY && <span class="goal-tag">🏆 Challenge {GOAL_DAY} achieved</span>}</td>
+                    <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span>{d.day === GOAL_DAY && <span class="goal-tag">🏆 Challenge {GOAL_DAY} achieved</span>}{shotsByDate.has(d.date) && <a class="shot-link" href={`#shots-${d.date}`}>📸 {shotsByDate.get(d.date)!.length} screenshots</a>}</td>
                     {r ? (
                       runCells.map(([label, v, c, dl], ci) => (
                         <td data-label={label}>
@@ -510,6 +540,28 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
           </table>
         )}
       </div>
+
+      {shotDates.length > 0 && (
+        <>
+          <h2>Screenshots</h2>
+          {shotDates.map((date, i) => (
+            <details class="shots" id={`shots-${date}`} open={i === 0}>
+              <summary>
+                <b>Day {dayNumber(date)}</b> · {fmtDate(date, { weekday: 'short', month: 'short', day: 'numeric' })}
+                <span>{shotsByDate.get(date)!.length} photos</span>
+              </summary>
+              <div class="shot-grid">
+                {shotsByDate.get(date)!.map((s) => (
+                  <a href={s.img.src} target="_blank" rel="noopener">
+                    <Image src={s.img} widths={[240, 480]} sizes="(max-width: 600px) 33vw, 180px" alt={`Day ${dayNumber(date)} ${s.name}`} loading="lazy" />
+                    <span>{s.name}</span>
+                  </a>
+                ))}
+              </div>
+            </details>
+          ))}
+        </>
+      )}
 
       {weightLog.length > 1 && (
         <>
