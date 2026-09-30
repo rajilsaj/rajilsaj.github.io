@@ -76,6 +76,37 @@ export const runs: Run[] = [
     ],
     notes: '10K Run award',
   },
+  {
+    date: '2026-09-30',
+    time: '5:05 AM – 6:43 AM',
+    location: 'Fayetteville',
+    workoutTime: '1:17:53',
+    elapsedTime: '1:37:29',
+    distanceMi: 7.78,
+    activeCal: 835,
+    totalCal: 952,
+    elevationFt: 276,
+    avgPowerW: 197,
+    avgCadenceSpm: 168,
+    avgPace: '10:00',
+    avgHrBpm: 155,
+    hrZones: ['7:39', '12:20', '13:20', '30:45', '13:46'],
+    recoveryHr: { end: 132, min1: 127, min2: 113 },
+    effort: 6,
+    tempF: 62,
+    humidityPct: 94,
+    splits: [
+      { time: '11:11', hr: 131 },
+      { time: '9:36', hr: 149 },
+      { time: '8:55', hr: 167 },
+      { time: '9:07', hr: 168 },
+      { time: '8:52', hr: 170 },
+      { time: '10:57' },
+      { time: '11:21' },
+      { time: '10:03' }, // last 0.78 mi in 7:54, stored as its per-mile pace
+    ],
+    notes: 'Awards: 10K Run, Fastest 5K (27:45), Fastest 10K (1:03:27), Longest Running Workout (7.79 mi), Running Workout Record (836 cal)',
+  },
 ]
 
 /** Weight log. One entry per weigh-in (run days or rest days). Weight in pounds. */
