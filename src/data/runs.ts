@@ -114,6 +114,7 @@ export type Weight = { date: string; lb: number }
 
 export const weights: Weight[] = [
   { date: '2026-09-29', lb: 150.7 },
+  { date: '2026-09-30', lb: 149.8 },
 ]
 
 /** Push-up log. One entry per day, total push-ups done that day. */
