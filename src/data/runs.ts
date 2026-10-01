@@ -122,6 +122,7 @@ export type Pushups = { date: string; count: number }
 
 export const pushups: Pushups[] = [
   { date: '2026-09-29', count: 21 },
+  { date: '2026-09-30', count: 22 },
 ]
 
 /**
