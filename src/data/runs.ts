@@ -129,6 +129,30 @@ export const runs: Run[] = [
     splits: [{ time: '12:07', hr: 150 }], // only mile 1 visible in the screenshots
     notes: 'Recovery run. Award: 7-Workout Week',
   },
+  {
+    date: '2026-10-03',
+    time: '5:36 AM – 7:28 AM',
+    location: 'Fayetteville',
+    workoutTime: '1:30:40',
+    elapsedTime: '1:51:51',
+    distanceMi: 8.48,
+    activeCal: 782,
+    totalCal: 917,
+    elevationFt: 304,
+    avgCadenceSpm: 153,
+    avgPace: '10:42',
+    avgHrBpm: 157,
+    tempF: 71,
+    humidityPct: 94,
+    splits: [
+      { time: '10:18', hr: 157 },
+      { time: '9:58', hr: 162 },
+      { time: '10:12', hr: 162 },
+      { time: '10:23', hr: 157 },
+      { time: '10:02', hr: 156 },
+    ], // only miles 1–5 visible in the screenshots
+    notes: 'Award: 10K Run. Air quality 51',
+  },
 ]
 
 /** Weight log. One entry per weigh-in (run days or rest days). Weight in pounds. */
