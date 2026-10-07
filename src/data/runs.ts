@@ -1,6 +1,6 @@
 /**
  * Day by Day Challenge log, shown at /run. No finish line: it counts up for good.
- * Four logs, each keyed by ISO date: runs, weigh-ins, push-ups, rest days.
+ * Five logs, each keyed by ISO date: runs, weigh-ins, push-ups, sleep, rest days.
  * Add entries in any order — the page sorts by date.
  */
 
@@ -176,6 +176,11 @@ export const pushups: Pushups[] = [
   { date: '2026-09-30', count: 22 },
 ]
 
+/** Sleep log. One entry per day: hours slept the night before. */
+export type Sleep = { date: string; hours: number }
+
+export const sleep: Sleep[] = []
+
 /**
  * Rest days with nothing else logged. Every day through today is listed anyway,
  * so this is only a record of days that were deliberately skipped.
@@ -225,20 +230,26 @@ export const weightsByDate = (): Weight[] => [...weights].sort((a, b) => a.date.
 /** Push-up entries sorted oldest → newest. */
 export const pushupsByDate = (): Pushups[] => [...pushups].sort((a, b) => a.date.localeCompare(b.date))
 
+/** Sleep entries sorted oldest → newest. */
+export const sleepByDate = (): Sleep[] => [...sleep].sort((a, b) => a.date.localeCompare(b.date))
+
 /** Weight logged on a given day, if any. */
 export const weightOn = (date: string): number | undefined => weights.find((w) => w.date === date)?.lb
 
 /** Push-ups logged on a given day, if any. */
 export const pushupsOn = (date: string): number | undefined => pushups.find((p) => p.date === date)?.count
 
-/** Latest date with anything logged (run, weigh-in, push-ups or rest day), or CHALLENGE_START. */
+/** Hours of sleep logged on a given day, if any. */
+export const sleepOn = (date: string): number | undefined => sleep.find((s) => s.date === date)?.hours
+
+/** Latest date with anything logged (run, weigh-in, push-ups, sleep or rest day), or CHALLENGE_START. */
 export const latestLoggedDate = () =>
-  [CHALLENGE_START, ...runs.map((r) => r.date), ...weights.map((w) => w.date), ...pushups.map((p) => p.date), ...restDays].sort().pop()!
+  [CHALLENGE_START, ...runs.map((r) => r.date), ...weights.map((w) => w.date), ...pushups.map((p) => p.date), ...sleep.map((s) => s.date), ...restDays].sort().pop()!
 
 /** Today as an ISO date (at build time; the browser adds any days that pass before the next build). */
 export const todayIso = () => new Date().toISOString().slice(0, 10)
 
-export type ChallengeDay = { day: number; date: string; run?: DayRun; weight?: number; pushups?: number }
+export type ChallengeDay = { day: number; date: string; run?: DayRun; weight?: number; pushups?: number; sleep?: number }
 
 /**
  * Every calendar day from CHALLENGE_START through today (or the latest logged
@@ -251,7 +262,7 @@ export const challengeDays = (): ChallengeDay[] => {
   const last = Math.max(0, dayNumber(lastDate))
   return Array.from({ length: last + 1 }, (_, i) => {
     const date = addDays(CHALLENGE_START, i)
-    return { day: i, date, run: byDate.get(date), weight: weightOn(date), pushups: pushupsOn(date) }
+    return { day: i, date, run: byDate.get(date), weight: weightOn(date), pushups: pushupsOn(date), sleep: sleepOn(date) }
   })
 }
 

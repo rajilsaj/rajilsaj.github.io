@@ -1,5 +1,5 @@
 ---
-import { CHALLENGE_START, GOAL_DAY, HR_ZONES, challengeDays, challengeYear, dayNumber, progressOn, todayIso, runTotals, weightsByDate, pushupsByDate, toSec, fmtDuration, fmtPace, fmtDate, effortLabel } from '~/data/runs'
+import { CHALLENGE_START, GOAL_DAY, HR_ZONES, challengeDays, challengeYear, dayNumber, progressOn, todayIso, runTotals, weightsByDate, pushupsByDate, sleepByDate, toSec, fmtDuration, fmtPace, fmtDate, effortLabel } from '~/data/runs'
 
 const title = 'Day by Day Challenge · Running Non Stop'
 const description = 'Running every single day, no finish line. Days, months and years completed.'
@@ -10,6 +10,7 @@ const lastDay = days[days.length - 1]?.day ?? 0
 const { count, measured, totalMi, totalSec, avgPaceSec } = runTotals()
 
 const weightLog = weightsByDate()
+const sleepLog = sleepByDate()
 const latestWeight = weightLog[weightLog.length - 1] ?? null
 const firstWeight = weightLog[0] ?? null
 const weightChange = latestWeight && firstWeight && latestWeight !== firstWeight ? latestWeight.lb - firstWeight.lb : null
@@ -79,6 +80,7 @@ const rings = [
 
 // previous logged value before a given date (so deltas work across rest days)
 const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => w.date < date)?.lb
+const prevSleepBefore = (date: string) => [...sleepLog].reverse().find((s) => s.date < date)?.hours
 const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) => p.date < date)?.count
 
 ---
@@ -496,7 +498,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
           <table class="daylog" id="daylog" data-last-day={lastDay}>
             <thead>
               <tr>
-                <th>Day</th><th>Distance</th><th>Time</th><th>Pace</th><th>Heart rate</th><th>Weight</th><th>Push-ups</th>
+                <th>Day</th><th>Distance</th><th>Time</th><th>Pace</th><th>Heart rate</th><th>Weight</th><th>Push-ups</th><th>Sleep</th>
               </tr>
             </thead>
             <tbody>
@@ -520,6 +522,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                 const bodyCells: [string, string, string, Delta][] = [
                   ['Weight', w != null ? `${w.toFixed(1)} lb` : '–', 'purple', delta(w, prevWeightBefore(d.date), (n) => `${n.toFixed(1)} lb`, true)],
                   ['Push-ups', pu != null ? String(pu) : '–', 'green', delta(pu, prevPushupsBefore(d.date), (n) => String(n))],
+                  ['Sleep', d.sleep != null ? `${d.sleep} h` : '–', 'blue', delta(d.sleep, prevSleepBefore(d.date), (n) => `${+n.toFixed(2)} h`)],
                 ]
                 const hasDetails = !!r
                 // details panel: zones first, then three key numbers and the splits
@@ -574,7 +577,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                   </tr>
                   {hasDetails && (
                     <tr class="details" id={`details-${d.date}`} hidden>
-                      <td colspan="7">
+                      <td colspan="8">
                         {r && (
                           <p class="dt-meta">
                             {[r.time, r.location, r.tempF != null && `${r.tempF}°F`, r.humidityPct != null && `${r.humidityPct}% humidity`, r.effort != null && `effort ${r.effort} · ${effortLabel(r.effort).toLowerCase()}`].filter(Boolean).join(' · ')}
@@ -715,7 +718,8 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
             `<td class="daycell">Day ${n}<span class="datesub"></span>${n === GOAL_DAY ? `<span class="goal-tag">🏆 Challenge ${GOAL_DAY} achieved</span>` : ''}</td>` +
             `<td colspan="4"><span class="rest-label">No run</span></td>` +
             `<td data-label="Weight"><span class="v purple">–</span></td>` +
-            `<td data-label="Push-ups"><span class="v green">–</span></td>`
+            `<td data-label="Push-ups"><span class="v green">–</span></td>` +
+            `<td data-label="Sleep"><span class="v blue">–</span></td>`
           tr.querySelector('.datesub')!.textContent = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
           tbody.prepend(tr)
         }
