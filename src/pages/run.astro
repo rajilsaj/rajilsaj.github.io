@@ -313,17 +313,31 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .green { color: var(--green); } .cyan { color: var(--cyan); } .orange { color: var(--orange); } .purple { color: var(--purple); }
       .empty { color: var(--muted); padding: 20px; text-align: center; }
 
+      /* wider screens: eight columns, so keep cells compact enough to fit without scrolling */
+      @media (min-width: 740px) {
+        .daylog th, .daylog td { padding: 12px 7px; }
+        .daylog th:first-child, .daylog td:first-child { padding-left: 14px; }
+        .daylog th:last-child, .daylog td:last-child { padding-right: 14px; }
+        .daylog th { font-size: 0.7rem; letter-spacing: 0.02em; }
+        .daylog td .v { font-size: 1rem; }
+        .daylog .zones { min-width: 72px; }
+        .daylog tr.details td { padding: 12px 14px; }
+      }
+
       /* phones and small tablets: each day becomes a card with a two-column grid of labelled stats */
       @media (max-width: 739px) {
         .daylog thead { display: none; }
         .daylog, .daylog tbody { display: block; }
-        .daylog tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 14px; padding: 14px 16px 16px; border-bottom: 1px solid var(--line); }
+        .daylog tr { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px 14px; padding: 14px 16px 16px; border-bottom: 1px solid var(--line); }
         .daylog tr:last-child { border-bottom: none; }
         .daylog td { display: block; padding: 0; border: 0; white-space: normal; min-width: 0; }
         .daylog td.daycell { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font-size: 1.05rem; }
         .daylog .goal-tag { margin-top: 0; }
         .daylog td.daycell .datesub { display: inline; margin: 0; }
         .daylog td[colspan] { grid-column: 1 / -1; }
+        /* run stats two per row; weight, push-ups and sleep three per row */
+        .daylog td[data-label] { grid-column: span 3; }
+        .daylog td[data-label='Weight'], .daylog td[data-label='Push-ups'], .daylog td[data-label='Sleep'] { grid-column: span 2; }
         .daylog tr.rest { gap: 6px 14px; }
         .daylog tr.rest td[colspan] { margin-bottom: 4px; }
         .daylog td[data-label]::before { content: attr(data-label); display: block; color: var(--muted); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
