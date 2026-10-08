@@ -153,6 +153,33 @@ export const runs: Run[] = [
     ], // only miles 1–5 visible in the screenshots
     notes: 'Award: 10K Run. Air quality 51',
   },
+  {
+    date: '2026-10-08',
+    time: '6:14 AM – 6:59 AM',
+    location: 'Fayetteville',
+    workoutTime: '45:35',
+    elapsedTime: '45:48',
+    distanceMi: 4.07,
+    activeCal: 387,
+    totalCal: 455,
+    elevationFt: 175,
+    avgPowerW: 168,
+    avgCadenceSpm: 166,
+    avgPace: '11:11',
+    avgHrBpm: 148,
+    hrZones: ['2:37', '8:23', '31:26', '3:08', '0:00'],
+    recoveryHr: { end: 140, min1: 110, min2: 113 },
+    tempF: 53,
+    humidityPct: 89,
+    splits: [
+      { time: '10:41', hr: 146 },
+      { time: '10:54', hr: 152 },
+      { time: '11:50', hr: 146 },
+      { time: '11:12', hr: 148 },
+      { time: '11:36', hr: 150 }, // last 0.07 mi in 0:54, stored as its per-mile pace
+    ],
+    notes: 'Air quality 58',
+  },
 ]
 
 /** Weight log. One entry per weigh-in (run days or rest days). Weight in pounds. */
