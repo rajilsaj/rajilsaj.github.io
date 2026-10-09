@@ -180,6 +180,34 @@ export const runs: Run[] = [
     ],
     notes: 'Air quality 58',
   },
+  {
+    date: '2026-10-09',
+    time: '5:30 AM – 6:44 AM',
+    location: 'Fayetteville',
+    workoutTime: '1:04:51',
+    elapsedTime: '1:13:50',
+    distanceMi: 6.49,
+    activeCal: 633,
+    totalCal: 729,
+    elevationFt: 220,
+    avgPowerW: 189,
+    avgCadenceSpm: 171,
+    avgPace: '9:59',
+    avgHrBpm: 160,
+    hrZones: ['1:59', '7:48', '13:48', '25:01', '16:09'],
+    recoveryHr: { end: 154, min1: 137, min2: 122 },
+    effort: 7,
+    tempF: 63,
+    humidityPct: 79,
+    splits: [
+      { time: '10:05', hr: 147 },
+      { time: '8:54', hr: 172 },
+      { time: '9:07', hr: 170 },
+      { time: '9:09', hr: 170 },
+      { time: '12:00', hr: 156 },
+    ], // only miles 1–5 visible in the screenshots
+    notes: 'Air quality 67',
+  },
 ]
 
 /** Weight log. One entry per weigh-in (run days or rest days). Weight in pounds. */
@@ -194,6 +222,7 @@ export const weights: Weight[] = [
   { date: '2026-10-05', lb: 150.7 },
   { date: '2026-10-06', lb: 150.7 },
   { date: '2026-10-08', lb: 150.7 },
+  { date: '2026-10-09', lb: 149.7 },
 ]
 
 /** Push-up log. One entry per day, total push-ups done that day. */
