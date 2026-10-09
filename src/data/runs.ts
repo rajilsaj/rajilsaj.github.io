@@ -331,6 +331,12 @@ export const addMonths = (iso: string, n: number) => {
   return new Date(Date.UTC(y, m - 1 + n, Math.min(d, lastOfMonth))).toISOString().slice(0, 10)
 }
 
+/** Birthday as 'MM-DD': celebrated on /run every year. */
+export const BIRTHDAY = '10-08'
+
+/** True when an ISO date falls on the birthday. */
+export const isBirthday = (iso: string) => iso.slice(5) === BIRTHDAY
+
 /** First big goal: reaching Day 90 marks "Challenge 90 achieved" on /run. */
 export const GOAL_DAY = 90
 

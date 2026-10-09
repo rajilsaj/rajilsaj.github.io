@@ -1,5 +1,5 @@
 ---
-import { CHALLENGE_START, GOAL_DAY, HR_ZONES, challengeDays, challengeYear, dayNumber, progressOn, todayIso, runTotals, weightsByDate, pushupsByDate, sleepByDate, toSec, fmtDuration, fmtPace, fmtDate, effortLabel } from '~/data/runs'
+import { CHALLENGE_START, GOAL_DAY, HR_ZONES, challengeDays, challengeYear, dayNumber, progressOn, todayIso, runTotals, weightsByDate, pushupsByDate, sleepByDate, toSec, fmtDuration, fmtPace, fmtDate, effortLabel, isBirthday } from '~/data/runs'
 
 const title = 'Day by Day Challenge · Running Non Stop'
 const description = 'Running every single day, no finish line. Days, months and years completed.'
@@ -48,7 +48,7 @@ const level = (date: string) => {
 const cellTitle = (date: string) => {
   const r = runOn.get(date)
   const what = r ? (r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : 'Run') : 'No run'
-  return `${what} · Day ${dayNumber(date)} · ${fmtDate(date, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
+  return `${isBirthday(date) ? '🎂 Birthday · ' : ''}${what} · Day ${dayNumber(date)} · ${fmtDate(date, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
 }
 const yearDates = challengeYear(prog.years).flatMap((m) => m.dates)
 const yearRuns = yearDates.filter((d) => runOn.has(d)).length
@@ -223,6 +223,13 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       /* Day 90 reached: lime trophy pill under the counter and on the Day 90 row */
       .achieved, .goal-tag { display: inline-block; background: var(--bar); color: #0b0e13; font-weight: 800; font-size: 0.78rem; padding: 5px 11px; border-radius: 999px; white-space: nowrap; letter-spacing: 0.01em; }
       .achieved[hidden] { display: none; }
+      /* birthday row: confetti-gradient pill with a bobbing cake */
+      .bday-tag { display: block; width: max-content; margin-top: 6px; font-size: 0.7rem; font-weight: 800; padding: 3px 9px; border-radius: 999px; color: #0b0e13; white-space: nowrap; letter-spacing: 0.01em;
+        background: linear-gradient(90deg, #ff5c7a, #ff9f0a, #c8f22b, #5ac8fa, #bf5af2, #ff5c7a); background-size: 300% 100%; animation: bday-shimmer 6s linear infinite; }
+      .bday-tag .cake { display: inline-block; animation: bday-bob 1.6s ease-in-out infinite; }
+      @keyframes bday-shimmer { to { background-position: 300% 0; } }
+      @keyframes bday-bob { 0%, 100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-2px) rotate(-8deg); } 75% { transform: translateY(-1px) rotate(8deg); } }
+      @media (prefers-reduced-motion: reduce) { .bday-tag, .bday-tag .cake { animation: none; } }
       .goal-tag { display: block; width: max-content; margin-top: 6px; font-size: 0.7rem; padding: 3px 9px; }
       .challenge .range b { color: var(--text); font-weight: 600; }
 
@@ -269,6 +276,9 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .cell.l4 { background: var(--bar); }
       .cell.future { opacity: 0.4; }
       .cell.today { outline: 2px solid var(--text); outline-offset: -1px; }
+      /* birthday: a little cake on top of that day's square */
+      .cell.bday { position: relative; overflow: visible; }
+      .cell.bday::after { content: '🎂'; position: absolute; inset: -35%; display: grid; place-items: center; font-size: 0.62rem; line-height: 1; font-style: normal; }
       .yg-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; color: var(--muted); font-size: 0.72rem; }
       .legend { display: inline-flex; align-items: center; gap: 3px; }
       .legend .cell { margin: 0 1px; }
@@ -332,7 +342,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         .daylog tr:last-child { border-bottom: none; }
         .daylog td { display: block; padding: 0; border: 0; white-space: normal; min-width: 0; }
         .daylog td.daycell { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font-size: 1.05rem; }
-        .daylog .goal-tag { margin-top: 0; }
+        .daylog .goal-tag, .daylog .bday-tag { margin-top: 0; }
         .daylog td.daycell .datesub { display: inline; margin: 0; }
         .daylog td[colspan] { grid-column: 1 / -1; }
         /* run stats two per row; weight, push-ups and sleep three per row */
@@ -452,7 +462,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                 <span class="wd"></span><span class="wd">Mon</span><span class="wd"></span><span class="wd">Wed</span><span class="wd"></span><span class="wd">Fri</span><span class="wd"></span>
                 {h.cells.map((date) =>
                   date ? (
-                    <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday }]} data-date={date} title={cellTitle(date)}></i>
+                    <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday, bday: isBirthday(date) }]} data-date={date} title={cellTitle(date)}></i>
                   ) : (
                     <i class="cell pad"></i>
                   ),
@@ -563,7 +573,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                     aria-expanded={hasDetails ? 'false' : undefined}
                     aria-controls={hasDetails ? `details-${d.date}` : undefined}
                   >
-                    <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span>{d.day === GOAL_DAY && <span class="goal-tag">🏆 Challenge {GOAL_DAY} achieved</span>}{hasDetails && <span class="more">details<i class="chev" aria-hidden="true">▾</i></span>}</td>
+                    <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span>{isBirthday(d.date) && <span class="bday-tag" title="Happy birthday!"><span class="cake" aria-hidden="true">🎂</span> {d.run ? 'Birthday run' : 'Birthday'} <span aria-hidden="true">🎉🎈🥳</span></span>}{d.day === GOAL_DAY && <span class="goal-tag">🏆 Challenge {GOAL_DAY} achieved</span>}{hasDetails && <span class="more">details<i class="chev" aria-hidden="true">▾</i></span>}</td>
                     {r ? (
                       runCells.map(([label, v, c, dl], ci) => (
                         <td data-label={label}>
