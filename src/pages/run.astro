@@ -1,5 +1,5 @@
 ---
-import { CHALLENGE_START, GOAL_DAY, HR_ZONES, challengeDays, challengeYear, dayNumber, progressOn, todayIso, runTotals, weightsByDate, pushupsByDate, sleepByDate, toSec, fmtDuration, fmtPace, fmtDate, effortLabel, isBirthday } from '~/data/runs'
+import { CHALLENGE_START, GOAL_DAY, HR_ZONES, challengeDays, challengeYear, dayNumber, progressOn, todayIso, runTotals, weightsByDate, pushupsByDate, sleepByDate, toSec, fmtDuration, fmtPace, fmtDate, effortLabel, isBirthday, restDays } from '~/data/runs'
 
 const title = 'Day by Day Challenge · Running Non Stop'
 const description = 'Running every single day, no finish line. Days, months and years completed.'
@@ -47,7 +47,7 @@ const level = (date: string) => {
 }
 const cellTitle = (date: string) => {
   const r = runOn.get(date)
-  const what = r ? (r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : 'Run') : 'No run'
+  const what = r ? (r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : 'Run') : restDays.includes(date) ? '🧘 Recovery day' : 'No run'
   return `${isBirthday(date) ? '🎂 Birthday · ' : ''}${what} · Day ${dayNumber(date)} · ${fmtDate(date, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
 }
 const yearDates = challengeYear(prog.years).flatMap((m) => m.dates)
@@ -277,8 +277,10 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .cell.future { opacity: 0.4; }
       .cell.today { outline: 2px solid var(--text); outline-offset: -1px; }
       /* birthday: a little cake on top of that day's square */
-      .cell.bday { position: relative; overflow: visible; }
-      .cell.bday::after { content: '🎂'; position: absolute; inset: -35%; display: grid; place-items: center; font-size: 0.62rem; line-height: 1; font-style: normal; }
+      .cell.bday, .cell.recovery { position: relative; overflow: visible; }
+      .cell.recovery::after { content: '🧘'; }
+      .cell.bday::after { content: '🎂'; }
+      .cell.bday::after, .cell.recovery::after { position: absolute; inset: -35%; display: grid; place-items: center; font-size: 0.62rem; line-height: 1; font-style: normal; }
       .yg-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; color: var(--muted); font-size: 0.72rem; }
       .legend { display: inline-flex; align-items: center; gap: 3px; }
       .legend .cell { margin: 0 1px; }
@@ -462,7 +464,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                 <span class="wd"></span><span class="wd">Mon</span><span class="wd"></span><span class="wd">Wed</span><span class="wd"></span><span class="wd">Fri</span><span class="wd"></span>
                 {h.cells.map((date) =>
                   date ? (
-                    <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday, bday: isBirthday(date) }]} data-date={date} title={cellTitle(date)}></i>
+                    <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday, bday: isBirthday(date), recovery: !isBirthday(date) && restDays.includes(date) }]} data-date={date} title={cellTitle(date)}></i>
                   ) : (
                     <i class="cell pad"></i>
                   ),
