@@ -272,7 +272,7 @@ export const sleep: Sleep[] = []
  * Rest days with nothing else logged. Every day through today is listed anyway,
  * so this is only a record of days that were deliberately skipped.
  */
-export const restDays: string[] = []
+export const restDays: string[] = ['2026-10-11']
 
 // ---------- helpers shared by /run and the homepage ----------
 
@@ -336,7 +336,7 @@ export const latestLoggedDate = () =>
 /** Today as an ISO date (at build time; the browser adds any days that pass before the next build). */
 export const todayIso = () => new Date().toISOString().slice(0, 10)
 
-export type ChallengeDay = { day: number; date: string; run?: DayRun; weight?: number; pushups?: number; sleep?: number }
+export type ChallengeDay = { day: number; date: string; run?: DayRun; weight?: number; pushups?: number; sleep?: number; rest?: boolean }
 
 /**
  * Every calendar day from CHALLENGE_START through today (or the latest logged
@@ -349,7 +349,7 @@ export const challengeDays = (): ChallengeDay[] => {
   const last = Math.max(0, dayNumber(lastDate))
   return Array.from({ length: last + 1 }, (_, i) => {
     const date = addDays(CHALLENGE_START, i)
-    return { day: i, date, run: byDate.get(date), weight: weightOn(date), pushups: pushupsOn(date), sleep: sleepOn(date) }
+    return { day: i, date, run: byDate.get(date), weight: weightOn(date), pushups: pushupsOn(date), sleep: sleepOn(date), rest: restDays.includes(date) }
   })
 }
 

@@ -590,7 +590,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                         </td>
                       ))
                     ) : (
-                      <td colspan="4"><span class="rest-label">No run</span></td>
+                      <td colspan="4"><span class="rest-label">{d.rest ? '🧘 Recovery day' : 'No run'}</span></td>
                     )}
                     {bodyCells.map(([label, v, c, dl]) => (
                       <td data-label={label}>
