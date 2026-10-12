@@ -249,6 +249,8 @@ export const runs: Run[] = [
     avgCadenceSpm: 163,
     avgPace: '10:25',
     avgHrBpm: 149,
+    hrZones: ['8:40', '10:27', '21:04', '16:59', '10:42'],
+    recoveryHr: { end: 104, min1: 102, min2: 99 },
     effort: 6,
     tempF: 64,
     humidityPct: 90,
