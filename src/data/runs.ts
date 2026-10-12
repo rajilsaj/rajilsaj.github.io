@@ -33,6 +33,8 @@ export type Run = {
   avgHrBpm?: number
   /** Time in heart rate zones 1–5, 'mm:ss' each, from the Heart Rate detail screen */
   hrZones?: [string, string, string, string, string]
+  /** Zone bpm ranges shown next to the zones that day, when they differ from HR_ZONES */
+  hrZoneRanges?: [string, string, string, string, string]
   /** Post-workout heart rate: at the end, after 1 min, after 2 min (bpm) */
   recoveryHr?: { end: number; min1: number; min2: number }
   /** Apple Fitness effort rating, 1–10 */
@@ -195,6 +197,7 @@ export const runs: Run[] = [
     avgPace: '9:59',
     avgHrBpm: 160,
     hrZones: ['1:59', '7:48', '13:48', '25:01', '16:09'],
+    hrZoneRanges: ['<132', '133–144', '145–157', '158–169', '170+'],
     recoveryHr: { end: 154, min1: 137, min2: 122 },
     effort: 7,
     tempF: 63,
@@ -223,6 +226,7 @@ export const runs: Run[] = [
     avgPace: '10:40',
     avgHrBpm: 153,
     hrZones: ['3:05', '6:08', '1:07:21', '27:17', '0:11'],
+    hrZoneRanges: ['<132', '133–144', '145–157', '158–169', '170+'],
     recoveryHr: { end: 137, min1: 116, min2: 111 },
     effort: 7,
     tempF: 63,
@@ -250,6 +254,7 @@ export const runs: Run[] = [
     avgPace: '10:25',
     avgHrBpm: 149,
     hrZones: ['8:40', '10:27', '21:04', '16:59', '10:42'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
     recoveryHr: { end: 104, min1: 102, min2: 99 },
     effort: 6,
     tempF: 64,

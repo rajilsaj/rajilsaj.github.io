@@ -585,7 +585,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                           {ci === 3 && zoneTotal > 0 && (
                             <span class="zones" aria-label="Time in heart rate zones">
                               {zoneSec.map((s, zi) => (
-                                <i class={`z${zi + 1}`} style={`flex-grow:${s}`} title={`Zone ${zi + 1} · ${r.hrZones![zi]} · ${HR_ZONES[zi]} bpm`}></i>
+                                <i class={`z${zi + 1}`} style={`flex-grow:${s}`} title={`Zone ${zi + 1} · ${r.hrZones![zi]} · ${(r.hrZoneRanges ?? HR_ZONES)[zi]} bpm`}></i>
                               ))}
                             </span>
                           )}
@@ -621,7 +621,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                             </div>
                             <div class="hz-legend">
                               {zoneSec.map((_, zi) => (
-                                <div class:list={['hz-item', { off: zoneSec[zi] === 0 }]} title={`${HR_ZONES[zi]} bpm`}>
+                                <div class:list={['hz-item', { off: zoneSec[zi] === 0 }]} title={`${(r.hrZoneRanges ?? HR_ZONES)[zi]} bpm`}>
                                   <span class="hz-name"><i class={`z${zi + 1}`}></i>Z{zi + 1}</span>
                                   <b>{r.hrZones![zi]}</b>
                                   <span class="hz-pct">{zonePct[zi]}%</span>
