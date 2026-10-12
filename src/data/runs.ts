@@ -235,6 +235,28 @@ export const runs: Run[] = [
       { time: '11:11', hr: 151 },
     ], // only miles 1–5 visible in the screenshots
     notes: 'Awards: 10K Run, Longest Running Workout (10.09 mi). Air quality 52',
+  },  {
+    date: '2026-10-12',
+    time: '5:11 AM – 6:36 AM',
+    location: 'Fayetteville',
+    workoutTime: '1:07:55',
+    elapsedTime: '1:25:18',
+    distanceMi: 6.51,
+    activeCal: 633,
+    totalCal: 733,
+    elevationFt: 237,
+    avgPowerW: 181,
+    avgCadenceSpm: 163,
+    avgPace: '10:25',
+    avgHrBpm: 149,
+    effort: 6,
+    tempF: 64,
+    humidityPct: 90,
+    splits: [
+      { time: '11:22', hr: 131 },
+      { time: '10:20', hr: 151 },
+    ], // only miles 1–2 readable in the screenshots
+    notes: 'Award: 10K Run. Air quality 42',
   },
 ]
 
