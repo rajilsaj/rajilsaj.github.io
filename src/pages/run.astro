@@ -1,5 +1,5 @@
 ---
-import { CHALLENGE_START, GOAL_DAY, HR_ZONES, challengeDays, challengeYear, dayNumber, progressOn, todayIso, runTotals, weightsByDate, pushupsByDate, sleepByDate, toSec, fmtDuration, fmtPace, fmtDate, effortLabel, isBirthday, restDays } from '~/data/runs'
+import { CHALLENGE_START, GOAL_DAY, HR_ZONES, challengeDays, challengeYear, dayNumber, progressOn, todayIso, runTotals, weightsByDate, pushupsByDate, sleepByDate, toSec, fmtDuration, fmtPace, fmtDate, effortLabel, isBirthday, restDays, rideOn, rideTotals } from '~/data/runs'
 
 const title = 'Day by Day Challenge · Running Non Stop'
 const description = 'Running every single day, no finish line. Days, months and years completed.'
@@ -8,6 +8,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, ''
 const days = challengeDays() // every calendar day since Day 0 through today, oldest → newest (rendered newest first)
 const lastDay = days[days.length - 1]?.day ?? 0
 const { count, measured, totalMi, totalSec, avgPaceSec } = runTotals()
+const bike = rideTotals()
+
+// heart-rate zones as seconds and whole percentages (shared by runs and rides)
+const zoneBreakdown = (zones?: string[]) => {
+  const sec = zones?.map(toSec) ?? []
+  const total = sec.reduce((a, b) => a + b, 0)
+  return { sec, total, pct: sec.map((z) => (total ? Math.round((z / total) * 100) : 0)) }
+}
 
 const weightLog = weightsByDate()
 const sleepLog = sleepByDate()
@@ -48,7 +56,8 @@ const level = (date: string) => {
 const cellTitle = (date: string) => {
   const r = runOn.get(date)
   const what = r ? (r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : 'Run') : restDays.includes(date) ? '🧘 Recovery day' : 'No run'
-  return `${isBirthday(date) ? '🎂 Birthday · ' : ''}${what} · Day ${dayNumber(date)} · ${fmtDate(date, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
+  const ride = rideOn(date)
+  return `${isBirthday(date) ? '🎂 Birthday · ' : ''}${what}${ride ? ` + 🚴 ${ride.distanceMi.toFixed(2)} mi ride` : ''} · Day ${dayNumber(date)} · ${fmtDate(date, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
 }
 const yearDates = challengeYear(prog.years).flatMap((m) => m.dates)
 const yearRuns = yearDates.filter((d) => runOn.has(d)).length
@@ -277,7 +286,9 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .cell.future { opacity: 0.4; }
       .cell.today { outline: 2px solid var(--text); outline-offset: -1px; }
       /* birthday: a little cake on top of that day's square */
-      .cell.bday, .cell.recovery { position: relative; overflow: visible; }
+      .cell.bday, .cell.recovery, .cell.ride { position: relative; overflow: visible; }
+      /* bike day: a small sky-blue wheel badge in the corner of that day's square */
+      .cell.ride::before { content: ''; position: absolute; right: -2px; bottom: -2px; width: 50%; height: 50%; min-width: 5px; min-height: 5px; border-radius: 50%; border: 1.5px solid #5ac8fa; background: var(--card); }
       .cell.recovery::after { content: '🧘'; }
       .cell.bday::after { content: '🎂'; }
       .cell.bday::after, .cell.recovery::after { position: absolute; inset: -35%; display: grid; place-items: center; font-size: 0.75rem; line-height: 1; font-style: normal; }
@@ -345,7 +356,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         .daylog tr:last-child { border-bottom: none; }
         .daylog td { display: block; padding: 0; border: 0; white-space: normal; min-width: 0; }
         .daylog td.daycell { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font-size: 1.05rem; }
-        .daylog .goal-tag, .daylog .bday-tag { margin-top: 0; }
+        .daylog .goal-tag, .daylog .bday-tag, .daylog .ride-tag { margin-top: 0; }
         .daylog td.daycell .datesub { display: inline; margin: 0; }
         .daylog td[colspan] { grid-column: 1 / -1; }
         /* run stats two per row; weight, push-ups and sleep three per row */
@@ -402,6 +413,44 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         .hz { padding: 12px; }
         .hz-item b { font-size: 0.85rem; }
       }
+
+      /* bike days: a gradient pill on the row and a ride card in the details */
+      .sky { color: #5ac8fa; }
+      :root[data-theme='light'] .sky { color: #0a7fb5; }
+      .legend-ride { display: inline-block; vertical-align: middle; margin: 0 4px 0 2px; }
+      .ride-tag { display: block; width: max-content; margin-top: 6px; font-size: 0.7rem; font-weight: 800; padding: 3px 9px; border-radius: 999px; white-space: nowrap; color: #0b0e13; background: linear-gradient(90deg, var(--bar) 0%, #5ac8fa 100%); }
+      .ride-tag .wheel { display: inline-block; animation: ride-roll 2.4s ease-in-out infinite; }
+      @keyframes ride-roll { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(3px); } }
+      .ride { margin-top: 14px; background: var(--card); border-radius: 14px; padding: 14px 16px; border-left: 3px solid #5ac8fa; }
+      .ride-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+      .ride-head b { display: block; font-size: 1rem; }
+      .ride-head span { display: block; color: var(--muted); font-size: 0.78rem; margin-top: 2px; }
+      .bike { width: 58px; height: 36px; flex: none; overflow: visible; color: var(--text); }
+      .bike circle, .bike line, .bike polyline { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+      .bike .whl line { stroke-width: 1; opacity: 0.55; }
+      .bike .frame { stroke: #5ac8fa; }
+      .bike .whl { animation: ride-spin 0.9s linear infinite; }
+      .bike .crank { animation: ride-spin 1.4s linear infinite; }
+      @keyframes ride-spin { to { transform: rotate(360deg); } }
+      .ride-stats { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+      .ride-stats div { display: flex; flex-direction: column; min-width: 0; }
+      .ride-stats b { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+      .ride-stats span { color: var(--muted); font-size: 0.72rem; }
+      @media (max-width: 559px) { .ride-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 10px; } }
+      .ride-zones { margin-bottom: 10px; }
+      .ride-zones .hz-bar { margin: 0 0 6px; height: 10px; }
+      .ride-zones .dt-label b { color: var(--text); }
+      .ride .dt-splits { padding: 0; }
+      .split.fast-leg { color: #0b0e13; background: #5ac8fa; }
+      .combo { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); }
+      .combo-label { color: var(--muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+      .combo-bar { display: flex; gap: 3px; margin: 8px 0; }
+      .combo-bar i { flex-basis: 0; min-width: 0; font-style: normal; font-size: 0.75rem; font-weight: 800; color: #0b0e13; padding: 4px 8px; border-radius: 999px; white-space: nowrap; overflow: hidden; }
+      .leg-run { background: var(--bar); }
+      .leg-ride { background: #5ac8fa; }
+      .combo-nums { font-size: 0.85rem; color: var(--muted); }
+      .combo-nums b { color: var(--text); }
+      @media (prefers-reduced-motion: reduce) { .bike *, .ride-tag .wheel { animation: none !important; } }
 
       footer { color: var(--muted); font-size: 0.8rem; margin-top: 30px; text-align: center; }
       footer a { color: var(--muted); }
@@ -465,7 +514,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                 <span class="wd"></span><span class="wd">Mon</span><span class="wd"></span><span class="wd">Wed</span><span class="wd"></span><span class="wd">Fri</span><span class="wd"></span>
                 {h.cells.map((date) =>
                   date ? (
-                    <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday, bday: isBirthday(date), recovery: !isBirthday(date) && restDays.includes(date) }]} data-date={date} title={cellTitle(date)}></i>
+                    <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday, bday: isBirthday(date), recovery: !isBirthday(date) && restDays.includes(date), ride: !!rideOn(date) }]} data-date={date} title={cellTitle(date)}></i>
                   ) : (
                     <i class="cell pad"></i>
                   ),
@@ -475,7 +524,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
           ))}
         </div>
         <div class="yg-foot">
-          <span>Shaded by distance, under 3 mi to 7+ mi</span>
+          <span>Shaded by distance run, under 3 mi to 7+ mi{bike.count > 0 && <> · <i class="cell ride legend-ride" aria-hidden="true"></i> bike day</>}</span>
           <span class="legend">Less <i class="cell l0"></i><i class="cell l1"></i><i class="cell l2"></i><i class="cell l3"></i><i class="cell l4"></i> More</span>
         </div>
       </section>
@@ -496,6 +545,13 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
           <div class="value cyan">{totalMi > 0 ? fmtPace(avgPaceSec) : '–'}<small>/MI</small></div>
           <div class="sub">across all runs</div>
         </div>
+        {bike.count > 0 && (
+          <div class="tile">
+            <div class="label">Bike 🚴</div>
+            <div class="value sky">{bike.totalMi.toFixed(1)}<small>MI</small></div>
+            <div class="sub">{bike.count} {bike.count === 1 ? 'ride' : 'rides'} · {fmtDuration(bike.totalSec)}</div>
+          </div>
+        )}
         <div class="tile">
           <div class="label">Weight</div>
           <div class="value purple">{latestWeight ? latestWeight.lb.toFixed(1) : '–'}<small>LB</small></div>
@@ -539,31 +595,38 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                 const runCells: [string, string, string, Delta][] = r
                   ? [
                       ['Distance', r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : '–', 'blue', delta(r.distanceMi, p?.distanceMi, (n) => `${n.toFixed(2)} mi`)],
-                      ['Time', r.workoutTime, 'yellow', delta(toSec(r.workoutTime), p ? toSec(p.workoutTime) : undefined, fmtDuration)],
+                      ['Time', r.workoutTime ?? '–', 'yellow', delta(r.workoutTime ? toSec(r.workoutTime) : undefined, p?.workoutTime ? toSec(p.workoutTime) : undefined, fmtDuration)],
                       ['Pace', r.avgPace ? `${fmtPace(toSec(r.avgPace))}/mi` : '–', 'cyan', delta(r.avgPace ? toSec(r.avgPace) : undefined, p?.avgPace ? toSec(p.avgPace) : undefined, fmtDuration, true)],
                       ['Heart rate', r.avgHrBpm ? `${r.avgHrBpm} bpm` : '–', 'orange', delta(r.avgHrBpm, p?.avgHrBpm, (n) => `${n} bpm`, true)],
                     ]
                   : []
-                const zoneSec = r?.hrZones?.map(toSec) ?? []
-                const zoneTotal = zoneSec.reduce((a, b) => a + b, 0)
+                const { sec: zoneSec, total: zoneTotal, pct: zonePct } = zoneBreakdown(r?.hrZones)
+                const ride = d.ride
                 const bodyCells: [string, string, string, Delta][] = [
                   ['Weight', w != null ? `${w.toFixed(1)} lb` : '–', 'purple', delta(w, prevWeightBefore(d.date), (n) => `${n.toFixed(1)} lb`, true)],
                   ['Push-ups', pu != null ? String(pu) : '–', 'green', delta(pu, prevPushupsBefore(d.date), (n) => String(n))],
                   ['Sleep', d.sleep != null ? `${d.sleep} h` : '–', 'blue', delta(d.sleep, prevSleepBefore(d.date), (n) => `${+n.toFixed(2)} h`)],
                 ]
-                const hasDetails = !!r
+                const hasDetails = !!r || !!ride
                 // details panel: zones first, then three key numbers and the splits
-                const sec = r ? toSec(r.workoutTime) : 0
+                const sec = r?.workoutTime ? toSec(r.workoutTime) : 0
                 const mi = r?.distanceMi
-                const zonePct = zoneSec.map((z) => (zoneTotal ? Math.round((z / zoneTotal) * 100) : 0))
                 const aerobic = zonePct[1] + zonePct[2]
                 const keyStats: [string, string | undefined][] = r
                   ? [
-                      ['beats / mile', r.avgHrBpm && mi ? String(Math.round((r.avgHrBpm * sec) / 60 / mi)) : undefined],
+                      ['beats / mile', r.avgHrBpm && mi && sec ? String(Math.round((r.avgHrBpm * sec) / 60 / mi)) : undefined],
                       ['steps / min', r.avgCadenceSpm != null ? String(r.avgCadenceSpm) : undefined],
                       ['ft climbed', r.elevationFt != null ? String(r.elevationFt) : undefined],
                     ]
                   : []
+                // bike ride panel: zones, the ride's numbers, and what run + ride add up to that day
+                const rz = zoneBreakdown(ride?.hrZones)
+                const rideSec = ride ? toSec(ride.workoutTime) : 0
+                const fastestLeg = ride?.splits?.length ? Math.max(...ride.splits.map((sp) => sp.mph)) : 0
+                const combo =
+                  ride && r?.distanceMi != null && sec
+                    ? { mi: r.distanceMi + ride.distanceMi, sec: sec + rideSec, cal: (r.totalCal ?? 0) + (ride.totalCal ?? 0), ft: (r.elevationFt ?? 0) + (ride.elevationFt ?? 0) }
+                    : null
                 const splitSec = r?.splits?.map((sp) => toSec(sp.time)) ?? []
                 const fastest = Math.min(...splitSec)
                 const slowest = Math.max(...splitSec)
@@ -576,7 +639,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                     aria-expanded={hasDetails ? 'false' : undefined}
                     aria-controls={hasDetails ? `details-${d.date}` : undefined}
                   >
-                    <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span>{isBirthday(d.date) && <span class="bday-tag" title="Happy birthday!"><span class="cake" aria-hidden="true">🎂</span> {d.run ? 'Birthday run' : 'Birthday'} <span aria-hidden="true">🎉🎈🥳</span></span>}{d.day === GOAL_DAY && <span class="goal-tag">🏆 Challenge {GOAL_DAY} achieved</span>}{hasDetails && <span class="more">details<i class="chev" aria-hidden="true">▾</i></span>}</td>
+                    <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span>{isBirthday(d.date) && <span class="bday-tag" title="Happy birthday!"><span class="cake" aria-hidden="true">🎂</span> {d.run ? 'Birthday run' : 'Birthday'} <span aria-hidden="true">🎉🎈🥳</span></span>}{ride && <span class="ride-tag" title={`${r ? 'Run + bike ride' : 'Bike ride'} · ${ride.distanceMi.toFixed(2)} mi on the bike`}><span class="wheel" aria-hidden="true">🚴</span> {r ? 'Double day' : 'Bike day'} · +{ride.distanceMi.toFixed(2)} mi</span>}{d.day === GOAL_DAY && <span class="goal-tag">🏆 Challenge {GOAL_DAY} achieved</span>}{hasDetails && <span class="more">details<i class="chev" aria-hidden="true">▾</i></span>}</td>
                     {r ? (
                       runCells.map(([label, v, c, dl], ci) => (
                         <td data-label={label}>
@@ -645,6 +708,59 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                             ))}
                           </div>
                         )}
+                        {ride && (
+                          <div class="ride">
+                            <div class="ride-head">
+                              <svg class="bike" viewBox="0 0 64 40" aria-hidden="true">
+                                <g class="whl" style="transform-origin:14px 28px"><circle cx="14" cy="28" r="10" /><line x1="14" y1="18" x2="14" y2="38" /><line x1="4" y1="28" x2="24" y2="28" /></g>
+                                <g class="whl" style="transform-origin:50px 28px"><circle cx="50" cy="28" r="10" /><line x1="50" y1="18" x2="50" y2="38" /><line x1="40" y1="28" x2="60" y2="28" /></g>
+                                <polyline class="frame" points="14,28 26,14 44,14 50,28 32,28 26,14" />
+                                <line class="frame" x1="32" y1="28" x2="44" y2="14" />
+                                <line class="frame" x1="23" y1="10" x2="29" y2="10" /><line class="frame" x1="26" y1="10" x2="26" y2="14" />
+                                <line class="frame" x1="44" y1="14" x2="42" y2="7" /><line class="frame" x1="42" y1="7" x2="47" y2="7" />
+                                <g class="crank" style="transform-origin:32px 28px"><line x1="27" y1="28" x2="37" y2="28" /></g>
+                              </svg>
+                              <div>
+                                <b>{r ? 'Then the bike came out' : 'Bike ride'}</b>
+                                <span>{[ride.time, ride.route, ride.tempF != null && `${ride.tempF}°F`, ride.humidityPct != null && `${ride.humidityPct}% humidity`].filter(Boolean).join(' · ')}</span>
+                              </div>
+                            </div>
+                            <div class="ride-stats">
+                              <div><b>{ride.distanceMi.toFixed(2)}</b><span>mi</span></div>
+                              <div><b>{ride.workoutTime}</b><span>riding</span></div>
+                              <div><b>{ride.avgMph}</b><span>mph avg</span></div>
+                              {ride.avgHrBpm != null && <div><b>{ride.avgHrBpm}</b><span>bpm avg</span></div>}
+                              {ride.elevationFt != null && <div><b>{ride.elevationFt}</b><span>ft climbed</span></div>}
+                              {ride.totalCal != null && <div><b>{ride.totalCal}</b><span>cal</span></div>}
+                            </div>
+                            {rz.total > 0 && (
+                              <div class="ride-zones">
+                                <div class="hz-bar" aria-label="Time in heart rate zones on the bike">
+                                  {rz.sec.map((z, zi) => z > 0 && <i class={`z${zi + 1}`} style={`flex-grow:${z}`} title={`Zone ${zi + 1} · ${ride.hrZones![zi]} · ${(ride.hrZoneRanges ?? HR_ZONES)[zi]} bpm`}></i>)}
+                                </div>
+                                <span class="dt-label"><b>{rz.pct[0] + rz.pct[1]}%</b> in zones 1–2, an easy spin to flush the legs{ride.recoveryHr && ` · back to ${ride.recoveryHr.min1} bpm a minute after`}</span>
+                              </div>
+                            )}
+                            {ride.splits && ride.splits.length > 0 && (
+                              <div class="dt-splits">
+                                <span class="dt-label">Every 5 mi</span>
+                                {ride.splits.map((sp) => (
+                                  <span class:list={['split', { 'fast-leg': sp.mph === fastestLeg }]} title={`${sp.time} for ${sp.mi} mi${sp.hr ? ` · ${sp.hr} bpm` : ''}`}>{sp.mph} mph</span>
+                                ))}
+                              </div>
+                            )}
+                            {combo && (
+                              <div class="combo">
+                                <span class="combo-label">Day total, run + ride</span>
+                                <div class="combo-bar" aria-hidden="true">
+                                  <i class="leg-run" style={`flex-grow:${r!.distanceMi}`}>🏃 {r!.distanceMi!.toFixed(2)}</i>
+                                  <i class="leg-ride" style={`flex-grow:${ride.distanceMi}`}>🚴 {ride.distanceMi.toFixed(2)}</i>
+                                </div>
+                                <div class="combo-nums"><b>{combo.mi.toFixed(2)} mi</b> moved · <b>{fmtDuration(combo.sec)}</b> active · <b>{combo.cal.toLocaleString('en-US')}</b> cal · <b>{combo.ft}</b> ft up</div>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </td>
                     </tr>
                   )}
@@ -682,7 +798,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
         </>
       )}
 
-      <footer>Outdoor runs recorded with Apple Watch · <a href="/">rajil.me</a></footer>
+      <footer>Outdoor runs and rides recorded with Apple Watch · <a href="/">rajil.me</a></footer>
     </main>
     <script>
       import { GOAL_DAY, progressOn } from '~/data/runs'

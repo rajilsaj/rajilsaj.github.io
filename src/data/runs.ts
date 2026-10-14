@@ -13,8 +13,8 @@ export type Run = {
   /** Start–end time as shown on the watch, e.g. '5:32 AM – 6:42 AM' */
   time?: string
   location?: string
-  /** Workout time, 'h:mm:ss' or 'mm:ss' */
-  workoutTime: string
+  /** Workout time, 'h:mm:ss' or 'mm:ss' (omit when the summary screen wasn't captured) */
+  workoutTime?: string
   /** Elapsed time incl. pauses, 'h:mm:ss' or 'mm:ss' */
   elapsedTime?: string
   /** Distance in miles (omit until the workout summary is logged) */
@@ -265,6 +265,117 @@ export const runs: Run[] = [
     ], // only miles 1–2 readable in the screenshots
     notes: 'Award: 10K Run. Air quality 42',
   },
+  {
+    date: '2026-10-13',
+    time: '10:51 PM – 11:42 PM',
+    location: 'Fayetteville',
+    workoutTime: '51:52',
+    distanceMi: 4.13,
+    activeCal: 396,
+    totalCal: 472,
+    elevationFt: 180,
+    avgPowerW: 154,
+    avgCadenceSpm: 160,
+    avgPace: '12:32',
+    avgHrBpm: 142,
+    hrZones: ['1:07', '36:55', '13:49', '0:00', '0:00'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 132, min1: 110, min2: 108 },
+    effort: 4,
+    tempF: 68,
+    humidityPct: 84,
+    splits: [
+      { time: '12:56', hr: 139 },
+      { time: '12:26', hr: 143 },
+      { time: '12:15', hr: 141 },
+      { time: '12:28', hr: 144 },
+      { time: '12:53', hr: 139 }, // last 0.13 mi in 1:45, stored as its per-mile pace
+    ],
+    notes: 'Late-night run. Award: 5K Run. Air quality 50',
+  },
+  {
+    date: '2026-10-14',
+    time: '5:17 AM – 6:40 AM',
+    location: 'Fayetteville',
+    workoutTime: '1:09:47',
+    elapsedTime: '1:22:42',
+    distanceMi: 7.11,
+    activeCal: 693,
+    totalCal: 796,
+    elevationFt: 245,
+    avgPowerW: 191,
+    avgCadenceSpm: 167,
+    avgPace: '9:48',
+    avgHrBpm: 162,
+    hrZones: ['1:19', '4:10', '18:30', '20:56', '24:50'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 153, min1: 123, min2: 116 },
+    effort: 7,
+    tempF: 62,
+    humidityPct: 91,
+    splits: [
+      { time: '11:40', hr: 147 },
+      { time: '9:58', hr: 161 },
+      { time: '8:23', hr: 175 },
+      { time: '8:32', hr: 175 },
+      { time: '8:51', hr: 175 },
+    ], // only miles 1–5 visible in the screenshots
+    notes: 'Awards: Fastest 5K, 10K Run. Air quality 68',
+  },
+]
+
+/** A bike ride: cross-training on top of the day's run, from the Apple Fitness Outdoor Cycle summary. */
+export type Ride = {
+  date: string
+  time?: string
+  location?: string
+  /** Where the route went, a few words */
+  route?: string
+  workoutTime: string
+  elapsedTime?: string
+  distanceMi: number
+  activeCal?: number
+  totalCal?: number
+  elevationFt?: number
+  /** Average speed in mph */
+  avgMph: number
+  avgHrBpm?: number
+  hrZones?: [string, string, string, string, string]
+  hrZoneRanges?: [string, string, string, string, string]
+  recoveryHr?: { end: number; min1: number; min2: number }
+  tempF?: number
+  humidityPct?: number
+  /** Splits as recorded by the watch (every 5 mi on a ride): time, distance covered, avg mph, avg heart rate */
+  splits?: { time: string; mi: number; mph: number; hr?: number }[]
+  notes?: string
+}
+
+export const rides: Ride[] = [
+  {
+    date: '2026-10-12',
+    time: '5:32 PM – 6:49 PM',
+    location: 'Fayetteville',
+    route: 'downtown, out along the Cape Fear River and back',
+    workoutTime: '1:09:03',
+    elapsedTime: '1:17:31',
+    distanceMi: 10.15,
+    activeCal: 289,
+    totalCal: 388,
+    elevationFt: 213,
+    avgMph: 8.8,
+    avgHrBpm: 127,
+    hrZones: ['44:47', '17:17', '4:59', '2:00', '0:00'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 103, min1: 91, min2: 91 },
+    tempF: 81,
+    humidityPct: 56,
+    splits: [
+      { time: '35:52', mi: 5, mph: 8.3, hr: 124 },
+      { time: '31:11', mi: 5, mph: 9.6, hr: 130 },
+      { time: '1:58', mi: 0.15, mph: 4.6, hr: 113 },
+    ],
+    notes: 'Same day as the morning run. Air quality 22',
+  },
 ]
 
 /** Weight log. One entry per weigh-in (run days or rest days). Weight in pounds. */
@@ -366,7 +477,17 @@ export const latestLoggedDate = () =>
 /** Today as an ISO date (at build time; the browser adds any days that pass before the next build). */
 export const todayIso = () => new Date().toISOString().slice(0, 10)
 
-export type ChallengeDay = { day: number; date: string; run?: DayRun; weight?: number; pushups?: number; sleep?: number; rest?: boolean }
+/** Bike ride logged on a given day, if any. */
+export const rideOn = (date: string): Ride | undefined => rides.find((r) => r.date === date)
+
+/** Aggregate totals across all bike rides. */
+export const rideTotals = () => ({
+  count: rides.length,
+  totalMi: rides.reduce((a, r) => a + r.distanceMi, 0),
+  totalSec: rides.reduce((a, r) => a + toSec(r.workoutTime), 0),
+})
+
+export type ChallengeDay = { day: number; date: string; run?: DayRun; ride?: Ride; weight?: number; pushups?: number; sleep?: number; rest?: boolean }
 
 /**
  * Every calendar day from CHALLENGE_START through today (or the latest logged
@@ -379,7 +500,7 @@ export const challengeDays = (): ChallengeDay[] => {
   const last = Math.max(0, dayNumber(lastDate))
   return Array.from({ length: last + 1 }, (_, i) => {
     const date = addDays(CHALLENGE_START, i)
-    return { day: i, date, run: byDate.get(date), weight: weightOn(date), pushups: pushupsOn(date), sleep: sleepOn(date), rest: restDays.includes(date) }
+    return { day: i, date, run: byDate.get(date), ride: rideOn(date), weight: weightOn(date), pushups: pushupsOn(date), sleep: sleepOn(date), rest: restDays.includes(date) }
   })
 }
 
@@ -463,10 +584,10 @@ export const effortLabel = (n: number) => (n <= 3 ? 'Easy' : n <= 6 ? 'Moderate'
 /** Aggregate totals across all runs. */
 export const runTotals = () => {
   const all = runsByDay()
-  const measured = all.filter((r) => r.distanceMi != null) // runs with a logged distance
+  const measured = all.filter((r) => r.distanceMi != null && r.workoutTime) // runs with a logged distance and time
   const totalMi = measured.reduce((a, r) => a + r.distanceMi!, 0)
-  const totalSec = all.reduce((a, r) => a + toSec(r.workoutTime), 0)
-  const measuredSec = measured.reduce((a, r) => a + toSec(r.workoutTime), 0)
+  const totalSec = all.reduce((a, r) => a + (r.workoutTime ? toSec(r.workoutTime) : 0), 0)
+  const measuredSec = measured.reduce((a, r) => a + toSec(r.workoutTime!), 0)
   const totalElev = all.reduce((a, r) => a + (r.elevationFt ?? 0), 0)
   const totalCal = all.reduce((a, r) => a + (r.totalCal ?? 0), 0)
   const hrRuns = all.filter((r) => r.avgHrBpm)
