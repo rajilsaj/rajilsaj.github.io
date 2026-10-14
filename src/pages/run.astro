@@ -286,9 +286,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .cell.future { opacity: 0.4; }
       .cell.today { outline: 2px solid var(--text); outline-offset: -1px; }
       /* birthday: a little cake on top of that day's square */
-      .cell.bday, .cell.recovery, .cell.ride { position: relative; overflow: visible; }
-      /* bike day: a small sky-blue wheel badge in the corner of that day's square */
-      .cell.ride::before { content: ''; position: absolute; right: -2px; bottom: -2px; width: 50%; height: 50%; min-width: 5px; min-height: 5px; border-radius: 50%; border: 1.5px solid #5ac8fa; background: var(--card); }
+      .cell.bday, .cell.recovery { position: relative; overflow: visible; }
       .cell.recovery::after { content: '🧘'; }
       .cell.bday::after { content: '🎂'; }
       .cell.bday::after, .cell.recovery::after { position: absolute; inset: -35%; display: grid; place-items: center; font-size: 0.75rem; line-height: 1; font-style: normal; }
@@ -417,7 +415,6 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       /* bike days: a gradient pill on the row and a ride card in the details */
       .sky { color: #5ac8fa; }
       :root[data-theme='light'] .sky { color: #0a7fb5; }
-      .legend-ride { display: inline-block; vertical-align: middle; margin: 0 4px 0 2px; }
       .ride-tag { display: block; width: max-content; margin-top: 6px; font-size: 0.7rem; font-weight: 800; padding: 3px 9px; border-radius: 999px; white-space: nowrap; color: #0b0e13; background: linear-gradient(90deg, var(--bar) 0%, #5ac8fa 100%); }
       .ride-tag .wheel { display: inline-block; animation: ride-roll 2.4s ease-in-out infinite; }
       @keyframes ride-roll { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(3px); } }
@@ -514,7 +511,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                 <span class="wd"></span><span class="wd">Mon</span><span class="wd"></span><span class="wd">Wed</span><span class="wd"></span><span class="wd">Fri</span><span class="wd"></span>
                 {h.cells.map((date) =>
                   date ? (
-                    <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday, bday: isBirthday(date), recovery: !isBirthday(date) && restDays.includes(date), ride: !!rideOn(date) }]} data-date={date} title={cellTitle(date)}></i>
+                    <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday, bday: isBirthday(date), recovery: !isBirthday(date) && restDays.includes(date) }]} data-date={date} title={cellTitle(date)}></i>
                   ) : (
                     <i class="cell pad"></i>
                   ),
@@ -524,7 +521,7 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
           ))}
         </div>
         <div class="yg-foot">
-          <span>Shaded by distance run, under 3 mi to 7+ mi{bike.count > 0 && <> · <i class="cell ride legend-ride" aria-hidden="true"></i> bike day</>}</span>
+          <span>Shaded by distance run, under 3 mi to 7+ mi</span>
           <span class="legend">Less <i class="cell l0"></i><i class="cell l1"></i><i class="cell l2"></i><i class="cell l3"></i><i class="cell l4"></i> More</span>
         </div>
       </section>
