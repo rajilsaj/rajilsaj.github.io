@@ -13,9 +13,11 @@ const checklistUrl =
 // Rapport has no app URL yet.
 const reportUrl = ''
 // `locked` tools are shown greyed and not clickable; their href is kept for later.
+// `hidden` groups are left off the page entirely (kept here to bring back later).
 const groups = [
   {
     title: 'Organisation',
+    hidden: true,
     layout: 'trio',
     items: [
       { label: 'Le Casting', sub: 'sélection des candidats', href: appUrl, locked: true },
@@ -474,7 +476,7 @@ const groups = [
           réel et suivi
         </p>
         {
-          groups.map((g) => (
+          groups.filter((g) => !g.hidden).map((g) => (
             <section class:list={['group', g.layout]}>
               <h2 class="group-title">
                 {g.title}
