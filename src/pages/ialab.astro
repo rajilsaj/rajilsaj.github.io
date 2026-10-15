@@ -59,6 +59,11 @@ const groups = [
       },
     ],
   },
+  {
+    title: 'Quiz en direct',
+    layout: 'solo',
+    items: [{ label: 'Kahoot!', sub: 'rejoindre avec le code PIN', href: 'https://kahoot.it/', color: 'purple' }],
+  },
 ]
 ---
 
@@ -323,6 +328,11 @@ const groups = [
         --c: var(--ialab-yellow);
         --ink: #8a6a12;
         --on: #2e2305;
+      }
+      .tube.purple {
+        --c: #46178f;
+        --ink: #46178f;
+        --on: #fff;
       }
       .tube .label {
         display: flex;
