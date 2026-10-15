@@ -1,4 +1,8 @@
 ---
+import IconClaude from '~/icons/claude.svg'
+import IconGemini from '~/icons/gemini.svg'
+import IconChatGPT from '~/icons/chatgpt.svg'
+
 const title = 'IA Lab'
 const description = 'Interactive AI Lab - Candidate selection and evaluation tool'
 const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '')
@@ -57,6 +61,15 @@ const groups = [
         label: 'Module 5',
         href: 'https://script.google.com/macros/s/AKfycbxlhaKm6grIJXTLFDlQ5ODklmT-Vk6fRaLBT3LB9H8ZeCxhZsgIEz1g6LMno_06WAH1qA/exec',
       },
+    ],
+  },
+  {
+    title: 'Assistants IA',
+    layout: 'trio',
+    items: [
+      { label: 'Claude', href: 'https://claude.ai/new', color: 'claude', icon: IconClaude },
+      { label: 'Gemini', href: 'https://gemini.google.com/app', color: 'gemini', icon: IconGemini },
+      { label: 'ChatGPT', href: 'https://chatgpt.com/', color: 'chatgpt', icon: IconChatGPT },
     ],
   },
   {
@@ -334,6 +347,28 @@ const groups = [
         --ink: #46178f;
         --on: #fff;
       }
+      /* AI assistants: each in its brand colour, logo next to the name */
+      .tube.claude {
+        --c: #d97757;
+        --ink: #b8573a;
+      }
+      .tube.gemini {
+        --c: #8e75b2;
+        --ink: #6f55a0;
+      }
+      .tube.chatgpt {
+        --c: #0d0d0d;
+        --ink: #0d0d0d;
+      }
+      .tube .label.with-icon {
+        flex-direction: row;
+        gap: 8px;
+      }
+      .tube .brand {
+        width: 1.35em;
+        height: 1.35em;
+        flex: none;
+      }
       .tube .label {
         display: flex;
         flex-direction: column;
@@ -466,7 +501,8 @@ const groups = [
                       >
                         <path d="M5 12h14M13 6l6 6-6 6" />
                       </svg>
-                      <span class="label">
+                      <span class:list={['label', { 'with-icon': t.icon }]}>
+                        {t.icon && <t.icon class="brand" aria-hidden="true" />}
                         {t.label}
                         {t.sub && <span class="sub">{t.sub}</span>}
                       </span>
