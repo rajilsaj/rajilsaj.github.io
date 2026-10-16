@@ -324,9 +324,15 @@ export const runs: Run[] = [
   },
 ]
 
-/** A bike ride: cross-training on top of the day's run, from the Apple Fitness Outdoor Cycle summary. */
-export type Ride = {
+/**
+ * Cross-training: a bike ride or a walk, on top of (or instead of) the day's run.
+ * Copied from the Apple Fitness Outdoor Cycle / Outdoor Walk summary.
+ */
+export type Activity = {
+  kind: 'bike' | 'walk'
   date: string
+  /** Card heading in the day's details (a default per kind is used when omitted) */
+  title?: string
   time?: string
   location?: string
   /** Where the route went, a few words */
@@ -337,21 +343,28 @@ export type Ride = {
   activeCal?: number
   totalCal?: number
   elevationFt?: number
-  /** Average speed in mph */
-  avgMph: number
+  /** Average speed in mph (rides) */
+  avgMph?: number
+  /** Average pace, 'mm:ss' per mile (walks) */
+  avgPace?: string
   avgHrBpm?: number
   hrZones?: [string, string, string, string, string]
   hrZoneRanges?: [string, string, string, string, string]
   recoveryHr?: { end: number; min1: number; min2: number }
+  effort?: number
   tempF?: number
   humidityPct?: number
-  /** Splits as recorded by the watch (every 5 mi on a ride): time, distance covered, avg mph, avg heart rate */
-  splits?: { time: string; mi: number; mph: number; hr?: number }[]
+  /**
+   * Splits as recorded by the watch: every 5 mi on a ride (with distance and mph),
+   * every mile on a walk (time per mile). Average heart rate for each.
+   */
+  splits?: { time: string; mi?: number; mph?: number; hr?: number }[]
   notes?: string
 }
 
-export const rides: Ride[] = [
+export const activities: Activity[] = [
   {
+    kind: 'bike',
     date: '2026-10-12',
     time: '5:32 PM – 6:49 PM',
     location: 'Fayetteville',
@@ -375,6 +388,35 @@ export const rides: Ride[] = [
       { time: '1:58', mi: 0.15, mph: 4.6, hr: 113 },
     ],
     notes: 'Same day as the morning run. Air quality 22',
+  },
+  {
+    kind: 'walk',
+    date: '2026-10-15',
+    title: 'Midnight walk',
+    time: '10:32 PM – 1:03 AM',
+    location: 'Fayetteville',
+    route: 'out along Morganton Rd past the All American Fwy and back',
+    workoutTime: '2:31:15',
+    distanceMi: 8.04,
+    activeCal: 578,
+    totalCal: 801,
+    elevationFt: 349,
+    avgPace: '18:48',
+    avgHrBpm: 96,
+    hrZones: ['2:30:04', '1:10', '0:00', '0:00', '0:00'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 81, min1: 78, min2: 83 },
+    effort: 4,
+    tempF: 72,
+    humidityPct: 84,
+    splits: [
+      { time: '18:12', hr: 101 },
+      { time: '17:24', hr: 99 },
+      { time: '16:40', hr: 102 },
+      { time: '18:42', hr: 96 },
+      { time: '18:50', hr: 94 },
+    ], // only miles 1–5 visible in the screenshots
+    notes: 'Award: Walking Workout Record (579 cal). Air quality 60',
   },
 ]
 
@@ -477,17 +519,19 @@ export const latestLoggedDate = () =>
 /** Today as an ISO date (at build time; the browser adds any days that pass before the next build). */
 export const todayIso = () => new Date().toISOString().slice(0, 10)
 
-/** Bike ride logged on a given day, if any. */
-export const rideOn = (date: string): Ride | undefined => rides.find((r) => r.date === date)
+/** Cross-training (ride or walk) logged on a given day, if any. */
+export const activityOn = (date: string): Activity | undefined => activities.find((a) => a.date === date)
 
-/** Aggregate totals across all bike rides. */
-export const rideTotals = () => ({
-  count: rides.length,
-  totalMi: rides.reduce((a, r) => a + r.distanceMi, 0),
-  totalSec: rides.reduce((a, r) => a + toSec(r.workoutTime), 0),
-})
+/** Cross-training totals: miles and count overall and per kind. */
+export const activityTotals = () => {
+  const sum = (kind?: Activity['kind']) => {
+    const list = activities.filter((a) => !kind || a.kind === kind)
+    return { count: list.length, totalMi: list.reduce((n, a) => n + a.distanceMi, 0), totalSec: list.reduce((n, a) => n + toSec(a.workoutTime), 0) }
+  }
+  return { ...sum(), bike: sum('bike'), walk: sum('walk') }
+}
 
-export type ChallengeDay = { day: number; date: string; run?: DayRun; ride?: Ride; weight?: number; pushups?: number; sleep?: number; rest?: boolean }
+export type ChallengeDay = { day: number; date: string; run?: DayRun; activity?: Activity; weight?: number; pushups?: number; sleep?: number; rest?: boolean }
 
 /**
  * Every calendar day from CHALLENGE_START through today (or the latest logged
@@ -500,7 +544,7 @@ export const challengeDays = (): ChallengeDay[] => {
   const last = Math.max(0, dayNumber(lastDate))
   return Array.from({ length: last + 1 }, (_, i) => {
     const date = addDays(CHALLENGE_START, i)
-    return { day: i, date, run: byDate.get(date), ride: rideOn(date), weight: weightOn(date), pushups: pushupsOn(date), sleep: sleepOn(date), rest: restDays.includes(date) }
+    return { day: i, date, run: byDate.get(date), activity: activityOn(date), weight: weightOn(date), pushups: pushupsOn(date), sleep: sleepOn(date), rest: restDays.includes(date) }
   })
 }
 
