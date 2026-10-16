@@ -615,10 +615,23 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                       ['Pace', r.avgPace ? `${fmtPace(toSec(r.avgPace))}/mi` : '–', 'cyan', delta(r.avgPace ? toSec(r.avgPace) : undefined, p?.avgPace ? toSec(p.avgPace) : undefined, fmtDuration, true)],
                       ['Heart rate', r.avgHrBpm ? `${r.avgHrBpm} bpm` : '–', 'orange', delta(r.avgHrBpm, p?.avgHrBpm, (n) => `${n} bpm`, true)],
                     ]
-                  : []
+                  : d.activity
+                    ? // no run that day: the walk or ride fills the same columns (no deltas, runs aren't compared with walks)
+                      [
+                        ['Distance', `${d.activity.distanceMi.toFixed(2)} mi`, 'blue', null],
+                        ['Time', d.activity.workoutTime, 'yellow', null],
+                        d.activity.avgPace
+                          ? ['Pace', `${fmtPace(toSec(d.activity.avgPace))}/mi`, 'cyan', null]
+                          : ['Speed', d.activity.avgMph != null ? `${d.activity.avgMph} mph` : '–', 'cyan', null],
+                        ['Heart rate', d.activity.avgHrBpm ? `${d.activity.avgHrBpm} bpm` : '–', 'orange', null],
+                      ]
+                    : []
                 const { sec: zoneSec, total: zoneTotal, pct: zonePct } = zoneBreakdown(r?.hrZones)
                 const act = d.activity
                 const k = act ? KIND[act.kind] : null
+                // whatever fills the row's distance/time/pace/heart-rate columns: the run, else the walk or ride
+                const main = r ?? act
+                const rowZ = zoneBreakdown(main?.hrZones)
                 const bodyCells: [string, string, string, Delta][] = [
                   ['Weight', w != null ? `${w.toFixed(1)} lb` : '–', 'purple', delta(w, prevWeightBefore(d.date), (n) => `${n.toFixed(1)} lb`, true)],
                   ['Push-ups', pu != null ? String(pu) : '–', 'green', delta(pu, prevPushupsBefore(d.date), (n) => String(n))],
@@ -659,23 +672,23 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
                     aria-controls={hasDetails ? `details-${d.date}` : undefined}
                   >
                     <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span>{isBirthday(d.date) && <span class="bday-tag" title="Happy birthday!"><span class="cake" aria-hidden="true">🎂</span> {d.run ? 'Birthday run' : 'Birthday'} <span aria-hidden="true">🎉🎈🥳</span></span>}{act && k && <span class:list={['ride-tag', `kind-${act.kind}`]} title={`${r ? `Run + ${k.noun}` : k.title} · ${act.distanceMi.toFixed(2)} mi`}><span class="wheel" aria-hidden="true">{k.emoji}</span> {r ? `Double day · +${act.distanceMi.toFixed(2)} mi` : k.day}</span>}{d.day === GOAL_DAY && <span class="goal-tag">🏆 Challenge {GOAL_DAY} achieved</span>}{hasDetails && <span class="more">details<i class="chev" aria-hidden="true">▾</i></span>}</td>
-                    {r ? (
+                    {main ? (
                       runCells.map(([label, v, c, dl], ci) => (
                         <td data-label={label}>
                           <span class={`v ${c}`}>{v}</span>
                           {dl && <span class={`delta ${dl.dir}`}>{dl.text}</span>}
-                          {ci === 3 && zoneTotal > 0 && (
+                          {ci === 3 && rowZ.total > 0 && (
                             <span class="zones" aria-label="Time in heart rate zones">
-                              {zoneSec.map((s, zi) => (
-                                <i class={`z${zi + 1}`} style={`flex-grow:${s}`} title={`Zone ${zi + 1} · ${r.hrZones![zi]} · ${(r.hrZoneRanges ?? HR_ZONES)[zi]} bpm`}></i>
+                              {rowZ.sec.map((s, zi) => (
+                                <i class={`z${zi + 1}`} style={`flex-grow:${s}`} title={`Zone ${zi + 1} · ${main.hrZones![zi]} · ${(main.hrZoneRanges ?? HR_ZONES)[zi]} bpm`}></i>
                               ))}
                             </span>
                           )}
-                          {ci === 3 && r.recoveryHr && <span class="rec" title="Post-workout heart rate: end → 1 min → 2 min">↓ {r.recoveryHr.end} · {r.recoveryHr.min1} · {r.recoveryHr.min2}</span>}
+                          {ci === 3 && main.recoveryHr && <span class="rec" title="Post-workout heart rate: end → 1 min → 2 min">↓ {main.recoveryHr.end} · {main.recoveryHr.min1} · {main.recoveryHr.min2}</span>}
                         </td>
                       ))
                     ) : (
-                      <td colspan="4"><span class="rest-label">{act && k ? <><span class="rest-emoji" aria-hidden="true">{k.emoji}</span>No run · {act.distanceMi.toFixed(2)} mi {k.noun} in {act.workoutTime}</> : d.rest ? <><span class="rest-emoji" aria-hidden="true">🧘</span>Recovery day</> : 'No run'}</span></td>
+                      <td colspan="4"><span class="rest-label">{d.rest ? <><span class="rest-emoji" aria-hidden="true">🧘</span>Recovery day</> : 'No run'}</span></td>
                     )}
                     {bodyCells.map(([label, v, c, dl]) => (
                       <td data-label={label}>
