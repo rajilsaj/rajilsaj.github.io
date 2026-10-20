@@ -97,6 +97,18 @@ const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => 
 const prevSleepBefore = (date: string) => [...sleepLog].reverse().find((s) => s.date < date)?.hours
 const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) => p.date < date)?.count
 
+// Weigh-in summary: consecutive weigh-ins at the same weight collapse into one stretch
+const wMin = Math.min(...weightLog.map((w) => w.lb))
+const wMax = Math.max(...weightLog.map((w) => w.lb))
+const wGroups = weightLog.reduce<{ lb: number; from: string; to: string; n: number; d: Delta }[]>((gs, w) => {
+  const last = gs[gs.length - 1]
+  if (last && Math.abs(last.lb - w.lb) < 1e-9) {
+    last.to = w.date
+    last.n++
+  } else gs.push({ lb: w.lb, from: w.date, to: w.date, n: 1, d: last ? delta(w.lb, last.lb, (n) => `${n.toFixed(1)} lb`, true) : null })
+  return gs
+}, [])
+
 // Evolution chart: weight line on top, daily miles (run + walk/ride stacked) below with the running total
 const EV = { w: 640, h: 360, l: 46, r: 46, wTop: 30, wBot: 150, mTop: 196, mBot: 310 }
 const evDays = days.map((d) => ({
@@ -525,7 +537,36 @@ const evInfo = evDays.map((d) => {
       .tabbar button { font: inherit; font-size: 0.85rem; font-weight: 700; color: var(--muted); background: none; border: 0; border-radius: 999px; padding: 7px 14px; cursor: pointer; transition: background 0.2s, color 0.2s; }
       .tabbar button[aria-selected='true'] { background: var(--bar); color: #0b0e13; }
       .tabbar button:focus-visible { outline: 2px solid var(--bar); outline-offset: 2px; }
-      .wtabs [role='tabpanel'][hidden] { display: none; }
+      /* both tabs take the chart's height: the chart stays in the flow (just invisible when not selected),
+         the weigh-in summary is laid over it and scrolls inside if it ever runs longer */
+      .wpanels { position: relative; }
+      #panel-evolution[hidden] { display: block; visibility: hidden; }
+      #panel-weighins[hidden] { display: none; }
+      .wsum { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--card); border-radius: 16px; padding: 16px; overflow: hidden; }
+      @media (max-width: 559px) {
+        .wsum { padding: 12px; }
+        .wsum .evo-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+        .wsum .evo-stats div { flex-direction: column; padding: 8px 10px; }
+        .wsum .evo-stats span { flex-basis: auto; font-size: 0.65rem; }
+        .wsum .evo-stats b { font-size: 1rem; }
+        .wsum .evo-stats em { font-size: 0.7rem; }
+        .wgroups li { gap: 10px; }
+      }
+      .wsum-head { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin: 6px 2px 8px; }
+      .wgroups { list-style: none; flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line) transparent; display: flex; flex-direction: column; gap: 6px; }
+      .wgroups li { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(60px, 1fr) auto; align-items: center; gap: 14px; background: var(--card-2); border-radius: 12px; padding: 10px 12px; }
+      .wgroups li:first-child { box-shadow: inset 3px 0 0 var(--green); }
+      .wg-when { min-width: 0; }
+      .wg-when b { display: block; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .wg-when span { display: block; color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
+      .wg-track { position: relative; height: 4px; border-radius: 999px; background: var(--track); }
+      .wg-track i { position: absolute; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px var(--card-2); }
+      .wg-lb { text-align: right; min-width: 64px; }
+      .wg-lb b { font-size: 1.1rem; white-space: nowrap; }
+      .wg-lb small { font-size: 0.6em; margin-left: 2px; color: var(--muted); }
+      .wg-lb .delta { margin-top: 0; }
+      .evo-stats b.good { color: var(--green); }
+      .evo-stats b.bad { color: var(--red); }
       .evo { background: var(--card); border-radius: 16px; padding: 16px; }
       .evo-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 10px; }
       .evo-stats div { display: flex; flex-direction: column; gap: 2px; min-width: 0; background: var(--card-2); border-radius: 12px; padding: 10px 12px; }
@@ -945,25 +986,29 @@ const evInfo = evDays.map((d) => {
             <button role="tab" id="tab-weighins" aria-controls="panel-weighins" aria-selected="true">⚖️ Weigh-ins</button>
             <button role="tab" id="tab-evolution" aria-controls="panel-evolution" aria-selected="false" tabindex="-1">📈 Evolution</button>
           </div>
-          <div class="table-wrap" role="tabpanel" id="panel-weighins" aria-labelledby="tab-weighins">
-            <table style="min-width: 0">
-              <thead><tr><th>Date</th><th>Weight</th></tr></thead>
-              <tbody>
-                {[...weightLog].reverse().map((w) => {
-                  const i = weightLog.indexOf(w) // index in the oldest → newest array
-                  const d = i > 0 ? delta(w.lb, weightLog[i - 1].lb, (n) => `${n.toFixed(1)} lb`, true) : null
-                  return (
-                    <tr>
-                      <td class="datecell">{fmtDate(w.date, { weekday: 'short', month: 'short', day: 'numeric' })}</td>
-                      <td>
-                        <span class="v purple">{w.lb.toFixed(1)} lb</span>
-                        {d && <span class={`delta ${d.dir}`}>{d.text}</span>}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+          <div class="wpanels">
+          <div class="wsum" role="tabpanel" id="panel-weighins" aria-labelledby="tab-weighins">
+            <div class="evo-stats">
+              <div><span>Now</span><b>{latestWeight!.lb.toFixed(1)}<small>lb</small></b><em>{fmtDate(latestWeight!.date, { month: 'short', day: 'numeric' })}</em></div>
+              <div><span>Since Day 0</span><b class:list={[weightChange == null ? '' : weightChange <= 0 ? 'good' : 'bad']}>{weightChange == null ? '=' : signed(weightChange, '').trim()}<small>lb</small></b><em>from {firstWeight!.lb.toFixed(1)} lb</em></div>
+              <div><span>Range</span><b>{wMin.toFixed(1)}–{wMax.toFixed(1)}<small>lb</small></b><em>{weightLog.length} weigh-ins</em></div>
+            </div>
+            <div class="wsum-head"><span>Stretches at the same weight</span><span>newest first</span></div>
+            <ol class="wgroups">
+              {[...wGroups].reverse().map((g) => (
+                <li>
+                  <div class="wg-when">
+                    <b>{g.from === g.to ? fmtDate(g.from, { weekday: 'short', month: 'short', day: 'numeric' }) : `${fmtDate(g.from, { month: 'short', day: 'numeric' })} – ${fmtDate(g.to, { month: 'short', day: 'numeric' })}`}</b>
+                    <span>Day {dayNumber(g.from)}{g.from !== g.to ? `–${dayNumber(g.to)}` : ''} · {g.n} {g.n === 1 ? 'weigh-in' : 'weigh-ins'}</span>
+                  </div>
+                  <div class="wg-track" aria-hidden="true"><i style={`left:${wMax > wMin ? ((g.lb - wMin) / (wMax - wMin)) * 100 : 50}%`}></i></div>
+                  <div class="wg-lb">
+                    <b>{g.lb.toFixed(1)}<small>lb</small></b>
+                    {g.d && <span class={`delta ${g.d.dir}`}>{g.d.text}</span>}
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
           <div class="evo" role="tabpanel" id="panel-evolution" aria-labelledby="tab-evolution" hidden>
             <div class="evo-stats">
@@ -1045,6 +1090,7 @@ const evInfo = evDays.map((d) => {
               <span><i class="sw cum"></i>Run miles, running total</span>
               <span>🏆 longest run</span>
             </div>
+          </div>
           </div>
         </section>
       )}
