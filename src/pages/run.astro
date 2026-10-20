@@ -97,6 +97,58 @@ const prevWeightBefore = (date: string) => [...weightLog].reverse().find((w) => 
 const prevSleepBefore = (date: string) => [...sleepLog].reverse().find((s) => s.date < date)?.hours
 const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) => p.date < date)?.count
 
+// Evolution chart: weight line on top, daily miles (run + walk/ride stacked) below with the running total
+const EV = { w: 640, h: 360, l: 46, r: 46, wTop: 30, wBot: 150, mTop: 196, mBot: 310 }
+const evDays = days.map((d) => ({
+  ...d,
+  runMi: d.run?.distanceMi ?? 0,
+  actMi: d.activity?.distanceMi ?? 0,
+}))
+const evCol = (EV.w - EV.l - EV.r) / Math.max(1, evDays.length)
+const evX = (i: number) => EV.l + (i + 0.5) * evCol
+const evW = weightLog.map((w) => w.lb)
+const evWMin = Math.floor((Math.min(...evW) - 0.3) * 2) / 2
+const evWMax = Math.ceil((Math.max(...evW) + 0.3) * 2) / 2
+const evWY = (lb: number) => EV.wBot - ((lb - evWMin) / (evWMax - evWMin || 1)) * (EV.wBot - EV.wTop)
+const evWTicks = Array.from({ length: Math.round((evWMax - evWMin) / 0.5) + 1 }, (_, i) => evWMin + i * 0.5).filter((_, i, a) => a.length <= 6 || i % 2 === 0)
+const evWPts = weightLog.map((w) => ({ x: evX(dayNumber(w.date)), y: evWY(w.lb), w }))
+// smooth curve through the weigh-ins that never overshoots (monotone cubic, Fritsch–Carlson)
+const evSlopes = (() => {
+  const p = evWPts
+  const d = p.slice(1).map((q, i) => (q.y - p[i].y) / (q.x - p[i].x || 1))
+  return p.map((_, i) => {
+    if (i === 0) return d[0] ?? 0
+    if (i === p.length - 1) return d[i - 1]
+    return d[i - 1] * d[i] <= 0 ? 0 : (2 * d[i - 1] * d[i]) / (d[i - 1] + d[i])
+  })
+})()
+const evWPath = evWPts
+  .map((p, i, a) => {
+    if (i === 0) return `M${p.x.toFixed(1)},${p.y.toFixed(1)}`
+    const q = a[i - 1], h = (p.x - q.x) / 3
+    return `C${(q.x + h).toFixed(1)},${(q.y + evSlopes[i - 1] * h).toFixed(1)} ${(p.x - h).toFixed(1)},${(p.y - evSlopes[i] * h).toFixed(1)} ${p.x.toFixed(1)},${p.y.toFixed(1)}`
+  })
+  .join(' ')
+const evWArea = evWPts.length ? `${evWPath} L${evWPts[evWPts.length - 1].x.toFixed(1)},${EV.wBot} L${evWPts[0].x.toFixed(1)},${EV.wBot} Z` : ''
+const evMMax = Math.max(2, Math.ceil(Math.max(...evDays.map((d) => d.runMi + d.actMi)) / 2) * 2)
+const evMH = (mi: number) => (mi / evMMax) * (EV.mBot - EV.mTop)
+let evRunning = 0
+const evCum = evDays.map((d) => (evRunning += d.runMi))
+const evCumMax = Math.max(1, evRunning)
+const evCumY = (mi: number) => EV.mBot - (mi / evCumMax) * (EV.mBot - EV.mTop)
+const evCumPath = evCum.map((c, i) => `${i ? 'L' : 'M'}${evX(i).toFixed(1)},${evCumY(c).toFixed(1)}`).join(' ')
+const evStep = evDays.length <= 35 ? 7 : evDays.length <= 120 ? 14 : 30
+const evBarW = Math.max(2, Math.min(18, evCol * 0.62))
+const evLongest = evDays.reduce((b, d) => (d.runMi > b.runMi ? d : b), evDays[0])
+const evLowest = weightLog.reduce((b, w) => (w.lb < b.lb ? w : b), weightLog[0])
+// tap/hover readout text for each day
+const evInfo = evDays.map((d) => {
+  const bits = [d.run?.distanceMi != null ? `🏃 ${d.run.distanceMi.toFixed(2)} mi` : d.run ? '🏃 Run' : d.rest ? '🧘 Recovery' : 'No run']
+  if (d.activity) bits.push(`${KIND[d.activity.kind].emoji} ${d.activity.distanceMi.toFixed(2)} mi`)
+  if (d.weight != null) bits.push(`⚖️ ${d.weight.toFixed(1)} lb`)
+  return `Day ${d.day} · ${fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })} · ${bits.join(' · ')} · ${evCum[d.day].toFixed(1)} mi total`
+})
+
 ---
 
 <!doctype html>
@@ -468,6 +520,72 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       .combo-nums b { color: var(--text); }
       @media (prefers-reduced-motion: reduce) { .bike *, .ride-tag .wheel { animation: none !important; } }
 
+      /* weight: tabs for the weigh-in table and the evolution chart */
+      .tabbar { display: inline-flex; gap: 4px; padding: 4px; background: var(--card); border-radius: 999px; margin-bottom: 12px; }
+      .tabbar button { font: inherit; font-size: 0.85rem; font-weight: 700; color: var(--muted); background: none; border: 0; border-radius: 999px; padding: 7px 14px; cursor: pointer; transition: background 0.2s, color 0.2s; }
+      .tabbar button[aria-selected='true'] { background: var(--bar); color: #0b0e13; }
+      .tabbar button:focus-visible { outline: 2px solid var(--bar); outline-offset: 2px; }
+      .wtabs [role='tabpanel'][hidden] { display: none; }
+      .evo { background: var(--card); border-radius: 16px; padding: 16px; }
+      .evo-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 10px; }
+      .evo-stats div { display: flex; flex-direction: column; gap: 2px; min-width: 0; background: var(--card-2); border-radius: 12px; padding: 10px 12px; }
+      .evo-stats span { color: var(--muted); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+      .evo-stats b { font-size: 1.25rem; letter-spacing: -0.02em; white-space: nowrap; }
+      .evo-stats small { font-size: 0.6em; margin-left: 3px; color: var(--muted); }
+      .evo-stats em { font-style: normal; font-size: 0.78rem; color: var(--muted); }
+      .evo-stats em.good { color: var(--green); }
+      .evo-stats em.bad { color: var(--red); }
+      @media (max-width: 559px) { .evo { padding: 12px; } .evo-stats { grid-template-columns: 1fr; } .evo-stats div { flex-direction: row; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; } .evo-stats span { flex-basis: 100%; } }
+      .evo-chart svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+      .evo-title { fill: var(--text); font-size: 15px; font-weight: 700; }
+      .evo-axis { fill: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+      @media (max-width: 559px) { .evo-title { font-size: 19px; } .evo-axis { font-size: 16px; } }
+      .evo-title.end, .evo-axis.end { text-anchor: end; }
+      .evo-axis.mid { text-anchor: middle; }
+      .evo-grid { stroke: var(--line); stroke-width: 1; }
+      .evo-stripe { fill: var(--text); opacity: 0.025; }
+      .evo-wline { fill: none; stroke: var(--green); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+      .evo-warea { opacity: 0; }
+      .evo-wdot { fill: var(--card); stroke: var(--green); stroke-width: 2.5; opacity: 0; }
+      .evo-wdot.low { fill: var(--green); }
+      .evo-wdot.last { fill: var(--green); stroke: var(--card); stroke-width: 3; }
+      .evo-wlabel { fill: var(--text); font-size: 15px; font-weight: 800; text-anchor: middle; opacity: 0; }
+      .evo-run { fill: var(--bar); }
+      .evo-act.kind-walk { fill: #ffb340; }
+      .evo-act.kind-bike { fill: #5ac8fa; }
+      .evo-rest { fill: var(--muted); opacity: 0.6; }
+      .evo-day { transform-box: fill-box; transform-origin: bottom; transform: scaleY(0); }
+      .evo-cum { fill: none; stroke: url(#evo-cum); stroke-width: 2; stroke-dasharray: 5 4; opacity: 0; }
+      .evo-cumdot { fill: var(--text); opacity: 0; }
+      .evo-flag { font-size: 16px; text-anchor: middle; opacity: 0; }
+      .evo-cursor { stroke: var(--text); stroke-width: 1.5; stroke-dasharray: 3 3; opacity: 0.7; pointer-events: none; }
+      .evo-day.on rect { filter: brightness(1.25); }
+      /* draw-in when the tab opens */
+      .evo.play .evo-wline { animation: evo-draw 1.4s ease-out forwards; }
+      .evo.play .evo-warea { animation: evo-fade 0.8s 0.9s ease forwards; }
+      .evo.play .evo-wdot, .evo.play .evo-wlabel { animation: evo-fade 0.4s 1.2s ease forwards; }
+      .evo.play .evo-day { animation: evo-grow 0.5s calc(var(--i) * 25ms) cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards; }
+      .evo.play .evo-cum, .evo.play .evo-cumdot, .evo.play .evo-flag { animation: evo-fade 0.6s 1s ease forwards; }
+      @keyframes evo-draw { to { stroke-dashoffset: 0; } }
+      @keyframes evo-fade { to { opacity: 1; } }
+      @keyframes evo-grow { to { transform: scaleY(1); } }
+      @media (prefers-reduced-motion: reduce) {
+        .evo-wline { stroke-dasharray: none; stroke-dashoffset: 0; }
+        .evo-warea, .evo-wdot, .evo-wlabel, .evo-cum, .evo-cumdot, .evo-flag { opacity: 1; }
+        .evo-cum { opacity: 1; }
+        .evo-day { transform: none; }
+        .evo.play * { animation: none !important; }
+      }
+      .evo-readout { min-height: 2.6em; margin-top: 8px; padding: 8px 12px; border-radius: 10px; background: var(--card-2); font-size: 0.85rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+      .evo-readout.live { color: var(--text); }
+      .evo-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: 0.75rem; color: var(--muted); }
+      .evo-legend span { display: inline-flex; align-items: center; gap: 6px; }
+      .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
+      .sw.run { background: var(--bar); } .sw.walk { background: #ffb340; } .sw.bike { background: #5ac8fa; }
+      .sw.rest { background: var(--muted); border-radius: 50%; width: 7px; height: 7px; opacity: 0.6; }
+      .sw.line { height: 3px; width: 16px; border-radius: 2px; background: var(--green); }
+      .sw.cum { height: 0; width: 16px; border-radius: 0; border-top: 2px dashed var(--text); }
+
       footer { color: var(--muted); font-size: 0.8rem; margin-top: 30px; text-align: center; }
       footer a { color: var(--muted); }
     </style>
@@ -821,9 +939,13 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
       </div>
 
       {weightLog.length > 1 && (
-        <>
-          <h2>Weigh-ins</h2>
-          <div class="table-wrap">
+        <section class="wtabs" aria-label="Weight">
+          <h2>Weight</h2>
+          <div class="tabbar" role="tablist" aria-label="Weight views">
+            <button role="tab" id="tab-weighins" aria-controls="panel-weighins" aria-selected="true">⚖️ Weigh-ins</button>
+            <button role="tab" id="tab-evolution" aria-controls="panel-evolution" aria-selected="false" tabindex="-1">📈 Evolution</button>
+          </div>
+          <div class="table-wrap" role="tabpanel" id="panel-weighins" aria-labelledby="tab-weighins">
             <table style="min-width: 0">
               <thead><tr><th>Date</th><th>Weight</th></tr></thead>
               <tbody>
@@ -843,7 +965,88 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
               </tbody>
             </table>
           </div>
-        </>
+          <div class="evo" role="tabpanel" id="panel-evolution" aria-labelledby="tab-evolution" hidden>
+            <div class="evo-stats">
+              <div><span>Weight</span><b>{firstWeight!.lb.toFixed(1)} → {latestWeight!.lb.toFixed(1)}<small>lb</small></b><em class:list={[weightChange == null ? '' : weightChange <= 0 ? 'good' : 'bad']}>{weightChange == null ? 'steady' : signed(weightChange, 'lb')}</em></div>
+              <div><span>Run miles since Day 0</span><b>{evRunning.toFixed(1)}<small>mi</small></b><em>{count} runs · {fmtDuration(totalSec)}</em></div>
+              <div><span>Lowest weigh-in</span><b>{evLowest.lb.toFixed(1)}<small>lb</small></b><em>Day {dayNumber(evLowest.date)} · {fmtDate(evLowest.date, { month: 'short', day: 'numeric' })}</em></div>
+            </div>
+            <div class="evo-chart">
+              <svg viewBox={`0 0 ${EV.w} ${EV.h}`} role="img" aria-label={`Weight from ${firstWeight!.lb.toFixed(1)} to ${latestWeight!.lb.toFixed(1)} lb while running ${evRunning.toFixed(1)} miles over ${evDays.length} days`} id="evo-svg">
+                <defs>
+                  <linearGradient id="evo-wfill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="var(--green)" stop-opacity="0.35" />
+                    <stop offset="100%" stop-color="var(--green)" stop-opacity="0" />
+                  </linearGradient>
+                  <linearGradient id="evo-cum" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="var(--muted)" />
+                    <stop offset="100%" stop-color="var(--text)" />
+                  </linearGradient>
+                </defs>
+                {/* panel titles */}
+                <text class="evo-title" x={EV.l} y={EV.wTop - 12}>⚖️ Weight (lb)</text>
+                <text class="evo-title" x={EV.l} y={EV.mTop - 14}>🏃 Miles each day</text>
+                <text class="evo-title end" x={EV.w - EV.r} y={EV.mTop - 14}>running total ⤴</text>
+                {/* week stripes so the eye can count weeks */}
+                {evDays.filter((d) => d.day % 14 >= 7).map((d) => <rect class="evo-stripe" x={evX(d.day) - evCol / 2} y={EV.wTop} width={evCol + 0.5} height={EV.mBot - EV.wTop} />)}
+                {/* weight axis */}
+                {evWTicks.map((t) => (
+                  <>
+                    <line class="evo-grid" x1={EV.l} x2={EV.w - EV.r} y1={evWY(t)} y2={evWY(t)} />
+                    <text class="evo-axis end" x={EV.l - 8} y={evWY(t) + 5}>{t.toFixed(1)}</text>
+                  </>
+                ))}
+                <path class="evo-warea" d={evWArea} fill="url(#evo-wfill)" />
+                <path class="evo-wline" d={evWPath} pathLength="1" />
+                {evWPts.map((p, i) => (
+                  <circle class:list={['evo-wdot', { last: i === evWPts.length - 1, low: p.w === evLowest }]} cx={p.x} cy={p.y} r={i === evWPts.length - 1 ? 6 : 4} />
+                ))}
+                <text class="evo-wlabel" x={evWPts[evWPts.length - 1].x} y={evWPts[evWPts.length - 1].y - 14}>{latestWeight!.lb.toFixed(1)}</text>
+                {/* miles axis */}
+                {[0, evMMax / 2, evMMax].map((t) => (
+                  <>
+                    <line class="evo-grid" x1={EV.l} x2={EV.w - EV.r} y1={EV.mBot - evMH(t)} y2={EV.mBot - evMH(t)} />
+                    <text class="evo-axis end" x={EV.l - 8} y={EV.mBot - evMH(t) + 5}>{t}</text>
+                  </>
+                ))}
+                <text class="evo-axis" x={EV.w - EV.r + 6} y={EV.mTop + 5}>{Math.round(evCumMax)}</text>
+                <text class="evo-axis" x={EV.w - EV.r + 6} y={EV.mBot + 5}>0</text>
+                {/* daily bars: run (lime) with walk/ride stacked on top in its own colour; recovery days get a little dot */}
+                {evDays.map((d, i) => (
+                  <g class="evo-day" style={`--i:${i}`}>
+                    {d.runMi > 0 && <rect class="evo-run" x={evX(i) - evBarW / 2} y={EV.mBot - evMH(d.runMi)} width={evBarW} height={evMH(d.runMi)} rx={Math.min(4, evBarW / 3)} />}
+                    {d.actMi > 0 && <rect class:list={['evo-act', `kind-${d.activity!.kind}`]} x={evX(i) - evBarW / 2} y={EV.mBot - evMH(d.runMi + d.actMi)} width={evBarW} height={evMH(d.actMi) - (d.runMi > 0 ? 1.5 : 0)} rx={Math.min(4, evBarW / 3)} />}
+                    {d.rest && !d.run && !d.activity && <circle class="evo-rest" cx={evX(i)} cy={EV.mBot - 5} r="3.5" />}
+                  </g>
+                ))}
+                <path class="evo-cum" d={evCumPath} />
+                <circle class="evo-cumdot" cx={evX(evDays.length - 1)} cy={evCumY(evRunning)} r="4.5" />
+                {/* moments worth a flag */}
+                {evLongest.runMi > 0 && <text class="evo-flag" x={evX(evLongest.day)} y={EV.mBot - evMH(evLongest.runMi + evLongest.actMi) - 8}>🏆</text>}
+                {evDays.filter((d) => isBirthday(d.date)).map((d) => <text class="evo-flag" x={evX(d.day)} y={EV.wBot + 26}>🎂</text>)}
+                {/* day axis */}
+                {evDays.filter((d) => d.day % evStep === 0).map((d) => (
+                  <text class="evo-axis mid" x={evX(d.day)} y={EV.mBot + 24}>D{d.day}</text>
+                ))}
+                {/* scrubber */}
+                <line class="evo-cursor" id="evo-cursor" x1="0" x2="0" y1={EV.wTop} y2={EV.mBot} visibility="hidden" />
+                <rect id="evo-hit" x={EV.l} y={EV.wTop - 10} width={EV.w - EV.l - EV.r} height={EV.mBot - EV.wTop + 30} fill="transparent" />
+              </svg>
+            </div>
+            <p class="evo-readout" id="evo-readout" data-info={JSON.stringify(evInfo)} data-l={EV.l} data-col={evCol} data-w={EV.w}>
+              Tap or hover the chart to read any day.
+            </p>
+            <div class="evo-legend">
+              <span><i class="sw run"></i>Run</span>
+              <span><i class="sw walk"></i>Walk</span>
+              <span><i class="sw bike"></i>Ride</span>
+              <span><i class="sw rest"></i>Recovery</span>
+              <span><i class="sw line"></i>Weight</span>
+              <span><i class="sw cum"></i>Run miles, running total</span>
+              <span>🏆 longest run</span>
+            </div>
+          </div>
+        </section>
       )}
 
       <footer>Outdoor runs, rides and walks recorded with Apple Watch · <a href="/">rajil.me</a></footer>
@@ -914,6 +1117,67 @@ const prevPushupsBefore = (date: string) => [...pushupLog].reverse().find((p) =>
           tr.querySelector('.datesub')!.textContent = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
           tbody.prepend(tr)
         }
+      }
+
+      // Weight tabs: weigh-in table first, evolution chart second (remembered per browser).
+      const tabs = [...document.querySelectorAll<HTMLButtonElement>('.wtabs [role=tab]')]
+      const evo = document.querySelector<HTMLElement>('.evo')
+      const selectTab = (tab: HTMLButtonElement, focus = false) => {
+        for (const t of tabs) {
+          const on = t === tab
+          t.setAttribute('aria-selected', String(on))
+          t.tabIndex = on ? 0 : -1
+          document.getElementById(t.getAttribute('aria-controls')!)!.hidden = !on
+        }
+        if (focus) tab.focus()
+        // replay the draw-in each time the chart opens
+        if (evo && tab.id === 'tab-evolution') {
+          evo.classList.remove('play')
+          void evo.offsetWidth
+          evo.classList.add('play')
+        }
+        try { localStorage.setItem('run-weight-tab', tab.id) } catch {}
+      }
+      tabs.forEach((t, i) => {
+        t.addEventListener('click', () => selectTab(t))
+        t.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault()
+            selectTab(tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length], true)
+          }
+        })
+      })
+      try {
+        const saved = tabs.find((t) => t.id === localStorage.getItem('run-weight-tab'))
+        if (saved && saved.id !== 'tab-weighins') selectTab(saved)
+      } catch {}
+
+      // Evolution chart scrubber: hover or drag across the chart to read any day.
+      const svg = document.getElementById('evo-svg') as SVGSVGElement | null
+      const readout = document.getElementById('evo-readout')
+      if (svg && readout) {
+        const info: string[] = JSON.parse(readout.dataset.info!)
+        const left = Number(readout.dataset.l), col = Number(readout.dataset.col), vbW = Number(readout.dataset.w)
+        const cursor = document.getElementById('evo-cursor')!
+        const dayEls = [...svg.querySelectorAll<SVGGElement>('.evo-day')]
+        let current = -1
+        const show = (e: PointerEvent) => {
+          const box = svg.getBoundingClientRect()
+          const x = ((e.clientX - box.left) / box.width) * vbW
+          const i = Math.max(0, Math.min(info.length - 1, Math.floor((x - left) / col)))
+          if (i === current) return
+          dayEls[current]?.classList.remove('on')
+          current = i
+          dayEls[i]?.classList.add('on')
+          const cx = String(left + (i + 0.5) * col)
+          cursor.setAttribute('x1', cx)
+          cursor.setAttribute('x2', cx)
+          cursor.setAttribute('visibility', 'visible')
+          readout.textContent = info[i]
+          readout.classList.add('live')
+        }
+        svg.addEventListener('pointermove', show)
+        svg.addEventListener('pointerdown', show)
       }
 
       // Black & white switch: toggles between dark (default) and light, remembered per browser.
