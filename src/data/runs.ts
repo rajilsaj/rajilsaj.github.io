@@ -493,6 +493,13 @@ export const weights: Weight[] = [
   { date: '2026-10-09', lb: 149.7 },
   { date: '2026-10-10', lb: 150 },
   { date: '2026-10-12', lb: 150 },
+  { date: '2026-10-13', lb: 150 },
+  { date: '2026-10-14', lb: 150 },
+  { date: '2026-10-15', lb: 150 },
+  { date: '2026-10-16', lb: 150 },
+  { date: '2026-10-17', lb: 150 },
+  { date: '2026-10-18', lb: 150 },
+  { date: '2026-10-19', lb: 150 },
 ]
 
 /** Push-up log. One entry per day, total push-ups done that day. */
