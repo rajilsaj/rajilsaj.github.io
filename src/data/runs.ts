@@ -520,7 +520,7 @@ export const sleep: Sleep[] = []
  * Rest days with nothing else logged. Every day through today is listed anyway,
  * so this is only a record of days that were deliberately skipped.
  */
-export const restDays: string[] = ['2026-10-04', '2026-10-05', '2026-10-06', '2026-10-07', '2026-10-11', '2026-10-18', '2026-10-19']
+export const restDays: string[] = ['2026-10-02', '2026-10-04', '2026-10-05', '2026-10-06', '2026-10-07', '2026-10-11', '2026-10-18', '2026-10-19']
 
 // ---------- helpers shared by /run and the homepage ----------
 
