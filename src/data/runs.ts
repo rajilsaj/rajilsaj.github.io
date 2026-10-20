@@ -322,6 +322,35 @@ export const runs: Run[] = [
     ], // only miles 1–5 visible in the screenshots
     notes: 'Awards: Fastest 5K, 10K Run. Air quality 68',
   },
+  {
+    date: '2026-10-17',
+    time: '5:34 AM – 7:03 AM',
+    location: 'Fayetteville',
+    workoutTime: '1:16:59',
+    elapsedTime: '1:28:48',
+    distanceMi: 7.1,
+    activeCal: 684,
+    totalCal: 797,
+    elevationFt: 359,
+    avgPowerW: 174,
+    avgCadenceSpm: 175,
+    avgPace: '10:50',
+    avgHrBpm: 156,
+    hrZones: ['2:28', '5:57', '27:55', '8:50', '20:15'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 109, min1: 101, min2: 100 },
+    effort: 6,
+    tempF: 62,
+    humidityPct: 74,
+    splits: [
+      { time: '10:22', hr: 137 },
+      { time: '10:07', hr: 153 },
+      { time: '10:00', hr: 148 },
+      { time: '11:05', hr: 149 },
+      { time: '10:50', hr: 151 },
+    ], // only miles 1–5 visible in the screenshots
+    notes: 'Intense run in the rain. Award: 7-Workout Week. Air quality 71',
+  },
 ]
 
 /**
@@ -455,7 +484,7 @@ export const sleep: Sleep[] = []
  * Rest days with nothing else logged. Every day through today is listed anyway,
  * so this is only a record of days that were deliberately skipped.
  */
-export const restDays: string[] = ['2026-10-11']
+export const restDays: string[] = ['2026-10-11', '2026-10-18', '2026-10-19']
 
 // ---------- helpers shared by /run and the homepage ----------
 
