@@ -510,26 +510,7 @@ export const activities: Activity[] = [
 /** Weight log. One entry per weigh-in (run days or rest days). Weight in pounds. */
 export type Weight = { date: string; lb: number }
 
-export const weights: Weight[] = [
-  { date: '2026-09-29', lb: 150.7 },
-  { date: '2026-09-30', lb: 149.8 },
-  { date: '2026-10-01', lb: 150.7 },
-  { date: '2026-10-03', lb: 150.7 },
-  { date: '2026-10-04', lb: 150.7 },
-  { date: '2026-10-05', lb: 150.7 },
-  { date: '2026-10-06', lb: 150.7 },
-  { date: '2026-10-08', lb: 150.7 },
-  { date: '2026-10-09', lb: 149.7 },
-  { date: '2026-10-10', lb: 150 },
-  { date: '2026-10-12', lb: 150 },
-  { date: '2026-10-13', lb: 150 },
-  { date: '2026-10-14', lb: 150 },
-  { date: '2026-10-15', lb: 150 },
-  { date: '2026-10-16', lb: 150 },
-  { date: '2026-10-17', lb: 150 },
-  { date: '2026-10-18', lb: 150 },
-  { date: '2026-10-19', lb: 150 },
-]
+export const weights: Weight[] = []
 
 /** Push-up log. One entry per day, total push-ups done that day. */
 export type Pushups = { date: string; count: number }
