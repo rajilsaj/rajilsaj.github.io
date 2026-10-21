@@ -380,6 +380,37 @@ export const runs: Run[] = [
     ], // only miles 1–5 visible in the screenshots
     notes: 'Intense run in the rain. Award: 7-Workout Week. Air quality 71',
   },
+  {
+    date: '2026-10-21',
+    time: '5:34 AM – 6:46 AM',
+    location: 'Fayetteville',
+    workoutTime: '1:04:34',
+    elapsedTime: '1:12:07',
+    distanceMi: 6.33,
+    activeCal: 720,
+    totalCal: 815,
+    elevationFt: 242,
+    avgPowerW: 188,
+    avgCadenceSpm: 166,
+    avgPace: '10:12',
+    avgHrBpm: 161,
+    hrZones: ['3:50', '6:58', '11:01', '13:16', '25:15'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 115, min1: 108, min2: 109 },
+    effort: 7,
+    tempF: 46,
+    humidityPct: 84,
+    splits: [
+      { time: '10:30', hr: 154 },
+      { time: '7:44', hr: 178 },
+      { time: '9:13', hr: 174 },
+      { time: '9:07', hr: 176 },
+      { time: '11:14', hr: 166 },
+      { time: '11:45' },
+      { time: '15:00' }, // last 0.33 mi in 5:02, stored as its per-mile pace
+    ], // heart rate only visible for miles 1–5
+    notes: 'Fast 7:44 second mile through downtown. Award: 10K Run. Air quality 35',
+  },
 ]
 
 /**
