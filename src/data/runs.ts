@@ -476,6 +476,35 @@ export const activities: Activity[] = [
     ], // only miles 1–5 visible in the screenshots
     notes: 'Award: Walking Workout Record (579 cal). Air quality 60',
   },
+  {
+    kind: 'walk',
+    date: '2026-10-20',
+    title: 'Evening walk',
+    time: '5:49 PM – 7:22 PM',
+    location: 'Fayetteville',
+    route: 'along the Cape Fear River',
+    workoutTime: '1:32:29',
+    distanceMi: 4.31,
+    activeCal: 334,
+    totalCal: 471,
+    elevationFt: 296,
+    avgPace: '21:25',
+    avgHrBpm: 87,
+    hrZones: ['1:32:28', '0:00', '0:00', '0:00', '0:00'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 87, min1: 72, min2: 69 },
+    effort: 2,
+    tempF: 72,
+    humidityPct: 32,
+    splits: [
+      { time: '23:34', hr: 85 },
+      { time: '22:37', hr: 84 },
+      { time: '20:35', hr: 90 },
+      { time: '19:36', hr: 91 },
+      { time: '18:52', hr: 91 }, // last 0.31 mi in 6:02, stored as its per-mile pace
+    ],
+    notes: 'Easy recovery walk. Air quality 32',
+  },
 ]
 
 /** Weight log. One entry per weigh-in (run days or rest days). Weight in pounds. */
