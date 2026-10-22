@@ -68,8 +68,18 @@ const groups = [
   {
     title: 'Documents',
     layout: 'solo',
-    // No link yet: an empty href renders the button greyed and not clickable.
-    items: [{ label: 'Document Module 3', href: '' }],
+    // `files` turns the button into a toggle that lists downloads (served from public/).
+    items: [
+      {
+        label: 'Document Module 3',
+        files: [
+          { label: 'Manuel apprenant', href: '/ialab/module3/01_Manuel_Apprenant_Module3.docx' },
+          { label: 'Plan de séance', href: '/ialab/module3/02_Plan_de_seance_Module3.docx' },
+          { label: 'Guide formateur', href: '/ialab/module3/03_Guide_Formateur_Module3.docx' },
+          { label: 'PowerPoint', href: '/ialab/module3/06_PowerPoint_Module3.pptx' },
+        ],
+      },
+    ],
   },
   {
     title: 'Assistants IA',
@@ -402,6 +412,50 @@ const groups = [
       .tube:active {
         transform: scale(0.97);
       }
+      /* Files toggle: the tube is a <summary>, its downloads drop down below it */
+      .files summary {
+        list-style: none;
+      }
+      .files summary::-webkit-details-marker {
+        display: none;
+      }
+      .files[open] .arrow {
+        transform: rotate(180deg);
+      }
+      .files ul {
+        list-style: none;
+        display: grid;
+        gap: 6px;
+        margin-top: 10px;
+      }
+      .files li a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 16px;
+        border: 1.5px solid #dbe6f3;
+        border-radius: 12px;
+        color: #333;
+        font-weight: 600;
+        text-decoration: none;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease;
+      }
+      .files li a:hover {
+        border-color: var(--ialab-blue);
+        background: #eef3fa;
+      }
+      .files .ext {
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #eef3fa;
+        color: var(--ialab-blue);
+        font-size: 0.75em;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
       /* Locked: greyed, no hover morph, a padlock where the arrow would be */
       .tube.locked {
         --c: #c3c8cf;
@@ -487,7 +541,35 @@ const groups = [
               </h2>
               <div class="tubes">
                 {g.items.map((t) =>
-                  t.href && !t.locked ? (
+                  t.files ? (
+                    <details class="files">
+                      <summary class:list={['tube', t.color]}>
+                        <svg
+                          class="arrow"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                        <span class="label">{t.label}</span>
+                      </summary>
+                      <ul>
+                        {t.files.map((f) => (
+                          <li>
+                            <a href={f.href} download>
+                              <span>{f.label}</span>
+                              <span class="ext">{f.href.split('.').pop()}</span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  ) : t.href && !t.locked ? (
                     <a
                       href={t.href}
                       target="_blank"
