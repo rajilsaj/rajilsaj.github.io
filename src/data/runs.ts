@@ -411,6 +411,32 @@ export const runs: Run[] = [
     ], // heart rate only visible for miles 1–5
     notes: 'Fast 7:44 second mile through downtown. Award: 10K Run. Air quality 35',
   },
+  {
+    date: '2026-10-22',
+    time: '5:40 PM – 6:07 PM',
+    location: 'Fayetteville',
+    workoutTime: '27:14',
+    distanceMi: 2.73,
+    activeCal: 313,
+    totalCal: 353,
+    elevationFt: 81,
+    avgPowerW: 196,
+    avgCadenceSpm: 167,
+    avgPace: '9:57',
+    avgHrBpm: 160,
+    hrZones: ['0:52', '1:06', '3:10', '18:59', '2:47'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 141, min1: 123, min2: 109 },
+    effort: 6,
+    tempF: 70,
+    humidityPct: 39,
+    splits: [
+      { time: '10:01', hr: 151 },
+      { time: '9:39', hr: 165 },
+      { time: '9:46', hr: 162 }, // last 0.73 mi in 7:11, stored as its per-mile pace
+    ],
+    notes: 'Evening loop downtown past Segra Stadium. Air quality 35',
+  },
 ]
 
 /**
