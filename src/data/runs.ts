@@ -437,6 +437,35 @@ export const runs: Run[] = [
     ],
     notes: 'Evening loop downtown past Segra Stadium. Air quality 35',
   },
+  {
+    date: '2026-10-24',
+    time: '5:36 AM – 7:59 AM',
+    location: 'Fayetteville',
+    workoutTime: '2:02:24',
+    elapsedTime: '2:22:29',
+    distanceMi: 11.07,
+    activeCal: 1118,
+    totalCal: 1298,
+    elevationFt: 495,
+    avgPowerW: 173,
+    avgCadenceSpm: 172,
+    avgPace: '11:03',
+    avgHrBpm: 145,
+    hrZones: ['6:45', '41:04', '1:05:51', '6:16', '0:00'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 114, min1: 107, min2: 100 },
+    effort: 6,
+    tempF: 49,
+    humidityPct: 92,
+    splits: [
+      { time: '10:57', hr: 146 },
+      { time: '10:06', hr: 152 },
+      { time: '10:49', hr: 147 },
+      { time: '11:30', hr: 139 },
+      { time: '11:09', hr: 140 },
+    ], // only miles 1–5 visible in the screenshots
+    notes: 'Long run out Morganton Rd into downtown. Awards: 10K Run, Longest Running Workout (11.08 mi), Running Workout Record (1,118 cal). Air quality 48',
+  },
 ]
 
 /**
