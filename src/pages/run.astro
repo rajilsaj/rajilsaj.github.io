@@ -1,5 +1,5 @@
 ---
-import { CHALLENGE_START, GOAL_DAY, HR_ZONES, challengeDays, challengeYear, dayNumber, progressOn, todayIso, runTotals, weightsByDate, pushupsByDate, sleepByDate, toSec, fmtDuration, fmtPace, fmtDate, effortLabel, isBirthday, restDays, activityOn, activityTotals } from '~/data/runs'
+import { CHALLENGE_START, GOAL_DAY, HR_ZONES, challengeDays, challengeYear, dayNumber, progressOn, todayIso, runTotals, weightsByDate, pushupsByDate, sleepByDate, toSec, fmtDuration, fmtPace, fmtDate, effortLabel, isBirthday, isRestDay, activityOn, activityTotals } from '~/data/runs'
 
 const title = 'Day by Day Challenge · Running Non Stop'
 const description = 'Running every single day, no finish line. Days, months and years completed.'
@@ -60,7 +60,7 @@ const level = (date: string) => {
 }
 const cellTitle = (date: string) => {
   const r = runOn.get(date)
-  const what = r ? (r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : 'Run') : restDays.includes(date) ? '🧘 Recovery day' : 'No run'
+  const what = r ? (r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : 'Run') : isRestDay(date) ? '🧘 Recovery day' : 'No run'
   const act = activityOn(date)
   return `${isBirthday(date) ? '🎂 Birthday · ' : ''}${what}${act ? ` + ${KIND[act.kind].emoji} ${act.distanceMi.toFixed(2)} mi ${KIND[act.kind].noun}` : ''} · Day ${dayNumber(date)} · ${fmtDate(date, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
 }
@@ -689,7 +689,7 @@ const evInfo = evDays.map((d) => {
                 <span class="wd"></span><span class="wd">Mon</span><span class="wd"></span><span class="wd">Wed</span><span class="wd"></span><span class="wd">Fri</span><span class="wd"></span>
                 {h.cells.map((date) =>
                   date ? (
-                    <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday, bday: isBirthday(date), recovery: !isBirthday(date) && restDays.includes(date) }]} data-date={date} title={cellTitle(date)}></i>
+                    <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday, bday: isBirthday(date), recovery: !isBirthday(date) && isRestDay(date) }]} data-date={date} title={cellTitle(date)}></i>
                   ) : (
                     <i class="cell pad"></i>
                   ),
@@ -1144,8 +1144,9 @@ const evInfo = evDays.map((d) => {
         })
       }
 
-      // The day-by-day list is built through the deploy date; add a "No run" row for
-      // each day that has passed since, newest at the top, so it keeps counting up daily.
+      // The day-by-day list is built through the deploy date; add a row for each day
+      // that has passed since, newest at the top, so it keeps counting up daily.
+      // Finished days without a run are recovery days; today stays "No run".
       const daylog = document.getElementById('daylog')
       const tbody = daylog?.querySelector('tbody')
       if (daylog && tbody) {
@@ -1154,9 +1155,10 @@ const evInfo = evDays.map((d) => {
           const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + n)
           const tr = document.createElement('tr')
           tr.className = 'rest'
+          const label = n < day ? '<span class="rest-emoji" aria-hidden="true">🧘</span>Recovery day' : 'No run'
           tr.innerHTML =
             `<td class="daycell">Day ${n}<span class="datesub"></span>${n === GOAL_DAY ? `<span class="goal-tag">🏆 Challenge ${GOAL_DAY} achieved</span>` : ''}</td>` +
-            `<td colspan="4"><span class="rest-label">No run</span></td>` +
+            `<td colspan="4"><span class="rest-label">${label}</span></td>` +
             `<td data-label="Weight"><span class="v purple">–</span></td>` +
             `<td data-label="Push-ups"><span class="v green">–</span></td>` +
             `<td data-label="Sleep"><span class="v blue">–</span></td>`

@@ -617,10 +617,10 @@ export type Sleep = { date: string; hours: number }
 export const sleep: Sleep[] = []
 
 /**
- * Rest days with nothing else logged. Every day through today is listed anyway,
- * so this is only a record of days that were deliberately skipped.
+ * Every day without a run is a recovery day, once it is over: today stays
+ * "No run" until it ends, in case the run comes later.
  */
-export const restDays: string[] = ['2026-10-02', '2026-10-04', '2026-10-05', '2026-10-06', '2026-10-07', '2026-10-11', '2026-10-18', '2026-10-19']
+export const isRestDay = (date: string) => date < todayIso() && !runs.some((r) => r.date === date)
 
 // ---------- helpers shared by /run and the homepage ----------
 
@@ -677,9 +677,9 @@ export const pushupsOn = (date: string): number | undefined => pushups.find((p) 
 /** Hours of sleep logged on a given day, if any. */
 export const sleepOn = (date: string): number | undefined => sleep.find((s) => s.date === date)?.hours
 
-/** Latest date with anything logged (run, weigh-in, push-ups, sleep or rest day), or CHALLENGE_START. */
+/** Latest date with anything logged (run, weigh-in, push-ups or sleep), or CHALLENGE_START. */
 export const latestLoggedDate = () =>
-  [CHALLENGE_START, ...runs.map((r) => r.date), ...weights.map((w) => w.date), ...pushups.map((p) => p.date), ...sleep.map((s) => s.date), ...restDays].sort().pop()!
+  [CHALLENGE_START, ...runs.map((r) => r.date), ...weights.map((w) => w.date), ...pushups.map((p) => p.date), ...sleep.map((s) => s.date)].sort().pop()!
 
 /** Today as an ISO date (at build time; the browser adds any days that pass before the next build). */
 export const todayIso = () => new Date().toISOString().slice(0, 10)
@@ -709,7 +709,7 @@ export const challengeDays = (): ChallengeDay[] => {
   const last = Math.max(0, dayNumber(lastDate))
   return Array.from({ length: last + 1 }, (_, i) => {
     const date = addDays(CHALLENGE_START, i)
-    return { day: i, date, run: byDate.get(date), activity: activityOn(date), weight: weightOn(date), pushups: pushupsOn(date), sleep: sleepOn(date), rest: restDays.includes(date) }
+    return { day: i, date, run: byDate.get(date), activity: activityOn(date), weight: weightOn(date), pushups: pushupsOn(date), sleep: sleepOn(date), rest: isRestDay(date) }
   })
 }
 
