@@ -1146,7 +1146,7 @@ const evInfo = evDays.map((d) => {
 
       // The day-by-day list is built through the deploy date; add a row for each day
       // that has passed since, newest at the top, so it keeps counting up daily.
-      // Finished days without a run are recovery days; today stays "No run".
+      // Finished days without a workout are recovery days; today stays "No run".
       const daylog = document.getElementById('daylog')
       const tbody = daylog?.querySelector('tbody')
       if (daylog && tbody) {

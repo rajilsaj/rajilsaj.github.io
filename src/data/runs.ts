@@ -618,10 +618,10 @@ export type Sleep = { date: string; hours: number }
 export const sleep: Sleep[] = []
 
 /**
- * Every day without a run is a recovery day, once it is over: today stays
- * "No run" until it ends, in case the run comes later.
+ * Every day without a workout (run, walk or ride) is a recovery day, once it is
+ * over: today stays "No run" until it ends, in case the workout comes later.
  */
-export const isRestDay = (date: string) => date < todayIso() && !runs.some((r) => r.date === date)
+export const isRestDay = (date: string) => date < todayIso() && !runs.some((r) => r.date === date) && !activities.some((a) => a.date === date)
 
 // ---------- helpers shared by /run and the homepage ----------
 
