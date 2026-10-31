@@ -498,6 +498,35 @@ export const runs: Run[] = [
     ],
     notes: 'Early run into downtown, negative split with miles 5–6 under 9:00. Award: 10K Run. Air quality 63',
   },
+  {
+    date: '2026-10-31',
+    time: '5:34 AM – 7:38 AM',
+    location: 'Fayetteville',
+    workoutTime: '1:46:51',
+    elapsedTime: '2:04:23',
+    distanceMi: 10.27,
+    activeCal: 1032,
+    totalCal: 1189,
+    elevationFt: 463,
+    avgPowerW: 188,
+    avgCadenceSpm: 167,
+    avgPace: '10:24',
+    avgHrBpm: 153,
+    hrZones: ['5:23', '19:57', '29:33', '33:28', '16:17'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 155, min1: 122, min2: 117 },
+    effort: 7,
+    tempF: 52,
+    humidityPct: 76,
+    splits: [
+      { time: '10:45', hr: 141 },
+      { time: '10:31', hr: 148 },
+      { time: '10:08', hr: 156 },
+      { time: '12:19', hr: 140 },
+      { time: '10:57', hr: 141 },
+    ], // only miles 1–5 visible in the screenshots
+    notes: 'Halloween long run out Morganton Rd into downtown. Award: 10K Run. Air quality 58',
+  },
 ]
 
 /**
@@ -634,6 +663,7 @@ export const weights: Weight[] = [
   { date: '2026-10-25', lb: 149.1 },
   { date: '2026-10-26', lb: 149.3 },
   { date: '2026-10-30', lb: 147.5 },
+  { date: '2026-10-31', lb: 149 },
 ]
 
 /** Push-up log. One entry per day, total push-ups done that day. */
