@@ -1,0 +1,1033 @@
+---
+import Layout from '~/layouts/Layout.astro'
+
+// Kaplan nursing admission test prep tracker. Everything is computed in the
+// browser from the date and saved to localStorage, so it never needs a rebuild.
+---
+
+<Layout title="Kaplan prep" description="Daily tracker for the Kaplan nursing admission test: plan, vocabulary, practice scores and readiness.">
+  <div class="kp" id="kp">
+    <header class="kp-head">
+      <p class="kp-eyebrow">Kaplan nursing admission test</p>
+      <h1>Prep tracker</h1>
+      <p class="kp-sub" id="kp-sub">Eleven months, seven phases, one heartbeat a day.</p>
+    </header>
+
+    <!-- Heart monitor -->
+    <section class="kp-monitor" aria-labelledby="kp-mon-title">
+      <div class="kp-mon-top">
+        <h2 id="kp-mon-title"><span class="kp-rec" aria-hidden="true"></span>Patient: me · study vitals</h2>
+        <span class="kp-mon-clock" id="kp-clock" aria-hidden="true"></span>
+      </div>
+      <dl class="kp-vitals">
+        <div class="kp-vital">
+          <dt>Readiness</dt>
+          <dd><span id="v-ready">0</span><small>%</small></dd>
+        </div>
+        <div class="kp-vital">
+          <dt>Days to test</dt>
+          <dd><span id="v-days">0</span></dd>
+        </div>
+        <div class="kp-vital">
+          <dt>Streak</dt>
+          <dd><span id="v-streak">0</span><small id="v-streak-u">days</small></dd>
+        </div>
+        <div class="kp-vital">
+          <dt>Words learned</dt>
+          <dd><span id="v-words">0</span><small id="v-words-goal">/ 3000</small></dd>
+        </div>
+      </dl>
+      <div class="kp-ecg-box">
+        <div class="kp-ecg-wrap" id="kp-ecg-wrap">
+          <svg id="kp-ecg" class="kp-ecg" preserveAspectRatio="none" role="img" aria-labelledby="kp-ecg-desc">
+            <title id="kp-ecg-desc">Study heartbeat for every day of the plan</title>
+            <g id="ecg-grid"></g>
+            <path id="ecg-future" class="ecg-future" vector-effect="non-scaling-stroke"></path>
+            <path id="ecg-glow" class="ecg-glow" vector-effect="non-scaling-stroke"></path>
+            <path id="ecg-line" class="ecg-line" vector-effect="non-scaling-stroke"></path>
+            <path id="ecg-miss" class="ecg-miss" vector-effect="non-scaling-stroke"></path>
+          </svg>
+          <span class="kp-ecg-dot" id="kp-ecg-dot" aria-hidden="true"></span>
+        </div>
+        <div class="kp-phase-labels" id="kp-phase-labels" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- Day card -->
+    <section class="kp-card kp-day" aria-labelledby="kp-day-date" id="kp-day">
+      <div class="kp-day-head">
+        <div>
+          <p class="kp-day-phase" id="kp-day-phase"></p>
+          <h2 id="kp-day-date"></h2>
+        </div>
+        <div class="kp-ring" id="kp-ring" role="img" aria-label="">
+          <svg viewBox="0 0 36 36" aria-hidden="true"><circle class="kp-ring-bg" cx="18" cy="18" r="15.5"></circle><circle class="kp-ring-fg" id="kp-ring-fg" cx="18" cy="18" r="15.5"></circle></svg>
+          <span id="kp-ring-txt">0/0</span>
+        </div>
+      </div>
+      <p class="kp-day-note" id="kp-day-note"></p>
+      <ul class="kp-tasks" id="kp-tasks"></ul>
+      <nav class="kp-day-nav" aria-label="Change day">
+        <button type="button" id="kp-prev" aria-label="Previous day">← Prev</button>
+        <button type="button" id="kp-today">Today</button>
+        <button type="button" id="kp-next" aria-label="Next day">Next →</button>
+      </nav>
+    </section>
+
+    <!-- How close am I -->
+    <section class="kp-card" aria-labelledby="kp-close-title">
+      <h2 id="kp-close-title">How close am I?</h2>
+      <p class="kp-status" id="kp-status" role="status"></p>
+      <div class="kp-bars" id="kp-bars"></div>
+      <div class="kp-tiles" id="kp-tiles"></div>
+      <p class="kp-formula" id="kp-formula"></p>
+    </section>
+
+    <!-- Heatmap -->
+    <section class="kp-card" aria-labelledby="kp-heat-title">
+      <div class="kp-row">
+        <h2 id="kp-heat-title">Every day of the plan</h2>
+        <span class="kp-legend" aria-hidden="true">less <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> more <i class="miss"></i> missed</span>
+      </div>
+      <div class="kp-heat-scroll">
+        <div class="kp-heat-months" id="kp-heat-months" aria-hidden="true"></div>
+        <div class="kp-heat-body">
+          <div class="kp-heat-days" aria-hidden="true"><span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span></div>
+          <div class="kp-heat" id="kp-heat" role="group" aria-label="Plan days heatmap. Choose a day to open it."></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Phases -->
+    <section class="kp-card" aria-labelledby="kp-phase-title">
+      <h2 id="kp-phase-title">Phases</h2>
+      <ol class="kp-phases" id="kp-phases"></ol>
+    </section>
+
+    <!-- Scores -->
+    <section class="kp-card" aria-labelledby="kp-score-title">
+      <h2 id="kp-score-title">Practice score log</h2>
+      <form class="kp-score-form" id="kp-score-form">
+        <label>Date<input type="date" name="date" required /></label>
+        <label>Reading %<input type="number" name="reading" min="0" max="100" step="1" inputmode="numeric" /></label>
+        <label>Math %<input type="number" name="math" min="0" max="100" step="1" inputmode="numeric" /></label>
+        <label>Writing %<input type="number" name="writing" min="0" max="100" step="1" inputmode="numeric" /></label>
+        <label>Science %<input type="number" name="science" min="0" max="100" step="1" inputmode="numeric" /></label>
+        <button type="submit" class="kp-primary">Add scores</button>
+      </form>
+      <p class="kp-hint">Every section is optional. Leave a box empty if you didn't take it.</p>
+      <div class="kp-table-scroll">
+        <table class="kp-table" id="kp-score-table">
+          <thead><tr><th scope="col">Date</th><th scope="col">Reading</th><th scope="col">Math</th><th scope="col">Writing</th><th scope="col">Science</th><th scope="col">Avg</th><th scope="col"><span class="sr-only">Delete</span></th></tr></thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section class="kp-card" aria-labelledby="kp-set-title">
+      <h2 id="kp-set-title">Settings</h2>
+      <form class="kp-set-form" id="kp-set-form">
+        <label>Test date<input type="date" name="testDate" min="2027-09-04" required /></label>
+        <label>Target score %<input type="number" name="target" min="1" max="100" step="1" required /></label>
+        <label>Vocab goal<input type="number" name="vocabGoal" min="10" max="100000" step="10" required /></label>
+        <button type="submit" class="kp-primary">Save settings</button>
+      </form>
+      <div class="kp-set-actions">
+        <button type="button" id="kp-export">Export backup</button>
+        <label class="kp-file">Import backup<input type="file" id="kp-import" accept="application/json,.json" /></label>
+        <button type="button" id="kp-reset" class="kp-danger">Reset everything</button>
+      </div>
+      <p class="kp-hint">Progress is saved in this browser only. Export a backup to move it to another device.</p>
+    </section>
+
+    <p class="kp-toast" id="kp-toast" role="status" aria-live="polite"></p>
+  </div>
+</Layout>
+
+<style is:global>
+  .kp {
+    --kp-bg: #f3f8f7;
+    --kp-card: #ffffff;
+    --kp-ink: #12302b;
+    --kp-muted: #587069;
+    --kp-line: #d8e5e2;
+    --kp-teal: #1f7a6c;
+    --kp-teal-ink: #ffffff;
+    --kp-teal-soft: #e2f1ed;
+    --kp-red: #c2413b;
+    --kp-red-soft: #f8e1df;
+    --kp-amber: #a86a00;
+    --kp-h0: #e5eeec;
+    --kp-h1: #b7ddd4;
+    --kp-h2: #7cc1b1;
+    --kp-h3: #3c9886;
+    --kp-h4: #1f7a6c;
+    --kp-mon: #06110c;
+    --kp-mon-2: #0b1d15;
+    --kp-mon-line: #3be0a0;
+    --kp-mon-dim: #5c8e79;
+    --kp-mon-grid: rgba(59, 224, 160, 0.07);
+    color: var(--kp-ink);
+    background: var(--kp-bg);
+    border-radius: 18px;
+    padding: 18px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    font-variant-numeric: tabular-nums;
+    margin-inline: -4px;
+  }
+  @media (prefers-color-scheme: dark) {
+    .kp {
+      --kp-bg: #0d1513;
+      --kp-card: #141f1c;
+      --kp-ink: #e2eeeb;
+      --kp-muted: #8fa6a0;
+      --kp-line: #24332f;
+      --kp-teal: #3fb39f;
+      --kp-teal-ink: #04130f;
+      --kp-teal-soft: #183531;
+      --kp-red: #ff7b72;
+      --kp-red-soft: #3a1d1c;
+      --kp-amber: #f2b84b;
+      --kp-h0: #1b2825;
+      --kp-h1: #1c463d;
+      --kp-h2: #216657;
+      --kp-h3: #2a8a76;
+      --kp-h4: #3fb39f;
+    }
+  }
+  .kp *, .kp *::before, .kp *::after { box-sizing: border-box; }
+  .kp h1, .kp h2, .kp p { margin: 0; }
+  .kp h2 { font-size: 1.05rem; font-weight: 650; letter-spacing: -0.01em; }
+  .kp button, .kp input { font: inherit; color: inherit; }
+  .kp :focus-visible { outline: 3px solid var(--kp-teal); outline-offset: 2px; border-radius: 6px; }
+  .kp .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  .kp-head h1 { font-size: 1.9rem; font-weight: 750; letter-spacing: -0.03em; line-height: 1.1; }
+  .kp-eyebrow { color: var(--kp-teal); font-size: 0.78rem; font-weight: 650; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px !important; }
+  .kp-sub { color: var(--kp-muted); margin-top: 6px !important; font-size: 0.95rem; }
+
+  /* ---------- monitor ---------- */
+  .kp-monitor {
+    background:
+      radial-gradient(120% 90% at 50% 0%, var(--kp-mon-2), var(--kp-mon) 70%),
+      var(--kp-mon);
+    color: var(--kp-mon-line);
+    border-radius: 16px;
+    padding: 16px 16px 12px;
+    box-shadow: inset 0 0 0 1px rgba(59, 224, 160, 0.14), inset 0 0 40px rgba(0, 0, 0, 0.6), 0 10px 30px -12px rgba(6, 17, 12, 0.6);
+    position: relative;
+    overflow: hidden;
+  }
+  .kp-monitor::after {
+    /* scanlines */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.18) 0 1px, transparent 1px 3px);
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+  .kp-mon-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .kp-mon-top h2 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--kp-mon-dim); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .kp-rec { width: 8px; height: 8px; border-radius: 50%; background: #ff5a5a; box-shadow: 0 0 8px #ff5a5a; animation: kp-blink 1.6s steps(2, start) infinite; }
+  .kp-mon-clock { font-size: 0.72rem; color: var(--kp-mon-dim); letter-spacing: 0.08em; }
+  @keyframes kp-blink { to { visibility: hidden; } }
+  .kp-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0 10px; }
+  .kp-vital { border-left: 2px solid rgba(59, 224, 160, 0.25); padding-left: 10px; min-width: 0; }
+  .kp-vital dt { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--kp-mon-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .kp-vital dd { margin: 2px 0 0; font-size: 1.9rem; font-weight: 700; line-height: 1; text-shadow: 0 0 12px rgba(59, 224, 160, 0.55); white-space: nowrap; }
+  .kp-vital dd small { font-size: 0.7rem; font-weight: 500; margin-left: 3px; color: var(--kp-mon-dim); text-shadow: none; }
+  .kp-vital:nth-child(2) dd { color: #f2f7a1; text-shadow: 0 0 12px rgba(242, 247, 161, 0.45); }
+  .kp-vital:nth-child(3) dd { color: #7fd8ff; text-shadow: 0 0 12px rgba(127, 216, 255, 0.45); }
+  .kp-vital:nth-child(4) dd { color: #ffb8e0; text-shadow: 0 0 12px rgba(255, 184, 224, 0.4); }
+
+  .kp-ecg-box { position: relative; }
+  .kp-ecg-wrap { position: relative; height: 120px; background-image: linear-gradient(var(--kp-mon-grid) 1px, transparent 1px), linear-gradient(90deg, var(--kp-mon-grid) 1px, transparent 1px); background-size: 12px 12px; border-radius: 6px; }
+  .kp-ecg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .ecg-line { fill: none; stroke: var(--kp-mon-line); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+  .ecg-glow { fill: none; stroke: var(--kp-mon-line); stroke-width: 6; opacity: 0.22; filter: blur(3px); stroke-linejoin: round; }
+  .ecg-future { fill: none; stroke: var(--kp-mon-dim); stroke-width: 1.4; stroke-dasharray: 2 5; opacity: 0.7; }
+  .ecg-miss { fill: none; stroke: #ff5a5a; stroke-width: 1.6; stroke-linecap: round; }
+  .ecg-phase { stroke: rgba(59, 224, 160, 0.18); stroke-width: 1; stroke-dasharray: 3 3; }
+  .kp-ecg-wrap.draw { animation: kp-draw 2.4s cubic-bezier(0.4, 0, 0.2, 1) both; }
+  @keyframes kp-draw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  .kp-ecg-dot { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: #eafff6; box-shadow: 0 0 0 3px rgba(59, 224, 160, 0.35), 0 0 16px 4px var(--kp-mon-line); animation: kp-pulse 1.1s ease-in-out infinite; }
+  .kp-ecg-dot[hidden] { display: none; }
+  @keyframes kp-pulse { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.45); } 30% { transform: scale(0.95); } 45% { transform: scale(1.2); } }
+  .kp-phase-labels { position: relative; height: 74px; margin-top: 6px; }
+  .kp-pl { position: absolute; top: 0; font-size: 0.64rem; line-height: 1.25; color: var(--kp-mon-dim); white-space: nowrap; padding-left: 4px; border-left: 1px solid rgba(59, 224, 160, 0.3); }
+  .kp-pl.r1 { top: 24px; }
+  .kp-pl.r2 { top: 48px; }
+  .kp-pl.end { transform: translateX(-100%); text-align: right; padding: 0 4px 0 0; border-left: 0; border-right: 1px solid rgba(59, 224, 160, 0.3); }
+  .kp-pl b { display: block; color: var(--kp-mon-line); font-weight: 600; }
+  .kp-pl.now b { text-shadow: 0 0 8px var(--kp-mon-line); }
+  .kp-pl .n { display: none; }
+  @media (max-width: 640px) {
+    .kp-phase-labels { height: 30px; }
+    .kp-pl.r1, .kp-pl.r2 { top: 0; }
+    .kp-pl.end { transform: none; text-align: left; padding: 0 0 0 4px; border-right: 0; border-left: 1px solid rgba(59, 224, 160, 0.3); }
+    .kp-pl .t { display: none; }
+    .kp-pl .n { display: inline; }
+  }
+
+  /* ---------- cards ---------- */
+  .kp-card { min-width: 0; background: var(--kp-card); border: 1px solid var(--kp-line); border-radius: 16px; padding: 18px; display: grid; gap: 12px; }
+  .kp-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .kp-hint { color: var(--kp-muted); font-size: 0.82rem; }
+  .kp button, .kp .kp-file { border: 1px solid var(--kp-line); background: var(--kp-card); border-radius: 10px; padding: 8px 14px; cursor: pointer; font-size: 0.9rem; font-weight: 550; transition: background 0.15s, border-color 0.15s; }
+  .kp button:hover:not(:disabled), .kp .kp-file:hover { border-color: var(--kp-teal); background: var(--kp-teal-soft); }
+  .kp button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .kp .kp-primary { background: var(--kp-teal); color: var(--kp-teal-ink); border-color: var(--kp-teal); }
+  .kp .kp-primary:hover:not(:disabled) { background: var(--kp-teal); filter: brightness(1.08); }
+  .kp .kp-danger { color: var(--kp-red); }
+  .kp .kp-danger:hover:not(:disabled) { border-color: var(--kp-red); background: var(--kp-red-soft); }
+
+  /* day card */
+  .kp-day { border-top: 4px solid var(--kp-teal); }
+  .kp-day-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .kp-day-head h2 { font-size: 1.25rem; }
+  .kp-day-phase { color: var(--kp-teal); font-size: 0.8rem; font-weight: 650; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px !important; }
+  .kp-day-note { color: var(--kp-muted); font-size: 0.88rem; }
+  .kp-day-note:empty { display: none; }
+  .kp-ring { position: relative; width: 58px; height: 58px; flex: none; }
+  .kp-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .kp-ring circle { fill: none; stroke-width: 3.2; }
+  .kp-ring-bg { stroke: var(--kp-h0); }
+  .kp-ring-fg { stroke: var(--kp-teal); stroke-linecap: round; stroke-dasharray: 97.4; stroke-dashoffset: 97.4; transition: stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+  .kp-ring span { position: absolute; inset: 0; display: grid; place-items: center; font-size: 0.8rem; font-weight: 700; }
+  .kp-tasks { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .kp-task label { display: flex; gap: 12px; align-items: flex-start; padding: 11px 12px; border: 1px solid var(--kp-line); border-radius: 12px; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+  .kp-task label:hover { border-color: var(--kp-teal); }
+  .kp-task input { appearance: none; flex: none; width: 22px; height: 22px; margin: 0; border: 2px solid var(--kp-muted); border-radius: 7px; display: grid; place-items: center; cursor: pointer; transition: all 0.15s; }
+  .kp-task input::after { content: ''; width: 6px; height: 11px; border: solid var(--kp-teal-ink); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg) scale(0); margin-top: -2px; transition: transform 0.15s; }
+  .kp-task input:checked { background: var(--kp-teal); border-color: var(--kp-teal); }
+  .kp-task input:checked::after { transform: rotate(45deg) scale(1); }
+  .kp-task.done label { background: var(--kp-teal-soft); border-color: transparent; }
+  .kp-task.done .kp-task-text { text-decoration: line-through; text-decoration-color: var(--kp-teal); color: var(--kp-muted); }
+  .kp-task.locked label { cursor: not-allowed; opacity: 0.6; }
+  .kp-task.locked input { cursor: not-allowed; border-style: dashed; }
+  .kp-task-text { line-height: 1.4; padding-top: 1px; }
+  .kp-badge { display: inline-block; margin-left: 6px; font-size: 0.72rem; font-weight: 650; color: var(--kp-teal); background: var(--kp-teal-soft); border-radius: 999px; padding: 1px 8px; vertical-align: 1px; }
+  .kp-task.done .kp-badge { background: var(--kp-card); }
+  .kp-day-nav { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; }
+  .kp-day-nav #kp-next { justify-self: end; }
+  .kp-day-nav #kp-prev { justify-self: start; }
+  .kp-day.flash { animation: kp-flash 0.7s ease-out; }
+  @keyframes kp-flash { from { box-shadow: 0 0 0 4px var(--kp-teal-soft); } to { box-shadow: 0 0 0 0 transparent; } }
+
+  /* readiness */
+  .kp-status { padding: 10px 12px; border-radius: 10px; font-weight: 550; font-size: 0.92rem; background: var(--kp-teal-soft); }
+  .kp-status.behind { background: var(--kp-red-soft); color: var(--kp-red); }
+  .kp-bars { display: grid; gap: 10px; }
+  .kp-bar-top { display: flex; justify-content: space-between; font-size: 0.86rem; margin-bottom: 4px; }
+  .kp-bar-top span:last-child { color: var(--kp-muted); }
+  .kp-bar { height: 10px; border-radius: 999px; background: var(--kp-h0); overflow: hidden; }
+  .kp-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--kp-h3), var(--kp-teal)); transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+  .kp-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .kp-tile { border: 1px solid var(--kp-line); border-radius: 12px; padding: 10px; text-align: center; }
+  .kp-tile span { display: block; font-size: 0.72rem; color: var(--kp-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .kp-tile b { display: block; font-size: 1.4rem; margin-top: 2px; }
+  .kp-tile small { color: var(--kp-muted); font-size: 0.72rem; }
+  .kp-tile.hit { border-color: var(--kp-teal); background: var(--kp-teal-soft); }
+  .kp-formula { font-size: 0.8rem; color: var(--kp-muted); line-height: 1.5; }
+  .kp-formula code { font-family: inherit; font-weight: 600; color: var(--kp-ink); }
+
+  /* heatmap */
+  .kp-legend { font-size: 0.72rem; color: var(--kp-muted); display: inline-flex; align-items: center; gap: 3px; }
+  .kp-legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .kp-legend i.miss { margin-left: 6px; }
+  .kp-heat-scroll { overflow-x: auto; padding-bottom: 4px; }
+  .kp-heat-months { display: grid; grid-auto-flow: column; grid-auto-columns: 13px; margin-left: 30px; height: 16px; font-size: 0.66rem; color: var(--kp-muted); }
+  .kp-heat-months span { white-space: nowrap; }
+  .kp-heat-body { display: flex; gap: 4px; }
+  .kp-heat-days { display: grid; grid-template-rows: repeat(7, 11px); gap: 2px; width: 26px; font-size: 0.6rem; color: var(--kp-muted); line-height: 11px; }
+  .kp-heat { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 11px); grid-auto-columns: 11px; gap: 2px; }
+  .kp-heat button, .kp-heat .pad { width: 11px; height: 11px; padding: 0; border-radius: 2px; border: 0; }
+  .kp .kp-heat button { border: 0; padding: 0; border-radius: 2px; }
+  .kp-heat .pad { visibility: hidden; }
+  .kp .l0, .kp .kp-heat .l0 { background: var(--kp-h0); }
+  .kp .l1, .kp .kp-heat .l1 { background: var(--kp-h1); }
+  .kp .l2, .kp .kp-heat .l2 { background: var(--kp-h2); }
+  .kp .l3, .kp .kp-heat .l3 { background: var(--kp-h3); }
+  .kp .l4, .kp .kp-heat .l4 { background: var(--kp-h4); }
+  .kp .miss, .kp .kp-heat .miss { background: color-mix(in srgb, var(--kp-red) 45%, var(--kp-h0)); }
+  .kp .kp-heat .future { opacity: 0.55; }
+  .kp .kp-heat .test { background: var(--kp-amber); opacity: 1; }
+  .kp .kp-heat .today { outline: 2px solid var(--kp-ink); outline-offset: 1px; }
+  .kp .kp-heat .sel { box-shadow: 0 0 0 2px var(--kp-teal); }
+  .kp .kp-heat button:hover { transform: scale(1.35); background-color: var(--kp-teal); }
+  .kp .kp-heat button:focus-visible { outline: 2px solid var(--kp-teal); outline-offset: 1px; border-radius: 2px; }
+
+  /* phases */
+  .kp-phases { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; counter-reset: ph; }
+  .kp-phases li { counter-increment: ph; display: grid; grid-template-columns: 32px 1fr auto; gap: 4px 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--kp-line); border-radius: 12px; }
+  .kp-phases li::before { content: counter(ph); grid-row: span 3; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 0.85rem; background: var(--kp-h0); color: var(--kp-muted); }
+  .kp-phases li.now { border-color: var(--kp-teal); background: var(--kp-teal-soft); }
+  .kp-phases li.now::before { background: var(--kp-teal); color: var(--kp-teal-ink); }
+  .kp-phases li.past::before { content: '✓'; background: var(--kp-h2); color: var(--kp-teal-ink); }
+  .kp-ph-name { font-weight: 650; }
+  .kp-ph-name em { font-style: normal; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--kp-teal); margin-left: 6px; }
+  .kp-ph-pct { font-weight: 700; font-size: 0.9rem; grid-row: span 2; }
+  .kp-ph-meta { color: var(--kp-muted); font-size: 0.82rem; }
+  .kp-ph-bar { grid-column: 2 / 4; height: 5px; border-radius: 999px; background: var(--kp-h0); overflow: hidden; }
+  .kp-ph-bar i { display: block; height: 100%; background: var(--kp-teal); }
+
+  /* scores + settings forms */
+  .kp-score-form, .kp-set-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); gap: 8px; align-items: end; }
+  .kp-score-form label, .kp-set-form label { display: grid; gap: 4px; font-size: 0.78rem; color: var(--kp-muted); font-weight: 550; }
+  .kp-score-form input, .kp-set-form input { width: 100%; min-width: 0; padding: 8px 10px; border: 1px solid var(--kp-line); border-radius: 10px; background: var(--kp-bg); color: var(--kp-ink); font-size: 0.95rem; }
+  .kp-table-scroll { overflow-x: auto; }
+  .kp-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .kp-table th, .kp-table td { padding: 8px 6px; text-align: right; border-bottom: 1px solid var(--kp-line); white-space: nowrap; }
+  .kp-table th:first-child, .kp-table td:first-child { text-align: left; }
+  .kp-table th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--kp-muted); font-weight: 600; }
+  .kp-table tfoot td { font-weight: 700; border-bottom: 0; }
+  .kp-table td.hit { color: var(--kp-teal); font-weight: 650; }
+  .kp-table td.empty { color: var(--kp-muted); text-align: center; padding: 16px; }
+  .kp .kp-table button { padding: 2px 8px; font-size: 0.8rem; border-radius: 8px; }
+  .kp-set-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .kp-file { position: relative; display: inline-flex; align-items: center; }
+  .kp-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .kp-file:focus-within { outline: 3px solid var(--kp-teal); outline-offset: 2px; }
+
+  .kp-toast { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 20px); background: var(--kp-ink); color: var(--kp-bg); padding: 10px 16px; border-radius: 999px; font-size: 0.88rem; font-weight: 550; opacity: 0; pointer-events: none; transition: all 0.25s; z-index: 50; max-width: calc(100vw - 32px); text-align: center; }
+  .kp-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  .kp-confetti { position: fixed; top: 0; width: 8px; height: 12px; border-radius: 2px; pointer-events: none; z-index: 60; animation: kp-fall 1.4s cubic-bezier(0.3, 0.6, 0.6, 1) forwards; }
+  @keyframes kp-fall { to { transform: translate(var(--dx), 105vh) rotate(var(--r)); opacity: 0.8; } }
+
+  @media (max-width: 640px) {
+    .kp { padding: 12px; margin-inline: -8px; gap: 12px; }
+    .kp-card { padding: 14px; }
+    .kp-vitals { grid-template-columns: repeat(2, 1fr); row-gap: 12px; }
+    .kp-vital dd { font-size: 1.6rem; }
+    .kp-tiles { grid-template-columns: repeat(2, 1fr); }
+    .kp-ecg-wrap { height: 100px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .kp *, .kp *::before, .kp *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<script>
+  const KEY = 'kprep-v1'
+  const START = '2026-11-02'
+  const PHASES = [
+    { name: 'Baseline', start: '2026-11-02', goal: 'Know the starting score per section.' },
+    { name: 'Reading habit', start: '2026-12-01', goal: 'Read daily and build vocabulary.' },
+    { name: 'Writing and grammar', start: '2027-03-01', goal: '80% on untimed writing sets.' },
+    { name: 'Science review', start: '2027-05-01', goal: 'One summary sheet per body system.' },
+    { name: 'Math tune-up', start: '2027-07-01', goal: '90% on math sets.' },
+    { name: 'Timed practice', start: '2027-08-01', goal: 'Finish every section on time.' },
+    { name: 'Simulation and taper', start: '2027-09-01', goal: 'Above target on two full practice tests.' },
+  ]
+  const GRAMMAR = ['commas', 'subject-verb agreement', 'pronouns', 'modifiers', 'parallel structure', 'apostrophes', 'verb tenses', 'sentence order in a paragraph', 'run-ons and fragments']
+  const SYSTEMS = ['cardiovascular', 'respiratory', 'gastrointestinal', 'renal and urinary', 'fluids and electrolytes', 'endocrine', 'neurological', 'musculoskeletal', 'immune and reproductive']
+  const SECTIONS = ['reading', 'math', 'writing', 'science']
+  const LABEL = { reading: 'Reading', math: 'Math', writing: 'Writing', science: 'Science' }
+
+  // ---------- dates (local YYYY-MM-DD, never UTC) ----------
+  const pad = (n) => String(n).padStart(2, '0')
+  const iso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  const parse = (s) => {
+    const [y, m, d] = s.split('-').map(Number)
+    return new Date(y, m - 1, d, 12)
+  }
+  const addDays = (s, n) => {
+    const d = parse(s)
+    d.setDate(d.getDate() + n)
+    return iso(d)
+  }
+  const between = (a, b) => Math.round((parse(b).getTime() - parse(a).getTime()) / 86400000)
+  const weekday = (s) => parse(s).getDay()
+  const today = () => iso(new Date())
+  const fmt = (s, o) => parse(s).toLocaleDateString('en-US', o)
+  const fmtLong = (s) => fmt(s, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+  const fmtShort = (s) => fmt(s, { month: 'short', day: 'numeric' })
+  const isDate = (s) => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s)
+
+  // ---------- state ----------
+  const defaults = () => ({ checks: {}, scores: [], settings: { testDate: '2027-10-02', target: 80, vocabGoal: 3000 } })
+  function normalize(s) {
+    const d = defaults()
+    if (!s || typeof s !== 'object') return d
+    const checks = {}
+    if (s.checks && typeof s.checks === 'object') {
+      for (const k in s.checks) if (isDate(k) && Array.isArray(s.checks[k])) checks[k] = s.checks[k].filter((x) => typeof x === 'string')
+    }
+    const scores = Array.isArray(s.scores) ? s.scores.filter((x) => x && isDate(x.date)) : []
+    const set = { ...d.settings, ...(s.settings || {}) }
+    if (!isDate(set.testDate) || set.testDate < '2027-09-04') set.testDate = d.settings.testDate
+    set.target = Number(set.target) > 0 ? Number(set.target) : 80
+    set.vocabGoal = Number(set.vocabGoal) > 0 ? Number(set.vocabGoal) : 3000
+    return { checks, scores, settings: set }
+  }
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY)
+      if (raw) return normalize(JSON.parse(raw))
+    } catch (e) {}
+    return defaults()
+  }
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state))
+    } catch (e) {
+      toast("Couldn't save in this browser. Export a backup to keep your progress.")
+    }
+  }
+  let state = load()
+
+  // ---------- plan ----------
+  function plan() {
+    const test = state.settings.testDate
+    const last = addDays(test, -1)
+    const total = between(START, test)
+    const phases = PHASES.map((p, i) => ({ ...p, end: i < PHASES.length - 1 ? addDays(PHASES[i + 1].start, -1) : last }))
+    return { test, last, total, phases }
+  }
+  const phaseIndex = (date, P) => {
+    let i = 0
+    P.phases.forEach((p, k) => {
+      if (date >= p.start) i = k
+    })
+    return i
+  }
+  const T = (text, words = 0) => ({ text, words })
+
+  function tasksFor(date, P) {
+    if (date < START || date > P.last) return []
+    if (date === START) return [T('Take a full timed practice test'), T('Enter your section scores in the log'), T('Set up your vocab deck and error log')]
+    if (between(date, P.test) <= 2) return [T('Light vocab review only'), T('Rest and go to sleep early')]
+    const pi = phaseIndex(date, P)
+    const ph = P.phases[pi]
+    const week = Math.floor(between(ph.start, date) / 7)
+    const sat = weekday(date) === 6
+    const sun = weekday(date) === 0
+    const section = ['Reading', 'Math', 'Writing', 'Science'][between(START, date) % 4]
+    let list
+    switch (pi) {
+      case 0:
+        list = [T('Learn 10 new words with roots', 10), T('Read one short article and summarize it in one sentence'), T('Do 10 practice questions')]
+        break
+      case 1:
+        list = [T('Learn 10 new words', 10), T('Read one health or science article and summarize it'), sat ? T('Do a Kaplan reading set, untimed') : T('Note 3 unknown words')]
+        break
+      case 2:
+        list = [T('Learn 10 new words', 10), T('Read for 10 minutes'), T(`Grammar of the week: ${GRAMMAR[week % GRAMMAR.length]}, plus 10 writing questions`)]
+        break
+      case 3:
+        list = [T('Review vocab and learn 5 new words', 5), T('Read for 10 minutes'), T(`Body system of the week: write the ${SYSTEMS[week % SYSTEMS.length]} summary sheet`)]
+        break
+      case 4:
+        list = [T('Review vocab'), T('Read for 10 minutes'), T('Do 15 problems: conversions, ratios, dosage')]
+        break
+      case 5:
+        list = [T('Review vocab'), T(`Timed ${section} section`), T('Log every mistake')]
+        break
+      default:
+        list = sat ? [T('Review vocab'), T('Take a full timed practice test'), T('Enter your scores in the log')] : [T('Review vocab'), T(`Timed ${section} section`)]
+        list.push(T('Review the error log'))
+    }
+    if (sun && pi <= 4) list.push(T('Review the error log'))
+    return list
+  }
+
+  // ---------- derived numbers ----------
+  function compute() {
+    const P = plan()
+    const now = today()
+    const days = []
+    let sum = 0
+    let expected = 0
+    let done = 0
+    let words = 0
+    for (let i = 0; i < P.total; i++) {
+      const date = addDays(START, i)
+      const tasks = tasksFor(date, P)
+      const checked = state.checks[date] || []
+      const hit = tasks.filter((t) => checked.includes(t.text))
+      const f = tasks.length ? hit.length / tasks.length : 0
+      words += hit.reduce((n, t) => n + t.words, 0)
+      days.push({ date, tasks, f, i })
+      sum += f
+      if (date < now) {
+        expected++
+        done += f
+      } else if (date === now) done += f
+    }
+    const fOf = (d) => (d >= START && d <= P.last ? days[between(START, d)].f : 0)
+    let streak = 0
+    let d = fOf(now) === 1 ? now : addDays(now, -1)
+    while (d >= START && fOf(d) === 1) {
+      streak++
+      d = addDays(d, -1)
+    }
+    const latest = {}
+    const sorted = [...state.scores].sort((a, b) => (a.date === b.date ? (a.id || 0) - (b.id || 0) : a.date.localeCompare(b.date)))
+    for (const s of sorted) for (const k of SECTIONS) if (typeof s[k] === 'number') latest[k] = s[k]
+    const target = state.settings.target
+    const planPct = sum / P.total
+    const vocabPct = Math.min(1, words / state.settings.vocabGoal)
+    const practicePct = SECTIONS.reduce((n, k) => n + (k in latest ? Math.min(1, latest[k] / target) : 0), 0) / 4
+    const readiness = 35 * planPct + 25 * vocabPct + 40 * practicePct
+    return { P, now, days, streak, words, latest, planPct, vocabPct, practicePct, readiness, behind: expected - done }
+  }
+
+  // ---------- helpers ----------
+  const $ = (s) => document.querySelector(s)
+  const el = (tag, cls, html) => {
+    const e = document.createElement(tag)
+    if (cls) e.className = cls
+    if (html != null) e.innerHTML = html
+    return e
+  }
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  let toastTimer
+  function toast(msg) {
+    const t = $('#kp-toast')
+    t.textContent = msg
+    t.classList.add('show')
+    clearTimeout(toastTimer)
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2600)
+  }
+  function confetti() {
+    if (reduced) return
+    const colors = ['#3be0a0', '#1f7a6c', '#f2f7a1', '#7fd8ff', '#ffb8e0']
+    for (let i = 0; i < 40; i++) {
+      const c = el('i', 'kp-confetti')
+      c.style.left = Math.random() * 100 + 'vw'
+      c.style.background = colors[i % colors.length]
+      c.style.setProperty('--dx', (Math.random() - 0.5) * 200 + 'px')
+      c.style.setProperty('--r', Math.random() * 720 + 'deg')
+      c.style.animationDelay = Math.random() * 0.3 + 's'
+      document.body.appendChild(c)
+      setTimeout(() => c.remove(), 2000)
+    }
+  }
+  function countUp(node, to, decimals = 0) {
+    const from = Number(node.dataset.v || 0)
+    node.dataset.v = String(to)
+    if (reduced || from === to) {
+      node.textContent = to.toFixed(decimals)
+      return
+    }
+    const t0 = performance.now()
+    const step = (t) => {
+      const k = Math.min(1, (t - t0) / 900)
+      const e = 1 - Math.pow(1 - k, 3)
+      node.textContent = (from + (to - from) * e).toFixed(decimals)
+      if (k < 1) requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+  }
+
+  let sel = null
+  let C = compute()
+
+  // ---------- render: monitor ----------
+  function renderVitals() {
+    const { P, now, streak, words, readiness } = C
+    countUp($('#v-ready'), Math.round(readiness))
+    countUp($('#v-days'), Math.max(0, between(now, P.test)))
+    countUp($('#v-streak'), streak)
+    $('#v-streak-u').textContent = streak === 1 ? 'day' : 'days'
+    countUp($('#v-words'), words)
+    $('#v-words-goal').textContent = `/ ${state.settings.vocabGoal}`
+    const sub = $('#kp-sub')
+    if (now < START) sub.textContent = `The plan starts ${fmtLong(START)}, in ${between(now, START)} day${between(now, START) === 1 ? '' : 's'}. Test day is ${fmtLong(P.test)}.`
+    else if (now > P.last) sub.textContent = now === P.test ? 'Test day. You did the work. Go get it.' : `Test day was ${fmtLong(P.test)}.`
+    else sub.textContent = `Test day is ${fmtLong(P.test)}. One heartbeat a day gets you there.`
+  }
+
+  const W = 6
+  const BASE = 64
+  const H = 112
+  function renderEcg(animate) {
+    const { P, now, days } = C
+    const n = P.total
+    const svg = $('#kp-ecg')
+    svg.setAttribute('viewBox', `0 0 ${n * W} ${H}`)
+    const ti = between(START, now)
+    const lastSolid = Math.min(ti, n - 1)
+    let line = `M0 ${BASE}`
+    let miss = ''
+    for (let i = 0; i <= lastSolid; i++) {
+      const x = i * W
+      const f = days[i].f
+      if (f > 0) {
+        const a = 48 * f
+        line += ` L${x + 1.2} ${BASE} L${x + 1.8} ${BASE - 3 * f} L${x + 2.3} ${BASE} L${x + 2.7} ${BASE + 5 * f} L${x + 3.2} ${BASE - a} L${x + 3.8} ${BASE + 10 * f} L${x + 4.4} ${BASE} L${x + 5.2} ${BASE - 4 * f} L${x + W} ${BASE}`
+      } else {
+        line += ` L${x + W} ${BASE}`
+        if (i < ti) miss += ` M${x + 3} ${BASE + 5} L${x + 3} ${BASE + 13}`
+      }
+    }
+    if (ti < 0) line = ''
+    $('#ecg-line').setAttribute('d', line)
+    $('#ecg-glow').setAttribute('d', line)
+    $('#ecg-miss').setAttribute('d', miss)
+    const fx = Math.max(0, Math.min(n, ti + 1)) * W
+    $('#ecg-future').setAttribute('d', fx < n * W ? `M${fx} ${BASE} L${n * W} ${BASE}` : '')
+    const grid = $('#ecg-grid')
+    grid.innerHTML = P.phases
+      .slice(1)
+      .map((p) => {
+        const x = between(START, p.start) * W
+        return `<line class="ecg-phase" vector-effect="non-scaling-stroke" x1="${x}" x2="${x}" y1="6" y2="${H - 6}"></line>`
+      })
+      .join('')
+    const dot = $('#kp-ecg-dot')
+    if (ti >= 0 && ti < n) {
+      dot.hidden = false
+      dot.style.left = (((ti + 1) * W) / (n * W)) * 100 + '%'
+      dot.style.top = (BASE / H) * 100 + '%'
+    } else dot.hidden = true
+    const done = days.filter((d) => d.f > 0).length
+    const missed = days.filter((d) => d.date < now && d.f === 0).length
+    $('#kp-ecg-desc').textContent = `Study heartbeat across ${n} plan days: ${done} days with work done, ${missed} missed days, ${Math.max(0, n - Math.max(0, ti))} days ahead.`
+    const labels = $('#kp-phase-labels')
+    const cur = now >= START && now <= P.last ? phaseIndex(now, P) : -1
+    labels.innerHTML = P.phases
+      .map((p, i) => {
+        const left = (between(START, p.start) / n) * 100
+        return `<span class="kp-pl${i % 3 ? ` r${i % 3}` : ''}${left > 80 ? ' end' : ''}${i === cur ? ' now' : ''}" style="left:${left}%"><b><span class="t">${esc(p.name)}</span><span class="n">${i + 1}</span></b>${fmt(p.start, { month: 'short' })}</span>`
+      })
+      .join('')
+    if (animate && !reduced) {
+      const wrap = $('#kp-ecg-wrap')
+      wrap.classList.remove('draw')
+      void wrap.offsetWidth
+      wrap.classList.add('draw')
+    }
+  }
+
+  // ---------- render: day card ----------
+  function clampDate(d) {
+    const { P } = C
+    return d < START ? START : d > P.last ? P.last : d
+  }
+  function renderDay() {
+    const { P, now } = C
+    sel = clampDate(sel || now)
+    const pi = phaseIndex(sel, P)
+    const ph = P.phases[pi]
+    const dayIn = between(ph.start, sel) + 1
+    const len = between(ph.start, ph.end) + 1
+    $('#kp-day-phase').textContent = `Phase ${pi + 1} · ${ph.name} · day ${dayIn} of ${len}`
+    $('#kp-day-date').textContent = (sel === now ? 'Today, ' : '') + fmtLong(sel)
+    const future = sel > now
+    let note = ''
+    if (future) note = now < START && sel === START ? `Day one. Opens in ${between(now, START)} day${between(now, START) === 1 ? '' : 's'}. You can look, but you can't check it off yet.` : "This day hasn't happened yet. You can look ahead, but you can't check it off."
+    else if (between(sel, P.test) <= 2) note = 'Almost there. Keep it light.'
+    $('#kp-day-note').textContent = note
+    const list = $('#kp-tasks')
+    list.innerHTML = ''
+    const checked = state.checks[sel] || []
+    tasksFor(sel, P).forEach((t, i) => {
+      const li = el('li', 'kp-task')
+      const on = checked.includes(t.text)
+      li.classList.toggle('done', on)
+      li.classList.toggle('locked', future)
+      const id = `kp-t-${i}`
+      li.innerHTML = `<label for="${id}"><input type="checkbox" id="${id}" ${on ? 'checked' : ''} ${future ? 'disabled' : ''} /><span class="kp-task-text">${esc(t.text)}${t.words ? `<span class="kp-badge">+${t.words} words</span>` : ''}</span></label>`
+      li.querySelector('input').addEventListener('change', (e) => toggleTask(sel, t.text, e.target.checked, li))
+      list.appendChild(li)
+    })
+    $('#kp-prev').disabled = sel <= START
+    $('#kp-next').disabled = sel >= P.last
+    $('#kp-today').disabled = sel === clampDate(now)
+    renderRing()
+  }
+  function renderRing() {
+    const day = C.days[between(START, sel)]
+    const total = day ? day.tasks.length : 0
+    const done = day ? Math.round(day.f * total) : 0
+    $('#kp-ring-fg').style.strokeDashoffset = String(97.4 * (1 - (total ? done / total : 0)))
+    $('#kp-ring-txt').textContent = `${done}/${total}`
+    $('#kp-ring').setAttribute('aria-label', `${done} of ${total} tasks done`)
+  }
+  function toggleTask(date, text, on, li) {
+    const list = new Set(state.checks[date] || [])
+    on ? list.add(text) : list.delete(text)
+    if (list.size) state.checks[date] = [...list]
+    else delete state.checks[date]
+    save()
+    li.classList.toggle('done', on)
+    const before = C.days[between(START, date)].f
+    C = compute()
+    renderRing()
+    renderVitals()
+    renderEcg(false)
+    renderReadiness()
+    renderHeat()
+    renderPhases()
+    if (before < 1 && C.days[between(START, date)].f === 1) {
+      confetti()
+      toast(C.streak > 1 && date === C.now ? `Day complete. ${C.streak}-day streak.` : 'Day complete. Nice work.')
+    }
+  }
+  function go(d, flash) {
+    sel = clampDate(d)
+    renderDay()
+    renderHeat()
+    if (flash) {
+      const card = $('#kp-day')
+      card.classList.remove('flash')
+      void card.offsetWidth
+      card.classList.add('flash')
+      card.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })
+    }
+  }
+
+  // ---------- render: readiness ----------
+  function renderReadiness() {
+    const { P, now, planPct, vocabPct, practicePct, readiness, behind, latest, words } = C
+    const target = state.settings.target
+    const status = $('#kp-status')
+    const b = Math.round(behind * 10) / 10
+    status.classList.toggle('behind', now >= START && b > 2)
+    if (now < START) status.textContent = `Not started yet. Day one is ${fmtLong(START)}.`
+    else if (now > P.last) status.textContent = `The plan is over. Final readiness: ${Math.round(readiness)}%.`
+    else if (b <= 2) status.textContent = b <= 0 ? 'On track. You are fully caught up.' : `On track. ${b} day${b === 1 ? '' : 's'} of work open, which is fine.`
+    else status.textContent = `${b} days of work behind. Try doubling up on a few days this week to catch up.`
+    const bars = [
+      ['Plan completed', planPct, 35, `${Math.round(planPct * 100)}% of all plan days`],
+      ['Vocabulary', vocabPct, 25, `${words} of ${state.settings.vocabGoal} words`],
+      ['Practice scores', practicePct, 40, `vs your ${target}% target`],
+    ]
+    $('#kp-bars').innerHTML = bars
+      .map(
+        ([name, pct, wt, sub]) =>
+          `<div><div class="kp-bar-top"><span><b>${name}</b> · ${(pct * wt).toFixed(1)} of ${wt} pts</span><span>${sub}</span></div><div class="kp-bar" role="progressbar" aria-label="${name}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pct * 100)}"><i style="width:${(pct * 100).toFixed(1)}%"></i></div></div>`,
+      )
+      .join('')
+    $('#kp-tiles').innerHTML = SECTIONS.map((k) => {
+      const v = latest[k]
+      const has = typeof v === 'number'
+      return `<div class="kp-tile${has && v >= target ? ' hit' : ''}"><span>${LABEL[k]}</span><b>${has ? v + '%' : '–'}</b><small>${has ? (v >= target ? 'at target' : `${target - v} to go`) : 'no score yet'}</small></div>`
+    }).join('')
+    $('#kp-formula').innerHTML = `Readiness <code>${readiness.toFixed(1)}%</code> = 35% × plan done (sum of daily task fractions ÷ ${P.total} days) + 25% × vocabulary (words ÷ ${state.settings.vocabGoal}) + 40% × practice (average over the 4 sections of min(1, latest score ÷ ${target}%)).`
+  }
+
+  // ---------- render: heatmap ----------
+  function renderHeat() {
+    const { P, now, days } = C
+    const heat = $('#kp-heat')
+    const months = $('#kp-heat-months')
+    const lead = weekday(START)
+    heat.innerHTML = ''
+    months.innerHTML = ''
+    for (let i = 0; i < lead; i++) heat.appendChild(el('span', 'pad'))
+    const cols = Math.ceil((lead + days.length + 1) / 7)
+    let lastMonth = -1
+    for (let c = 0; c < cols; c++) {
+      const first = addDays(START, c * 7 - lead)
+      const m = parse(first < START ? START : first).getMonth()
+      const s = el('span', '', m !== lastMonth ? fmt(first < START ? START : first, { month: 'short' }) : '')
+      lastMonth = m
+      months.appendChild(s)
+    }
+    const frag = document.createDocumentFragment()
+    for (const d of days) {
+      const b = el('button')
+      b.type = 'button'
+      const lvl = d.f === 0 ? 0 : d.f < 0.34 ? 1 : d.f < 0.67 ? 2 : d.f < 1 ? 3 : 4
+      const cls = [`l${lvl}`]
+      if (d.date < now && d.f === 0) cls.push('miss')
+      if (d.date > now) cls.push('future')
+      if (d.date === now) cls.push('today')
+      if (d.date === sel) cls.push('sel')
+      b.className = cls.join(' ')
+      const done = Math.round(d.f * d.tasks.length)
+      const what = d.date > now ? 'upcoming' : d.date < now && d.f === 0 ? 'missed' : `${done} of ${d.tasks.length} tasks done`
+      b.setAttribute('aria-label', `${fmtLong(d.date)}: ${what}${d.date === now ? ', today' : ''}`)
+      b.title = `${fmtShort(d.date)} · ${what}`
+      b.addEventListener('click', () => go(d.date, true))
+      frag.appendChild(b)
+    }
+    const test = el('button', 'test')
+    test.type = 'button'
+    test.disabled = true
+    test.setAttribute('aria-label', `Test day, ${fmtLong(P.test)}`)
+    test.title = `Test day · ${fmtShort(P.test)}`
+    frag.appendChild(test)
+    heat.appendChild(frag)
+  }
+
+  // ---------- render: phases ----------
+  function renderPhases() {
+    const { P, now, days } = C
+    const cur = now >= START && now <= P.last ? phaseIndex(now, P) : -1
+    $('#kp-phases').innerHTML = P.phases
+      .map((p, i) => {
+        const a = between(START, p.start)
+        const z = between(START, p.end)
+        const slice = days.slice(a, z + 1)
+        const pct = slice.length ? (slice.reduce((n, d) => n + d.f, 0) / slice.length) * 100 : 0
+        const yr = (s) => fmt(s, { month: 'short', day: 'numeric', year: 'numeric' })
+        const cls = i === cur ? 'now' : p.end < now ? 'past' : ''
+        return `<li class="${cls}"${i === cur ? ' aria-current="step"' : ''}><span class="kp-ph-name">${esc(p.name)}${i === cur ? '<em>Now</em>' : ''}</span><span class="kp-ph-pct">${Math.round(pct)}%</span><span class="kp-ph-meta">${fmtShort(p.start)} – ${yr(p.end)} · ${slice.length} days · ${esc(p.goal)}</span><span class="kp-ph-bar"><i style="width:${pct.toFixed(1)}%"></i></span></li>`
+      })
+      .join('')
+  }
+
+  // ---------- render: scores ----------
+  function renderScores() {
+    const target = state.settings.target
+    const body = $('#kp-score-table tbody')
+    const foot = $('#kp-score-table tfoot')
+    const rows = [...state.scores].sort((a, b) => (a.date === b.date ? (b.id || 0) - (a.id || 0) : b.date.localeCompare(a.date)))
+    if (!rows.length) {
+      body.innerHTML = `<tr><td colspan="7" class="empty">No scores yet. Day one starts with a full practice test.</td></tr>`
+      foot.innerHTML = ''
+      return
+    }
+    const cell = (v) => (typeof v === 'number' ? `<td class="${v >= target ? 'hit' : ''}">${v}%</td>` : '<td>–</td>')
+    const avg = (vals) => (vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : null)
+    body.innerHTML = rows
+      .map((r) => {
+        const vals = SECTIONS.map((k) => r[k]).filter((v) => typeof v === 'number')
+        return `<tr><td>${fmt(r.date, { month: 'short', day: 'numeric', year: 'numeric' })}</td>${SECTIONS.map((k) => cell(r[k])).join('')}${cell(avg(vals))}<td><button type="button" data-del="${r.id}" aria-label="Delete scores from ${fmtLong(r.date)}">✕</button></td></tr>`
+      })
+      .join('')
+    const colAvg = SECTIONS.map((k) => avg(rows.map((r) => r[k]).filter((v) => typeof v === 'number')))
+    const all = rows.flatMap((r) => SECTIONS.map((k) => r[k]).filter((v) => typeof v === 'number'))
+    foot.innerHTML = `<tr><td>Average</td>${colAvg.map(cell).join('')}${cell(avg(all))}<td></td></tr>`
+  }
+
+  // ---------- render: settings ----------
+  function renderSettings() {
+    const f = $('#kp-set-form')
+    f.elements.testDate.value = state.settings.testDate
+    f.elements.target.value = state.settings.target
+    f.elements.vocabGoal.value = state.settings.vocabGoal
+  }
+
+  function renderAll(animate) {
+    C = compute()
+    renderVitals()
+    renderEcg(animate)
+    renderDay()
+    renderReadiness()
+    renderHeat()
+    renderPhases()
+    renderScores()
+    renderSettings()
+  }
+
+  // ---------- events ----------
+  $('#kp-prev').addEventListener('click', () => go(addDays(sel, -1)))
+  $('#kp-next').addEventListener('click', () => go(addDays(sel, 1)))
+  $('#kp-today').addEventListener('click', () => go(C.now))
+
+  const scoreForm = $('#kp-score-form')
+  scoreForm.date.value = today()
+  scoreForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+    const entry = { id: Date.now(), date: scoreForm.date.value }
+    let any = false
+    for (const k of SECTIONS) {
+      const raw = scoreForm[k].value.trim()
+      if (raw === '') continue
+      const v = Math.round(Number(raw))
+      if (!(v >= 0 && v <= 100)) return toast(`${LABEL[k]} must be between 0 and 100.`)
+      entry[k] = v
+      any = true
+    }
+    if (!isDate(entry.date)) return toast('Pick a date.')
+    if (!any) return toast('Enter at least one section score.')
+    state.scores.push(entry)
+    save()
+    for (const k of SECTIONS) scoreForm[k].value = ''
+    renderAll(false)
+    toast('Scores added.')
+  })
+  $('#kp-score-table').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-del]')
+    if (!b) return
+    if (!confirm('Delete this score entry?')) return
+    state.scores = state.scores.filter((s) => String(s.id) !== b.dataset.del)
+    save()
+    renderAll(false)
+    toast('Entry deleted.')
+  })
+
+  const setForm = $('#kp-set-form')
+  setForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+    const testDate = setForm.elements.testDate.value
+    const target = Math.round(Number(setForm.elements.target.value))
+    const vocabGoal = Math.round(Number(setForm.elements.vocabGoal.value))
+    if (!isDate(testDate) || testDate < '2027-09-04') return toast('The test date must be on or after Sep 4, 2027, so every phase fits.')
+    if (!(target >= 1 && target <= 100)) return toast('Target must be between 1 and 100.')
+    if (!(vocabGoal >= 10)) return toast('Vocab goal must be at least 10.')
+    state.settings = { testDate, target, vocabGoal }
+    save()
+    renderAll(true)
+    toast('Settings saved.')
+  })
+
+  $('#kp-export').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = `kprep-backup-${today()}.json`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000)
+    toast('Backup downloaded.')
+  })
+  $('#kp-import').addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(String(reader.result))
+        if (!data || typeof data !== 'object' || !('checks' in data || 'scores' in data)) throw new Error('bad')
+        if (!confirm('Replace your current progress with this backup?')) return
+        state = normalize(data)
+        save()
+        renderAll(true)
+        toast('Backup imported.')
+      } catch (err) {
+        toast("That file isn't a kprep backup.")
+      } finally {
+        e.target.value = ''
+      }
+    }
+    reader.readAsText(file)
+  })
+  $('#kp-reset').addEventListener('click', () => {
+    if (!confirm('Erase all progress, scores and settings? This cannot be undone. Export a backup first if you might want it.')) return
+    state = defaults()
+    save()
+    sel = null
+    renderAll(true)
+    toast('Everything reset.')
+  })
+
+  // Clock in the monitor corner, and roll over at midnight without a reload.
+  let lastDay = today()
+  function tick() {
+    const d = new Date()
+    $('#kp-clock').textContent = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    if (today() !== lastDay) {
+      const wasToday = sel === clampDate(lastDay)
+      lastDay = today()
+      if (wasToday) sel = null
+      renderAll(false)
+    }
+  }
+  tick()
+  setInterval(tick, 15000)
+
+  renderAll(true)
+</script>
