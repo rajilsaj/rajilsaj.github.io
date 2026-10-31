@@ -466,6 +466,38 @@ export const runs: Run[] = [
     ], // only miles 1–5 visible in the screenshots
     notes: 'Long run out Morganton Rd into downtown. Awards: 10K Run, Longest Running Workout (11.08 mi), Running Workout Record (1,118 cal). Air quality 48',
   },
+  {
+    date: '2026-10-30',
+    time: '4:57 AM – 6:24 AM',
+    location: 'Fayetteville',
+    workoutTime: '1:18:10',
+    elapsedTime: '1:26:23',
+    distanceMi: 7.36,
+    activeCal: 790,
+    totalCal: 905,
+    elevationFt: 339,
+    avgPowerW: 178,
+    avgCadenceSpm: 162,
+    avgPace: '10:37',
+    avgHrBpm: 151,
+    hrZones: ['8:24', '17:47', '13:20', '25:27', '13:11'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 109, min1: 104, min2: 105 },
+    effort: 6,
+    tempF: 54,
+    humidityPct: 92,
+    splits: [
+      { time: '11:49', hr: 141 },
+      { time: '11:01', hr: 149 },
+      { time: '10:44', hr: 145 },
+      { time: '9:33', hr: 162 },
+      { time: '8:43', hr: 169 },
+      { time: '8:59', hr: 166 },
+      { time: '10:09', hr: 164 },
+      { time: '19:49', hr: 117 }, // last 0.36 mi in 7:14, stored as its per-mile pace
+    ],
+    notes: 'Early run into downtown, negative split with miles 5–6 under 9:00. Award: 10K Run. Air quality 63',
+  },
 ]
 
 /**
