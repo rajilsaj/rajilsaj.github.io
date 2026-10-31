@@ -611,7 +611,7 @@ export const pushups: Pushups[] = [
   { date: '2026-09-29', count: 21 },
   { date: '2026-09-30', count: 22 },
   { date: '2026-10-08', count: 22 },
-  { date: '2026-10-30', count: 21 },
+  { date: '2026-10-30', count: 26 },
 ]
 
 /** Sleep log. One entry per day: hours slept the night before. */
