@@ -2,22 +2,28 @@
 import Layout from '~/layouts/Layout.astro'
 
 // Kaplan nursing admission test prep tracker. Everything is computed in the
-// browser from the date and saved to localStorage, so it never needs a rebuild.
+// browser from the date and saved to localStorage first, then synced to a
+// Google Sheet through an Apps Script web app (see apps-script/README.md).
+// The token never ships in the build; it is pasted once into "Unlock editing".
+const api = import.meta.env.PUBLIC_KPREP_API ?? ''
 ---
 
 <Layout title="Kaplan prep" description="Daily tracker for the Kaplan nursing admission test: plan, vocabulary, practice scores and readiness.">
-  <div class="kp" id="kp">
+  <div class="kp" id="kp" data-api={api}>
     <header class="kp-head">
       <p class="kp-eyebrow">Kaplan nursing admission test</p>
       <h1>Prep tracker</h1>
-      <p class="kp-sub" id="kp-sub">Eleven months, seven phases, one heartbeat a day.</p>
+      <p class="kp-sub" id="kp-sub">Eight months, seven phases, one heartbeat a day.</p>
     </header>
 
     <!-- Heart monitor -->
     <section class="kp-monitor" aria-labelledby="kp-mon-title">
       <div class="kp-mon-top">
         <h2 id="kp-mon-title"><span class="kp-rec" aria-hidden="true"></span>Patient: me · study vitals</h2>
-        <span class="kp-mon-clock" id="kp-clock" aria-hidden="true"></span>
+        <div class="kp-mon-right">
+          <span class="kp-sync" id="kp-sync" data-s="local" role="status" aria-live="polite"><i aria-hidden="true"></i><span id="kp-sync-txt">Saved in this browser</span></span>
+          <span class="kp-mon-clock" id="kp-clock" aria-hidden="true"></span>
+        </div>
       </div>
       <dl class="kp-vitals">
         <div class="kp-vital">
@@ -129,7 +135,7 @@ import Layout from '~/layouts/Layout.astro'
     <section class="kp-card" aria-labelledby="kp-set-title">
       <h2 id="kp-set-title">Settings</h2>
       <form class="kp-set-form" id="kp-set-form">
-        <label>Test date<input type="date" name="testDate" min="2027-09-04" required /></label>
+        <label>Test date<input type="date" name="testDate" min="2027-06-10" required /></label>
         <label>Target score %<input type="number" name="target" min="1" max="100" step="1" required /></label>
         <label>Vocab goal<input type="number" name="vocabGoal" min="10" max="100000" step="10" required /></label>
         <button type="submit" class="kp-primary">Save settings</button>
@@ -139,7 +145,21 @@ import Layout from '~/layouts/Layout.astro'
         <label class="kp-file">Import backup<input type="file" id="kp-import" accept="application/json,.json" /></label>
         <button type="button" id="kp-reset" class="kp-danger">Reset everything</button>
       </div>
-      <p class="kp-hint">Progress is saved in this browser only. Export a backup to move it to another device.</p>
+      <p class="kp-hint" id="kp-save-hint">Progress is saved in this browser only. Export a backup to move it to another device.</p>
+      <div class="kp-unlock" id="kp-unlock" hidden>
+        <h3>Editing</h3>
+        <form class="kp-unlock-form" id="kp-unlock-form" hidden>
+          <label for="kp-token">Unlock editing<span>Paste your token once. It stays in this browser only.</span></label>
+          <div class="kp-unlock-row">
+            <input type="password" id="kp-token" name="token" autocomplete="off" spellcheck="false" placeholder="Token" required />
+            <button type="submit" class="kp-primary">Unlock</button>
+          </div>
+        </form>
+        <div class="kp-unlock-row" id="kp-locked-row" hidden>
+          <p>Editing is unlocked on this device.</p>
+          <button type="button" id="kp-lock">Lock</button>
+        </div>
+      </div>
     </section>
 
     <p class="kp-toast" id="kp-toast" role="status" aria-live="polite"></p>
@@ -235,6 +255,14 @@ import Layout from '~/layouts/Layout.astro'
   .kp-mon-top h2 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--kp-mon-dim); font-weight: 600; display: flex; align-items: center; gap: 8px; }
   .kp-rec { width: 8px; height: 8px; border-radius: 50%; background: #ff5a5a; box-shadow: 0 0 8px #ff5a5a; animation: kp-blink 1.6s steps(2, start) infinite; }
   .kp-mon-clock { font-size: 0.72rem; color: var(--kp-mon-dim); letter-spacing: 0.08em; }
+  .kp-mon-right { display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; }
+  .kp-sync { display: inline-flex; align-items: center; gap: 6px; font-size: 0.68rem; letter-spacing: 0.04em; color: var(--kp-mon-line); border: 1px solid rgba(59, 224, 160, 0.3); border-radius: 999px; padding: 2px 9px 2px 7px; white-space: nowrap; }
+  .kp-sync i { width: 7px; height: 7px; border-radius: 50%; background: var(--kp-mon-line); box-shadow: 0 0 6px var(--kp-mon-line); }
+  .kp-sync[data-s='syncing'] i { animation: kp-pulse 0.9s ease-in-out infinite; }
+  .kp-sync[data-s='offline'] { color: #f2c46b; border-color: rgba(242, 196, 107, 0.4); }
+  .kp-sync[data-s='offline'] i { background: #f2c46b; box-shadow: 0 0 6px #f2c46b; }
+  .kp-sync[data-s='readonly'], .kp-sync[data-s='local'] { color: var(--kp-mon-dim); border-color: rgba(92, 142, 121, 0.4); }
+  .kp-sync[data-s='readonly'] i, .kp-sync[data-s='local'] i { background: var(--kp-mon-dim); box-shadow: none; }
   @keyframes kp-blink { to { visibility: hidden; } }
   .kp-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0 10px; }
   .kp-vital { border-left: 2px solid rgba(59, 224, 160, 0.25); padding-left: 10px; min-width: 0; }
@@ -393,6 +421,16 @@ import Layout from '~/layouts/Layout.astro'
   .kp-file { position: relative; display: inline-flex; align-items: center; }
   .kp-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
   .kp-file:focus-within { outline: 3px solid var(--kp-teal); outline-offset: 2px; }
+  .kp .kp-file.disabled { opacity: 0.4; pointer-events: none; }
+  .kp-unlock { border-top: 1px solid var(--kp-line); padding-top: 12px; display: grid; gap: 8px; }
+  .kp-unlock[hidden], .kp-unlock [hidden] { display: none; }
+  .kp-unlock h3 { margin: 0; font-size: 0.92rem; font-weight: 650; }
+  .kp-unlock label { display: grid; gap: 2px; font-size: 0.85rem; font-weight: 550; }
+  .kp-unlock label span { font-weight: 400; color: var(--kp-muted); font-size: 0.8rem; }
+  .kp-unlock-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .kp-unlock-row p { margin: 0; font-size: 0.88rem; color: var(--kp-teal); font-weight: 550; flex: 1; }
+  .kp-unlock input { flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid var(--kp-line); border-radius: 10px; background: var(--kp-bg); color: var(--kp-ink); font-size: 0.95rem; }
+  .kp-readonly .kp-task label { cursor: default; }
 
   .kp-toast { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 20px); background: var(--kp-ink); color: var(--kp-bg); padding: 10px 16px; border-radius: 999px; font-size: 0.88rem; font-weight: 550; opacity: 0; pointer-events: none; transition: all 0.25s; z-index: 50; max-width: calc(100vw - 32px); text-align: center; }
   .kp-toast.show { opacity: 1; transform: translate(-50%, 0); }
@@ -401,6 +439,7 @@ import Layout from '~/layouts/Layout.astro'
   @keyframes kp-fall { to { transform: translate(var(--dx), 105vh) rotate(var(--r)); opacity: 0.8; } }
 
   @media (max-width: 640px) {
+    .kp-mon-clock { display: none; }
     .kp { padding: 12px; margin-inline: -8px; gap: 12px; }
     .kp-card { padding: 14px; }
     .kp-vitals { grid-template-columns: repeat(2, 1fr); row-gap: 12px; }
@@ -415,15 +454,18 @@ import Layout from '~/layouts/Layout.astro'
 
 <script>
   const KEY = 'kprep-v1'
+  const TOKEN_KEY = 'kprep-token'
+  const API = (document.getElementById('kp')?.dataset.api || '').trim()
   const START = '2026-11-02'
+  const MIN_TEST = '2027-06-10'
   const PHASES = [
     { name: 'Baseline', start: '2026-11-02', goal: 'Know the starting score per section.' },
-    { name: 'Reading habit', start: '2026-12-01', goal: 'Read daily and build vocabulary.' },
-    { name: 'Writing and grammar', start: '2027-03-01', goal: '80% on untimed writing sets.' },
-    { name: 'Science review', start: '2027-05-01', goal: 'One summary sheet per body system.' },
-    { name: 'Math tune-up', start: '2027-07-01', goal: '90% on math sets.' },
-    { name: 'Timed practice', start: '2027-08-01', goal: 'Finish every section on time.' },
-    { name: 'Simulation and taper', start: '2027-09-01', goal: 'Above target on two full practice tests.' },
+    { name: 'Reading habit', start: '2026-11-16', goal: 'Read daily and build vocabulary.' },
+    { name: 'Writing and grammar', start: '2027-01-11', goal: '80% on untimed writing sets.' },
+    { name: 'Science review', start: '2027-02-22', goal: 'One summary sheet per body system.' },
+    { name: 'Math tune-up', start: '2027-04-26', goal: '90% on math sets.' },
+    { name: 'Timed practice', start: '2027-05-17', goal: 'Finish every section on time.' },
+    { name: 'Simulation and taper', start: '2027-06-07', goal: 'Above target on two full practice tests.' },
   ]
   const GRAMMAR = ['commas', 'subject-verb agreement', 'pronouns', 'modifiers', 'parallel structure', 'apostrophes', 'verb tenses', 'sentence order in a paragraph', 'run-ons and fragments']
   const SYSTEMS = ['cardiovascular', 'respiratory', 'gastrointestinal', 'renal and urinary', 'fluids and electrolytes', 'endocrine', 'neurological', 'musculoskeletal', 'immune and reproductive']
@@ -451,20 +493,32 @@ import Layout from '~/layouts/Layout.astro'
   const isDate = (s) => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s)
 
   // ---------- state ----------
-  const defaults = () => ({ checks: {}, scores: [], settings: { testDate: '2027-10-02', target: 80, vocabGoal: 3000 } })
+  // checks: { date: [task text] }, scores + settings form the "meta" synced as one row.
+  // queue: pending writes ({ type: 'day', date } | { type: 'meta' }); values are read
+  // from the current state when sent, so the latest change always wins.
+  const defaultSettings = () => ({ testDate: '2027-07-01', target: 80, vocabGoal: 1500 })
+  const defaults = () => ({ checks: {}, scores: [], settings: defaultSettings(), queue: [], metaEdited: false })
+  function cleanSettings(s) {
+    const d = defaultSettings()
+    const set = { ...d, ...(s && typeof s === 'object' ? s : {}) }
+    if (!isDate(set.testDate) || set.testDate < MIN_TEST) set.testDate = d.testDate
+    set.target = Number(set.target) > 0 ? Math.min(100, Number(set.target)) : d.target
+    set.vocabGoal = Number(set.vocabGoal) > 0 ? Number(set.vocabGoal) : d.vocabGoal
+    return { testDate: set.testDate, target: set.target, vocabGoal: set.vocabGoal }
+  }
+  const cleanScores = (a) => (Array.isArray(a) ? a.filter((x) => x && isDate(x.date)) : [])
+  const cleanDone = (a) => (Array.isArray(a) ? a.filter((x) => typeof x === 'string') : [])
   function normalize(s) {
-    const d = defaults()
-    if (!s || typeof s !== 'object') return d
+    if (!s || typeof s !== 'object') return defaults()
     const checks = {}
     if (s.checks && typeof s.checks === 'object') {
-      for (const k in s.checks) if (isDate(k) && Array.isArray(s.checks[k])) checks[k] = s.checks[k].filter((x) => typeof x === 'string')
+      for (const k in s.checks) {
+        const v = cleanDone(s.checks[k])
+        if (isDate(k) && v.length) checks[k] = v
+      }
     }
-    const scores = Array.isArray(s.scores) ? s.scores.filter((x) => x && isDate(x.date)) : []
-    const set = { ...d.settings, ...(s.settings || {}) }
-    if (!isDate(set.testDate) || set.testDate < '2027-09-04') set.testDate = d.settings.testDate
-    set.target = Number(set.target) > 0 ? Number(set.target) : 80
-    set.vocabGoal = Number(set.vocabGoal) > 0 ? Number(set.vocabGoal) : 3000
-    return { checks, scores, settings: set }
+    const queue = Array.isArray(s.queue) ? s.queue.filter((q) => q && (q.type === 'meta' || (q.type === 'day' && isDate(q.date)))) : []
+    return { checks, scores: cleanScores(s.scores), settings: cleanSettings(s.settings), queue, metaEdited: !!s.metaEdited }
   }
   function load() {
     try {
@@ -480,7 +534,23 @@ import Layout from '~/layouts/Layout.astro'
       toast("Couldn't save in this browser. Export a backup to keep your progress.")
     }
   }
+  function getToken() {
+    try {
+      return localStorage.getItem(TOKEN_KEY) || ''
+    } catch (e) {
+      return ''
+    }
+  }
+  function setToken(t) {
+    try {
+      t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY)
+    } catch (e) {}
+    token = t
+  }
   let state = load()
+  let token = getToken()
+  // Editing is allowed when there's no backend at all, or when this device holds the token.
+  const canEdit = () => !API || !!token
 
   // ---------- plan ----------
   function plan() {
@@ -505,7 +575,7 @@ import Layout from '~/layouts/Layout.astro'
     if (between(date, P.test) <= 2) return [T('Light vocab review only'), T('Rest and go to sleep early')]
     const pi = phaseIndex(date, P)
     const ph = P.phases[pi]
-    const week = Math.floor(between(ph.start, date) / 7)
+    const inPhase = between(ph.start, date)
     const sat = weekday(date) === 6
     const sun = weekday(date) === 0
     const section = ['Reading', 'Math', 'Writing', 'Science'][between(START, date) % 4]
@@ -515,19 +585,19 @@ import Layout from '~/layouts/Layout.astro'
         list = [T('Learn 10 new words with roots', 10), T('Read one short article and summarize it in one sentence'), T('Do 10 practice questions')]
         break
       case 1:
-        list = [T('Learn 10 new words', 10), T('Read one health or science article and summarize it'), sat ? T('Do a Kaplan reading set, untimed') : T('Note 3 unknown words')]
+        list = [T('Learn 10 new words', 10), T('Read one health or science article and summarize it in one sentence'), sat ? T('Do a Kaplan reading set, untimed') : T('Note 3 unknown words from the article')]
         break
       case 2:
-        list = [T('Learn 10 new words', 10), T('Read for 10 minutes'), T(`Grammar of the week: ${GRAMMAR[week % GRAMMAR.length]}, plus 10 writing questions`)]
+        list = [T('Learn 10 new words', 10), T('Read for 10 minutes'), T(`Grammar topic: ${GRAMMAR[Math.floor(inPhase / 5) % GRAMMAR.length]}, plus 10 writing questions`)]
         break
       case 3:
-        list = [T('Review vocab and learn 5 new words', 5), T('Read for 10 minutes'), T(`Body system of the week: write the ${SYSTEMS[week % SYSTEMS.length]} summary sheet`)]
+        list = [T('Review vocab and learn 5 new words', 5), T('Read for 10 minutes'), T(`Body system of the week: write the ${SYSTEMS[Math.floor(inPhase / 7) % SYSTEMS.length]} summary sheet`)]
         break
       case 4:
         list = [T('Review vocab'), T('Read for 10 minutes'), T('Do 15 problems: conversions, ratios, dosage')]
         break
       case 5:
-        list = [T('Review vocab'), T(`Timed ${section} section`), T('Log every mistake')]
+        list = [T('Review vocab'), T(`Timed ${section} section`), T('Log every mistake in the error log')]
         break
       default:
         list = sat ? [T('Review vocab'), T('Take a full timed practice test'), T('Enter your scores in the log')] : [T('Review vocab'), T(`Timed ${section} section`)]
@@ -594,7 +664,7 @@ import Layout from '~/layouts/Layout.astro'
     t.textContent = msg
     t.classList.add('show')
     clearTimeout(toastTimer)
-    toastTimer = setTimeout(() => t.classList.remove('show'), 2600)
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800)
   }
   function confetti() {
     if (reduced) return
@@ -627,6 +697,149 @@ import Layout from '~/layouts/Layout.astro'
     requestAnimationFrame(step)
   }
 
+  // ---------- sync with the Apps Script web app ----------
+  const SYNC_TEXT = { local: 'Saved in this browser', saved: 'Saved', syncing: 'Syncing…', offline: 'Offline, will retry', readonly: 'Read-only' }
+  function setSync(s) {
+    const chip = $('#kp-sync')
+    chip.dataset.s = s
+    $('#kp-sync-txt').textContent = SYNC_TEXT[s]
+  }
+  function idleStatus() {
+    if (!API) return 'local'
+    if (!token) return 'readonly'
+    return state.queue.length ? 'offline' : 'saved'
+  }
+  const metaOf = (s) => ({ ...s.settings, scores: s.scores })
+  function enqueue(op) {
+    if (!API || !token) return
+    if (op.type === 'meta') {
+      state.metaEdited = true
+      if (!state.queue.some((q) => q.type === 'meta')) state.queue.push(op)
+    } else if (!state.queue.some((q) => q.type === 'day' && q.date === op.date)) state.queue.push(op)
+    save()
+    flushSoon()
+  }
+  async function post(body) {
+    const res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ ...body, token }),
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    return res.json()
+  }
+  let flushing = false
+  let retryTimer = 0
+  let backoff = 0
+  function flushSoon(delay = 0) {
+    clearTimeout(retryTimer)
+    retryTimer = setTimeout(flush, delay)
+  }
+  async function flush() {
+    if (!API || !token || flushing) return setSync(idleStatus())
+    if (!state.queue.length) return setSync('saved')
+    if (!navigator.onLine) return setSync('offline')
+    flushing = true
+    setSync('syncing')
+    try {
+      while (state.queue.length && token) {
+        const op = state.queue[0]
+        const body = op.type === 'day' ? { type: 'day', date: op.date, done: state.checks[op.date] || [] } : { type: 'meta', meta: metaOf(state) }
+        const res = await post(body)
+        if (res && res.error === 'unauthorized') {
+          setToken('')
+          renderAll(false)
+          toast('That token was rejected. Editing is locked again.')
+          break
+        }
+        if (!res || !res.ok) throw new Error((res && res.error) || 'Bad response')
+        // Only drop the op if nothing re-queued the same key while it was in flight.
+        if (state.queue[0] === op) state.queue.shift()
+        if (op.type === 'meta' && !state.queue.some((q) => q.type === 'meta')) state.metaEdited = false
+        save()
+      }
+      backoff = 0
+      setSync(idleStatus())
+    } catch (err) {
+      setSync('offline')
+      backoff = Math.min(backoff + 1, 6)
+      flushSoon(Math.min(60000, 2000 * 2 ** (backoff - 1)))
+    } finally {
+      flushing = false
+    }
+  }
+
+  // Pull the Sheet and merge it in. Days: the Sheet wins, except days with a local
+  // change still waiting to upload. Meta: whichever side has more scores wins; an
+  // unsynced local edit with the same count but different content asks.
+  async function pull() {
+    if (!API) return
+    if (token) setSync('syncing')
+    let data
+    try {
+      const res = await fetch(API, { method: 'GET' })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      data = await res.json()
+      if (!data || data.error) throw new Error((data && data.error) || 'Bad response')
+    } catch (err) {
+      setSync(token ? 'offline' : 'readonly')
+      if (token && state.queue.length) flushSoon(4000)
+      return
+    }
+    const serverDays = {}
+    if (data.days && typeof data.days === 'object') {
+      for (const k in data.days) {
+        // Empty rows matter: they record a day that was cleared on another device.
+        if (isDate(k)) serverDays[k] = cleanDone(data.days[k])
+      }
+    }
+    const serverMeta = data.meta && typeof data.meta === 'object' ? { settings: cleanSettings(data.meta), scores: cleanScores(data.meta.scores) } : null
+
+    if (!token) {
+      // Read-only visitors mirror the Sheet exactly.
+      state.checks = {}
+      for (const k in serverDays) if (serverDays[k].length) state.checks[k] = serverDays[k]
+      if (serverMeta) {
+        state.settings = serverMeta.settings
+        state.scores = serverMeta.scores
+      }
+      state.queue = []
+      state.metaEdited = false
+    } else {
+      const pendingDays = new Set(state.queue.filter((q) => q.type === 'day').map((q) => q.date))
+      for (const k in serverDays) {
+        if (pendingDays.has(k)) continue
+        if (serverDays[k].length) state.checks[k] = serverDays[k]
+        else delete state.checks[k]
+      }
+      for (const k in state.checks) if (!(k in serverDays) && !pendingDays.has(k)) state.queue.push({ type: 'day', date: k })
+      const pendingMeta = state.queue.some((q) => q.type === 'meta')
+      if (!serverMeta) {
+        if (!pendingMeta) state.queue.push({ type: 'meta' })
+      } else if (JSON.stringify(serverMeta) !== JSON.stringify({ settings: state.settings, scores: state.scores })) {
+        const takeServer = () => {
+          state.settings = serverMeta.settings
+          state.scores = serverMeta.scores
+          state.queue = state.queue.filter((q) => q.type !== 'meta')
+          state.metaEdited = false
+        }
+        const keepLocal = () => {
+          if (!pendingMeta) state.queue.push({ type: 'meta' })
+          state.metaEdited = true
+        }
+        if (!state.metaEdited) takeServer()
+        else if (serverMeta.scores.length > state.scores.length) takeServer()
+        else if (serverMeta.scores.length < state.scores.length) keepLocal()
+        else if (confirm('Your settings or scores on this device differ from the saved copy in the Sheet.\n\nOK keeps the Sheet copy. Cancel keeps this device and uploads it.')) takeServer()
+        else keepLocal()
+      }
+    }
+    save()
+    renderAll(false)
+    if (token) flushSoon()
+    else setSync('readonly')
+  }
+
   let sel = null
   let C = compute()
 
@@ -640,7 +853,8 @@ import Layout from '~/layouts/Layout.astro'
     countUp($('#v-words'), words)
     $('#v-words-goal').textContent = `/ ${state.settings.vocabGoal}`
     const sub = $('#kp-sub')
-    if (now < START) sub.textContent = `The plan starts ${fmtLong(START)}, in ${between(now, START)} day${between(now, START) === 1 ? '' : 's'}. Test day is ${fmtLong(P.test)}.`
+    const wait = between(now, START)
+    if (now < START) sub.textContent = `The plan starts ${fmtLong(START)}, in ${wait} day${wait === 1 ? '' : 's'}. Test day is ${fmtLong(P.test)}.`
     else if (now > P.last) sub.textContent = now === P.test ? 'Test day. You did the work. Go get it.' : `Test day was ${fmtLong(P.test)}.`
     else sub.textContent = `Test day is ${fmtLong(P.test)}. One heartbeat a day gets you there.`
   }
@@ -674,8 +888,7 @@ import Layout from '~/layouts/Layout.astro'
     $('#ecg-miss').setAttribute('d', miss)
     const fx = Math.max(0, Math.min(n, ti + 1)) * W
     $('#ecg-future').setAttribute('d', fx < n * W ? `M${fx} ${BASE} L${n * W} ${BASE}` : '')
-    const grid = $('#ecg-grid')
-    grid.innerHTML = P.phases
+    $('#ecg-grid').innerHTML = P.phases
       .slice(1)
       .map((p) => {
         const x = between(START, p.start) * W
@@ -685,15 +898,14 @@ import Layout from '~/layouts/Layout.astro'
     const dot = $('#kp-ecg-dot')
     if (ti >= 0 && ti < n) {
       dot.hidden = false
-      dot.style.left = (((ti + 1) * W) / (n * W)) * 100 + '%'
+      dot.style.left = ((ti + 1) / n) * 100 + '%'
       dot.style.top = (BASE / H) * 100 + '%'
     } else dot.hidden = true
     const done = days.filter((d) => d.f > 0).length
     const missed = days.filter((d) => d.date < now && d.f === 0).length
     $('#kp-ecg-desc').textContent = `Study heartbeat across ${n} plan days: ${done} days with work done, ${missed} missed days, ${Math.max(0, n - Math.max(0, ti))} days ahead.`
-    const labels = $('#kp-phase-labels')
     const cur = now >= START && now <= P.last ? phaseIndex(now, P) : -1
-    labels.innerHTML = P.phases
+    $('#kp-phase-labels').innerHTML = P.phases
       .map((p, i) => {
         const left = (between(START, p.start) / n) * 100
         return `<span class="kp-pl${i % 3 ? ` r${i % 3}` : ''}${left > 80 ? ' end' : ''}${i === cur ? ' now' : ''}" style="left:${left}%"><b><span class="t">${esc(p.name)}</span><span class="n">${i + 1}</span></b>${fmt(p.start, { month: 'short' })}</span>`
@@ -722,8 +934,11 @@ import Layout from '~/layouts/Layout.astro'
     $('#kp-day-phase').textContent = `Phase ${pi + 1} · ${ph.name} · day ${dayIn} of ${len}`
     $('#kp-day-date').textContent = (sel === now ? 'Today, ' : '') + fmtLong(sel)
     const future = sel > now
+    const locked = future || !canEdit()
+    const wait = between(now, START)
     let note = ''
-    if (future) note = now < START && sel === START ? `Day one. Opens in ${between(now, START)} day${between(now, START) === 1 ? '' : 's'}. You can look, but you can't check it off yet.` : "This day hasn't happened yet. You can look ahead, but you can't check it off."
+    if (future) note = now < START && sel === START ? `Day one. Opens in ${wait} day${wait === 1 ? '' : 's'}. You can look, but you can't check it off yet.` : "This day hasn't happened yet. You can look ahead, but you can't check it off."
+    else if (!canEdit()) note = 'Read-only. Unlock editing in settings to check off tasks.'
     else if (between(sel, P.test) <= 2) note = 'Almost there. Keep it light.'
     $('#kp-day-note').textContent = note
     const list = $('#kp-tasks')
@@ -733,9 +948,9 @@ import Layout from '~/layouts/Layout.astro'
       const li = el('li', 'kp-task')
       const on = checked.includes(t.text)
       li.classList.toggle('done', on)
-      li.classList.toggle('locked', future)
+      li.classList.toggle('locked', locked)
       const id = `kp-t-${i}`
-      li.innerHTML = `<label for="${id}"><input type="checkbox" id="${id}" ${on ? 'checked' : ''} ${future ? 'disabled' : ''} /><span class="kp-task-text">${esc(t.text)}${t.words ? `<span class="kp-badge">+${t.words} words</span>` : ''}</span></label>`
+      li.innerHTML = `<label for="${id}"><input type="checkbox" id="${id}" ${on ? 'checked' : ''} ${locked ? 'disabled' : ''} /><span class="kp-task-text">${esc(t.text)}${t.words ? `<span class="kp-badge">+${t.words} words</span>` : ''}</span></label>`
       li.querySelector('input').addEventListener('change', (e) => toggleTask(sel, t.text, e.target.checked, li))
       list.appendChild(li)
     })
@@ -753,11 +968,13 @@ import Layout from '~/layouts/Layout.astro'
     $('#kp-ring').setAttribute('aria-label', `${done} of ${total} tasks done`)
   }
   function toggleTask(date, text, on, li) {
+    if (!canEdit()) return
     const list = new Set(state.checks[date] || [])
     on ? list.add(text) : list.delete(text)
     if (list.size) state.checks[date] = [...list]
     else delete state.checks[date]
     save()
+    enqueue({ type: 'day', date })
     li.classList.toggle('done', on)
     const before = C.days[between(START, date)].f
     C = compute()
@@ -791,15 +1008,15 @@ import Layout from '~/layouts/Layout.astro'
     const target = state.settings.target
     const status = $('#kp-status')
     const b = Math.round(behind * 10) / 10
-    status.classList.toggle('behind', now >= START && b > 2)
+    status.classList.toggle('behind', now >= START && now <= P.last && b > 2)
     if (now < START) status.textContent = `Not started yet. Day one is ${fmtLong(START)}.`
     else if (now > P.last) status.textContent = `The plan is over. Final readiness: ${Math.round(readiness)}%.`
-    else if (b <= 2) status.textContent = b <= 0 ? 'On track. You are fully caught up.' : `On track. ${b} day${b === 1 ? '' : 's'} of work open, which is fine.`
+    else if (b <= 2) status.textContent = b <= 0 ? 'On track. Fully caught up.' : `On track. ${b} day${b === 1 ? '' : 's'} of work open, which is fine.`
     else status.textContent = `${b} days of work behind. Try doubling up on a few days this week to catch up.`
     const bars = [
       ['Plan completed', planPct, 35, `${Math.round(planPct * 100)}% of all plan days`],
       ['Vocabulary', vocabPct, 25, `${words} of ${state.settings.vocabGoal} words`],
-      ['Practice scores', practicePct, 40, `vs your ${target}% target`],
+      ['Practice scores', practicePct, 40, `vs the ${target}% target`],
     ]
     $('#kp-bars').innerHTML = bars
       .map(
@@ -828,10 +1045,10 @@ import Layout from '~/layouts/Layout.astro'
     let lastMonth = -1
     for (let c = 0; c < cols; c++) {
       const first = addDays(START, c * 7 - lead)
-      const m = parse(first < START ? START : first).getMonth()
-      const s = el('span', '', m !== lastMonth ? fmt(first < START ? START : first, { month: 'short' }) : '')
+      const shown = first < START ? START : first
+      const m = parse(shown).getMonth()
+      months.appendChild(el('span', '', m !== lastMonth ? fmt(shown, { month: 'short' }) : ''))
       lastMonth = m
-      months.appendChild(s)
     }
     const frag = document.createDocumentFragment()
     for (const d of days) {
@@ -890,10 +1107,11 @@ import Layout from '~/layouts/Layout.astro'
     }
     const cell = (v) => (typeof v === 'number' ? `<td class="${v >= target ? 'hit' : ''}">${v}%</td>` : '<td>–</td>')
     const avg = (vals) => (vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : null)
+    const dis = canEdit() ? '' : ' disabled'
     body.innerHTML = rows
       .map((r) => {
         const vals = SECTIONS.map((k) => r[k]).filter((v) => typeof v === 'number')
-        return `<tr><td>${fmt(r.date, { month: 'short', day: 'numeric', year: 'numeric' })}</td>${SECTIONS.map((k) => cell(r[k])).join('')}${cell(avg(vals))}<td><button type="button" data-del="${r.id}" aria-label="Delete scores from ${fmtLong(r.date)}">✕</button></td></tr>`
+        return `<tr><td>${fmt(r.date, { month: 'short', day: 'numeric', year: 'numeric' })}</td>${SECTIONS.map((k) => cell(r[k])).join('')}${cell(avg(vals))}<td><button type="button" data-del="${r.id}" aria-label="Delete scores from ${fmtLong(r.date)}"${dis}>✕</button></td></tr>`
       })
       .join('')
     const colAvg = SECTIONS.map((k) => avg(rows.map((r) => r[k]).filter((v) => typeof v === 'number')))
@@ -901,12 +1119,26 @@ import Layout from '~/layouts/Layout.astro'
     foot.innerHTML = `<tr><td>Average</td>${colAvg.map(cell).join('')}${cell(avg(all))}<td></td></tr>`
   }
 
-  // ---------- render: settings ----------
+  // ---------- render: settings + editing lock ----------
   function renderSettings() {
     const f = $('#kp-set-form')
     f.elements.testDate.value = state.settings.testDate
     f.elements.target.value = state.settings.target
     f.elements.vocabGoal.value = state.settings.vocabGoal
+    const off = !canEdit()
+    for (const form of [f, $('#kp-score-form')]) for (const c of form.elements) c.disabled = off
+    $('#kp-reset').disabled = off
+    $('#kp-import').disabled = off
+    $('#kp-import').parentElement.classList.toggle('disabled', off)
+    $('#kp').classList.toggle('kp-readonly', off)
+    if (API) {
+      $('#kp-unlock').hidden = false
+      $('#kp-unlock-form').hidden = !!token
+      $('#kp-locked-row').hidden = !token
+      $('#kp-save-hint').textContent = token
+        ? 'Changes save in this browser right away, then sync to the Google Sheet in the background.'
+        : 'Showing the saved progress from the Google Sheet. Unlock editing to make changes.'
+    }
   }
 
   function renderAll(animate) {
@@ -927,13 +1159,14 @@ import Layout from '~/layouts/Layout.astro'
   $('#kp-today').addEventListener('click', () => go(C.now))
 
   const scoreForm = $('#kp-score-form')
-  scoreForm.date.value = today()
+  scoreForm.elements.date.value = today()
   scoreForm.addEventListener('submit', (e) => {
     e.preventDefault()
-    const entry = { id: Date.now(), date: scoreForm.date.value }
+    if (!canEdit()) return
+    const entry = { id: Date.now(), date: scoreForm.elements.date.value }
     let any = false
     for (const k of SECTIONS) {
-      const raw = scoreForm[k].value.trim()
+      const raw = scoreForm.elements[k].value.trim()
       if (raw === '') continue
       const v = Math.round(Number(raw))
       if (!(v >= 0 && v <= 100)) return toast(`${LABEL[k]} must be between 0 and 100.`)
@@ -944,16 +1177,18 @@ import Layout from '~/layouts/Layout.astro'
     if (!any) return toast('Enter at least one section score.')
     state.scores.push(entry)
     save()
-    for (const k of SECTIONS) scoreForm[k].value = ''
+    enqueue({ type: 'meta' })
+    for (const k of SECTIONS) scoreForm.elements[k].value = ''
     renderAll(false)
     toast('Scores added.')
   })
   $('#kp-score-table').addEventListener('click', (e) => {
     const b = e.target.closest('[data-del]')
-    if (!b) return
+    if (!b || !canEdit()) return
     if (!confirm('Delete this score entry?')) return
     state.scores = state.scores.filter((s) => String(s.id) !== b.dataset.del)
     save()
+    enqueue({ type: 'meta' })
     renderAll(false)
     toast('Entry deleted.')
   })
@@ -961,20 +1196,23 @@ import Layout from '~/layouts/Layout.astro'
   const setForm = $('#kp-set-form')
   setForm.addEventListener('submit', (e) => {
     e.preventDefault()
+    if (!canEdit()) return
     const testDate = setForm.elements.testDate.value
     const target = Math.round(Number(setForm.elements.target.value))
     const vocabGoal = Math.round(Number(setForm.elements.vocabGoal.value))
-    if (!isDate(testDate) || testDate < '2027-09-04') return toast('The test date must be on or after Sep 4, 2027, so every phase fits.')
+    if (!isDate(testDate) || testDate < MIN_TEST) return toast(`The test date must be on or after ${fmtShort(MIN_TEST)}, 2027, so every phase fits.`)
     if (!(target >= 1 && target <= 100)) return toast('Target must be between 1 and 100.')
     if (!(vocabGoal >= 10)) return toast('Vocab goal must be at least 10.')
     state.settings = { testDate, target, vocabGoal }
     save()
+    enqueue({ type: 'meta' })
     renderAll(true)
     toast('Settings saved.')
   })
 
   $('#kp-export').addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' })
+    const { checks, scores, settings } = state
+    const blob = new Blob([JSON.stringify({ checks, scores, settings }, null, 2)], { type: 'application/json' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
     a.download = `kprep-backup-${today()}.json`
@@ -984,17 +1222,26 @@ import Layout from '~/layouts/Layout.astro'
     setTimeout(() => URL.revokeObjectURL(a.href), 1000)
     toast('Backup downloaded.')
   })
+  // After replacing everything locally, queue every day that changed plus the meta row.
+  function queueAllChanges(oldChecks) {
+    const dates = new Set([...Object.keys(oldChecks), ...Object.keys(state.checks)])
+    for (const date of dates) enqueue({ type: 'day', date })
+    enqueue({ type: 'meta' })
+  }
   $('#kp-import').addEventListener('change', (e) => {
     const file = e.target.files && e.target.files[0]
-    if (!file) return
+    if (!file || !canEdit()) return
     const reader = new FileReader()
     reader.onload = () => {
       try {
         const data = JSON.parse(String(reader.result))
         if (!data || typeof data !== 'object' || !('checks' in data || 'scores' in data)) throw new Error('bad')
         if (!confirm('Replace your current progress with this backup?')) return
-        state = normalize(data)
+        const old = state.checks
+        const queue = state.queue
+        state = normalize({ ...data, queue })
         save()
+        queueAllChanges(old)
         renderAll(true)
         toast('Backup imported.')
       } catch (err) {
@@ -1006,12 +1253,63 @@ import Layout from '~/layouts/Layout.astro'
     reader.readAsText(file)
   })
   $('#kp-reset').addEventListener('click', () => {
-    if (!confirm('Erase all progress, scores and settings? This cannot be undone. Export a backup first if you might want it.')) return
-    state = defaults()
+    if (!canEdit()) return
+    const msg = API ? 'Erase all progress, scores and settings, here and in the Google Sheet? This cannot be undone. Export a backup first if you might want it.' : 'Erase all progress, scores and settings? This cannot be undone. Export a backup first if you might want it.'
+    if (!confirm(msg)) return
+    const old = state.checks
+    state = { ...defaults(), queue: state.queue }
     save()
+    queueAllChanges(old)
     sel = null
     renderAll(true)
     toast('Everything reset.')
+  })
+
+  $('#kp-unlock-form').addEventListener('submit', async (e) => {
+    e.preventDefault()
+    const input = $('#kp-token')
+    const t = input.value.trim()
+    if (!t) return
+    setSync('syncing')
+    try {
+      const prev = token
+      token = t
+      const res = await post({ type: 'ping' })
+      token = prev
+      if (res && res.error === 'unauthorized') {
+        setSync(idleStatus())
+        return toast('That token was rejected.')
+      }
+      if (!res || !res.ok) throw new Error('bad')
+    } catch (err) {
+      token = ''
+      setSync('readonly')
+      return toast("Couldn't reach the Sheet to check the token. Try again when you're online.")
+    }
+    setToken(t)
+    input.value = ''
+    renderAll(false)
+    toast('Editing unlocked on this device.')
+    pull()
+  })
+  $('#kp-lock').addEventListener('click', () => {
+    if (state.queue.length && !confirm('Some changes have not synced yet. Lock anyway? They stay in this browser and upload the next time you unlock.')) return
+    setToken('')
+    renderAll(false)
+    setSync(idleStatus())
+    toast('Editing locked.')
+  })
+
+  window.addEventListener('online', () => {
+    backoff = 0
+    if (token) flushSoon()
+    else pull()
+  })
+  window.addEventListener('offline', () => {
+    if (token) setSync('offline')
+  })
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && API && !state.queue.length && !flushing) pull()
   })
 
   // Clock in the monitor corner, and roll over at midnight without a reload.
@@ -1030,4 +1328,6 @@ import Layout from '~/layouts/Layout.astro'
   setInterval(tick, 15000)
 
   renderAll(true)
+  setSync(idleStatus())
+  pull()
 </script>
