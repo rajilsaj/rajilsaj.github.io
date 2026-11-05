@@ -527,6 +527,33 @@ export const runs: Run[] = [
     ], // only miles 1–5 visible in the screenshots
     notes: 'Halloween long run out Morganton Rd into downtown. Award: 10K Run. Air quality 58',
   },
+  {
+    date: '2026-11-04',
+    time: '5:13 PM – 5:52 PM',
+    location: 'Fayetteville',
+    workoutTime: '38:52',
+    distanceMi: 4.4,
+    activeCal: 482,
+    totalCal: 539,
+    elevationFt: 183,
+    avgPowerW: 220,
+    avgCadenceSpm: 175,
+    avgPace: '8:50',
+    avgHrBpm: 174,
+    hrZones: ['0:52', '0:25', '1:50', '4:16', '31:29'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 179, min1: 146, min2: 139 },
+    tempF: 74,
+    humidityPct: 77,
+    splits: [
+      { time: '8:57' },
+      { time: '8:58' },
+      { time: '8:35' },
+      { time: '8:50' },
+      { time: '8:49' }, // last 0.40 mi in 3:32, stored as its per-mile pace
+    ],
+    notes: 'Evening tempo run along the Cape Fear River, fastest average pace yet (8:50/mi) with 31 min in zone 5. Air quality 45',
+  },
 ]
 
 /**
