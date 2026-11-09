@@ -582,6 +582,36 @@ export const runs: Run[] = [
     ], // only miles 1–5 visible in the screenshots
     notes: '10K race along the Cape Fear River. Awards: 10K Run + Fastest 10K (54:57). Air quality 50',
   },
+  {
+    date: '2026-11-09',
+    time: '5:20 AM – 6:24 AM',
+    location: 'Fayetteville',
+    workoutTime: '1:01:30',
+    elapsedTime: '1:04:01',
+    distanceMi: 5.28,
+    activeCal: 518,
+    totalCal: 608,
+    elevationFt: 186,
+    avgPowerW: 165,
+    avgCadenceSpm: 163,
+    avgPace: '11:38',
+    avgHrBpm: 141,
+    hrZones: ['10:59', '11:42', '38:36', '0:11', '0:00'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 107, min1: 112, min2: 99 },
+    effort: 5,
+    tempF: 44,
+    humidityPct: 96,
+    splits: [
+      { time: '11:30', hr: 136 },
+      { time: '10:34', hr: 146 },
+      { time: '10:52', hr: 147 },
+      { time: '10:53', hr: 150 },
+      { time: '12:24', hr: 141 },
+      { time: '18:09', hr: 115 }, // last 0.28 mi in 5:14, stored as its per-mile pace
+    ],
+    notes: 'Easy recovery run the morning after the 10K race, laps through downtown. Award: 5K Run. Air quality 59',
+  },
 ]
 
 /**
