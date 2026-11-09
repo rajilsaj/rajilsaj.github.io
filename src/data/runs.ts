@@ -554,6 +554,34 @@ export const runs: Run[] = [
     ],
     notes: 'Evening tempo run along the Cape Fear River, fastest average pace yet (8:50/mi) with 31 min in zone 5. Air quality 45',
   },
+  {
+    date: '2026-11-08',
+    time: '7:00 AM – 7:56 AM',
+    location: 'Fayetteville',
+    workoutTime: '56:17',
+    distanceMi: 6.29,
+    activeCal: 695,
+    totalCal: 778,
+    elevationFt: 262,
+    avgPowerW: 218,
+    avgCadenceSpm: 170,
+    avgPace: '8:56',
+    avgHrBpm: 170,
+    hrZones: ['0:00', '0:00', '0:06', '25:41', '29:19'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 152, min1: 133, min2: 125 },
+    effort: 7,
+    tempF: 40,
+    humidityPct: 93,
+    splits: [
+      { time: '8:49', hr: 164 },
+      { time: '8:56', hr: 169 },
+      { time: '9:08', hr: 169 },
+      { time: '8:15', hr: 173 },
+      { time: '9:05', hr: 172 },
+    ], // only miles 1–5 visible in the screenshots
+    notes: '10K race along the Cape Fear River. Awards: 10K Run + Fastest 10K (54:57). Air quality 50',
+  },
 ]
 
 /**
