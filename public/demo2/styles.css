@@ -519,7 +519,10 @@ blockquote { margin: 0; }
 /* Logo double-wave at every dark → light transition */
 .bwave { position: absolute; left: 0; right: 0; top: -1px; width: 100%; height: clamp(46px, 6vw, 86px); pointer-events: none; z-index: 1; }
 .bwave__band { fill: var(--navy); }
-.bwave__line { fill: none; stroke: var(--gold); stroke-width: 7; vector-effect: non-scaling-stroke; }
+.bwave__line { fill: none; stroke-width: 6; vector-effect: non-scaling-stroke; }
+.bwave__line--g { stroke: #009543; }
+.bwave__line--y { stroke: #fbde4a; }
+.bwave__line--r { stroke: #dc241f; }
 .bwave--n2 .bwave__band { fill: var(--navy-2); }
 
 /* Watermark drop */

@@ -362,10 +362,12 @@ form.addEventListener('submit', (e) => {
 
 /* =============== BRAND: logo waves + scroll gauge =============== */
 (() => {
-  // the logo's double wave (band + gold stripe) on every dark → light edge
+  // the logo's wave in the Congolese flag colours (green / yellow / red) on every dark → light edge
   const svg = (n2) => `<svg class="bwave${n2 ? ' bwave--n2' : ''}" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
     <path class="bwave__band" d="M0,0 H1440 V38 C1260,64 1080,14 900,34 C700,58 520,74 300,46 C180,30 80,30 0,40 Z" />
-    <path class="bwave__line" d="M0,62 C80,52 180,52 300,68 C520,96 700,80 900,56 C1080,36 1260,86 1440,60" />
+    <path class="bwave__line bwave__line--g" transform="translate(0 0)" d="M0,58 C80,48 180,48 300,64 C520,92 700,76 900,52 C1080,32 1260,82 1440,56" />
+    <path class="bwave__line bwave__line--y" transform="translate(0 6)" d="M0,58 C80,48 180,48 300,64 C520,92 700,76 900,52 C1080,32 1260,82 1440,56" />
+    <path class="bwave__line bwave__line--r" transform="translate(0 12)" d="M0,58 C80,48 180,48 300,64 C520,92 700,76 900,52 C1080,32 1260,82 1440,56" />
   </svg>`;
   ['.about', '.sectors', '.process', '.stamps', '.contact'].forEach((sel) => {
     const el = $(sel); if (el) el.insertAdjacentHTML('afterbegin', svg(sel === '.contact'));
