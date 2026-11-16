@@ -1,6 +1,22 @@
-/* DB Services — concept demo. Vanilla JS, no build step. Nothing is sent or stored. */
+/* DBS Congo — concept demo. Vanilla JS, no build step. Nothing is sent or stored. */
 
-/* =============== CONTENT (from the DB Services brochure) =============== */
+/* =============== CONTENT (DBS Congo brochure + letterhead) =============== */
+/* Core business: petroleum trading. Copy is draft, to be validated by DBS Congo. */
+const TRADING = [
+  { id: 'negoce', n: '01', title: 'Négoce', img: 'img/map.webp', alt: 'Carte du monde stylisée',
+    text: "Achat et revente de produits pétroliers, en lien avec un réseau de fournisseurs et partenaires internationaux (Europe, Turquie, Émirats Arabes Unis, Inde, Chine, Afrique du Sud).",
+    items: ['Sourcing auprès de partenaires internationaux', 'Négociation et contractualisation', 'Suivi des commandes et des cargaisons', 'Conformité aux standards internationaux'] },
+  { id: 'import', n: '02', title: 'Import-Export', img: 'img/logistique.webp', alt: 'Agents logistiques devant un camion porte-conteneur',
+    text: "Gestion des flux d'importation et d'exportation : formalités, dédouanement et coordination avec les autorités et les transitaires.",
+    items: ['Formalités import / export', 'Dédouanement', 'Coordination portuaire', 'Documentation commerciale'] },
+  { id: 'transport', n: '03', title: 'Transport', img: 'img/proj-equipements.webp', alt: 'Camion de transport lourd sur un site',
+    text: "Acheminement sécurisé des produits sur l'ensemble du territoire national, avec une logistique maîtrisée du point de chargement jusqu'au client.",
+    items: ['Transport de marchandises', 'Couverture nationale', 'Respect des normes HSE', 'Suivi des livraisons'] },
+  { id: 'logistique', n: '04', title: 'Logistique', img: 'img/proj-entrepot.webp', alt: 'Entrepôt avec rayonnages et chariots élévateurs',
+    text: "Stockage, manutention et gestion des stocks pour garantir la disponibilité des produits, jusqu'à la livraison du dernier kilomètre.",
+    items: ['Entreposage sécurisé', 'Manutention portuaire', 'Gestion de stocks', 'Livraison dernier kilomètre'] },
+];
+
 const SERVICES = [
   { id: 'fourniture', n: '01', title: 'Fourniture de biens', img: 'img/fourniture.webp', alt: 'Deux agents en gilet de sécurité vérifient un stock en entrepôt',
     text: "Approvisionnement en matériels, équipements et consommables pour les secteurs industriels, miniers et institutionnels. Sélection, acheminement et livraison de produits conformes aux standards internationaux.",
@@ -23,8 +39,8 @@ const SERVICES = [
 ];
 
 const SECTORS = [
+  ['Pg', 'Pétrole & Gaz', 'Notre cœur de métier : trading, transport et logistique pétrolière.', true],
   ['Mi', 'Mines', 'Équipements, pièces et logistique pour sites miniers.'],
-  ['Pg', 'Pétrole & Gaz', 'Fournitures et maintenance pour l\'amont et l\'aval.'],
   ['En', 'Énergie', 'Solaire, groupes électrogènes, réseaux BT/MT.'],
   ['Bt', 'BTP', 'Bâtiments, routes et ouvrages d\'art.'],
   ['In', 'Industrie', 'Équipements lourds et de précision.'],
@@ -87,9 +103,9 @@ $('#track').innerHTML = SERVICES.map((s) => `
     <div><a class="btn btn--gold" href="#contact">Parlons-en <span class="arr">→</span></a></div>
   </div>`;
 
-$('#ptable').innerHTML = SECTORS.map(([sym, name, desc], i) => `
-  <li class="el rv" tabindex="0" aria-label="${name} : ${desc}">
-    <span class="el__z"><span>${String(i + 1).padStart(2, '0')}</span><span>DB</span></span>
+$('#ptable').innerHTML = SECTORS.map(([sym, name, desc, star], i) => `
+  <li class="el rv${star ? ' el--star' : ''}" tabindex="0" aria-label="${name} : ${desc}">
+    <span class="el__z"><span>${String(i + 1).padStart(2, '0')}</span><span>${star ? '★ DBS' : 'DBS'}</span></span>
     <span class="el__sym" aria-hidden="true">${sym}</span>
     <span class="el__name" aria-hidden="true">${name}</span>
     <span class="el__desc" aria-hidden="true">${desc}</span>
@@ -99,7 +115,7 @@ $('#stack').innerHTML = PROJECTS.map(([tag, title, img, alt], i) => `
   <article class="pcard" style="--i:${i}">
     <img src="${img}" alt="${alt}" loading="lazy" width="1312" height="816" />
     <div class="pcard__body">
-      <div><span class="pcard__tag">${tag}</span><h3>${title}</h3><p class="pcard__by mono">Projet réalisé par DB Services</p></div>
+      <div><span class="pcard__tag">${tag}</span><h3>${title}</h3><p class="pcard__by mono">Projet réalisé par DBS Congo</p></div>
       <span class="pcard__n" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>
     </div>
   </article>`).join('');
@@ -111,14 +127,14 @@ $('#stamps').innerHTML = STAMPS.map(([name, lines], i) => `
         <defs><path id="c${i}" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0" /></defs>
         <circle cx="100" cy="100" r="96" fill="none" stroke="currentColor" stroke-width="3" />
         <circle cx="100" cy="100" r="54" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 4" />
-        <g class="stamp__ring"><text font-family="JetBrains Mono, monospace" font-size="13" font-weight="600" letter-spacing="3.2" fill="currentColor"><textPath href="#c${i}">DB SERVICES ★ ENGAGEMENT ★ BRAZZAVILLE ★ </textPath></text></g>
+        <g class="stamp__ring"><text font-family="JetBrains Mono, monospace" font-size="13" font-weight="600" letter-spacing="3.2" fill="currentColor"><textPath href="#c${i}">DBS CONGO ★ ENGAGEMENT ★ BRAZZAVILLE ★ </textPath></text></g>
       </svg>
       <b>${name}</b>
     </div>
     <ul>${lines.map((l) => `<li>${l}</li>`).join('')}</ul>
   </div>`).join('');
 
-$('#picks').innerHTML = SERVICES.map((s) => `<label><input type="checkbox" name="svc" value="${s.id}" /><span>${s.title}</span></label>`).join('');
+$('#picks').innerHTML = [{ id: 'trading', title: 'Trading pétrolier' }, ...SERVICES].map((s) => `<label><input type="checkbox" name="svc" value="${s.id}" /><span>${s.title}</span></label>`).join('');
 $('#yr').textContent = new Date().getFullYear();
 
 /* =============== MAP ARCS =============== */
@@ -178,27 +194,62 @@ const spy = new IntersectionObserver((es) => es.forEach((en) => {
 }), { rootMargin: '-45% 0px -50% 0px' });
 navLinks.forEach((a) => { const t = $(a.hash); t && spy.observe(t); });
 
-/* =============== HERO LENS =============== */
+/* =============== HERO: drop parallax =============== */
 (() => {
-  const hero = $('.hero');
-  let tx = 0.7, ty = innerWidth < 640 ? 0.2 : 0.45, cx = tx, cy = ty, auto = true, t0 = performance.now(), visible = true;
-  const set = () => { hero.style.setProperty('--x', (cx * 100).toFixed(2) + '%'); hero.style.setProperty('--y', (cy * 100).toFixed(2) + '%'); };
+  const hero = $('.hero'), drop = $('.drop');
+  if (RM || !drop) return;
   hero.addEventListener('pointermove', (e) => {
     if (e.pointerType === 'touch') return;
     const r = hero.getBoundingClientRect();
-    tx = (e.clientX - r.left) / r.width; ty = (e.clientY - r.top) / r.height; auto = false;
+    const dx = (e.clientX - r.left) / r.width - 0.5, dy = (e.clientY - r.top) / r.height - 0.5;
+    drop.style.transform = `translate3d(${dx * -24}px, ${dy * -18}px, 0) rotate(${dx * 6}deg)`;
   });
-  hero.addEventListener('pointerleave', () => { auto = true; });
-  new IntersectionObserver(([en]) => { visible = en.isIntersecting; }).observe(hero);
-  if (RM) { set(); return; }
-  const loop = (t) => {
-    if (visible) {
-      if (auto) { const s = (t - t0) / 1000, m = innerWidth < 640; tx = (m ? 0.55 : 0.62) + Math.sin(s * 0.45) * (m ? 0.3 : 0.22); ty = (m ? 0.2 : 0.42) + Math.sin(s * 0.7) * (m ? 0.05 : 0.14); }
-      cx += (tx - cx) * 0.12; cy += (ty - cy) * 0.12; set();
-    }
-    requestAnimationFrame(loop);
+  hero.addEventListener('pointerleave', () => { drop.style.transform = ''; });
+})();
+
+/* =============== TRADING PIPELINE =============== */
+(() => {
+  const pipe = $('#pipe'), stations = $('.pipe__stations'), panel = $('#pipe-panel');
+  stations.innerHTML = TRADING.map((t, i) => `
+    <button class="station" type="button" role="tab" id="tab-${t.id}" aria-controls="pipe-panel" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-i="${i}">
+      <span class="station__valve" aria-hidden="true"></span>
+      <span class="station__n mono">${t.n}</span>
+      <span class="station__t">${t.title}</span>
+    </button>`).join('');
+  const tabs = $$('.station', stations);
+  let cur = 0, timer = null, userTook = false;
+  const show = (i, focus) => {
+    cur = (i + TRADING.length) % TRADING.length;
+    const t = TRADING[cur];
+    tabs.forEach((b, k) => { b.setAttribute('aria-selected', String(k === cur)); b.tabIndex = k === cur ? 0 : -1; b.classList.toggle('done', k < cur); });
+    pipe.style.setProperty('--k', cur / (TRADING.length - 1));
+    panel.setAttribute('aria-labelledby', 'tab-' + t.id);
+    panel.innerHTML = `
+      <div class="pp__img"><img src="${t.img}" alt="${t.alt}" loading="lazy" /></div>
+      <div class="pp__body">
+        <span class="mono">Étape ${t.n} / 0${TRADING.length}</span>
+        <h3>${t.title}</h3>
+        <p>${t.text}</p>
+        <ul>${t.items.map((x) => `<li>${x}</li>`).join('')}</ul>
+      </div>`;
+    panel.classList.remove('swap'); void panel.offsetWidth; panel.classList.add('swap');
+    if (focus) tabs[cur].focus();
   };
-  requestAnimationFrame(loop);
+  const stop = () => { userTook = true; clearInterval(timer); };
+  stations.addEventListener('click', (e) => { const b = e.target.closest('.station'); if (b) { stop(); show(+b.dataset.i); } });
+  stations.addEventListener('keydown', (e) => {
+    const d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+    if (d) { e.preventDefault(); stop(); show(cur + d, true); }
+    if (e.key === 'Home') { e.preventDefault(); stop(); show(0, true); }
+    if (e.key === 'End') { e.preventDefault(); stop(); show(TRADING.length - 1, true); }
+  });
+  show(0);
+  if (!RM) {
+    new IntersectionObserver(([en]) => {
+      clearInterval(timer);
+      if (en.isIntersecting && !userTook) timer = setInterval(() => show(cur + 1), 5000);
+    }, { threshold: 0.4 }).observe(pipe);
+  }
 })();
 
 /* =============== REVEAL + COUNTERS + MAP =============== */
@@ -302,8 +353,8 @@ form.addEventListener('submit', (e) => {
       <div class="ok" tabindex="-1">
         <div class="ok__stamp">REÇU*</div>
         <h3 style="font-size:1.8rem;margin-bottom:.5em">Merci, ${name} !</h3>
-        <p style="color:#b8c5db">*Démonstration uniquement : ce formulaire n'est relié à aucun serveur. <strong>Votre demande n'a pas été transmise</strong> à DB Services et rien n'a été enregistré.</p>
-        <p style="color:#b8c5db">Pour les joindre : <a href="mailto:contact@dbscongo.co" style="color:var(--gold)">contact@dbscongo.co</a> · <a href="tel:+242066757171" style="color:var(--gold)">+242 06 675 71 71</a></p>
+        <p style="color:#b8c5db">*Démonstration uniquement : ce formulaire n'est relié à aucun serveur. <strong>Votre demande n'a pas été transmise</strong> à DBS Congo et rien n'a été enregistré.</p>
+        <p style="color:#b8c5db">Pour joindre DBS Congo : <a href="mailto:contact@dbscongo.co" style="color:var(--gold)">contact@dbscongo.co</a> · <a href="tel:+242066757171" style="color:var(--gold)">+242 06 675 71 71</a></p>
       </div>`;
     $('.ok', form).focus();
   }, 1300);
