@@ -24,7 +24,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+html { scroll-behavior: smooth; scroll-padding-top: 96px; }
 body { margin: 0; background: var(--navy); color: #e8edf6; font: 400 17px/1.65 var(--body); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 img { display: block; max-width: 100%; height: auto; }
 a { color: inherit; }
@@ -89,10 +89,9 @@ html:not(.js) .loader { display: none; }
 @keyframes bar { to { transform: scaleX(1); } }
 
 /* ---------- Demo bar + header ---------- */
-.demo-bar { background: var(--gold); color: var(--navy); font-size: .7rem; text-align: center; padding: 6px 12px; font-weight: 600; }
 .hdr { position: sticky; top: 0; z-index: 100; transition: background .35s, backdrop-filter .35s, border-color .35s; border-bottom: 1px solid transparent; }
 .hdr.is-solid { background: rgb(13 23 54 / 82%); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-color: var(--line); }
-.hdr__in { display: flex; align-items: center; gap: 28px; height: 74px; width: min(100% - 40px, 1400px); margin-inline: auto; }
+.hdr__in { display: flex; align-items: center; gap: 28px; height: 92px; width: min(100% - 40px, 1400px); margin-inline: auto; }
 .mark { display: flex; align-items: baseline; gap: 8px; text-decoration: none; }
 .mark__db { font: 800 1.9rem/1 var(--display); background: linear-gradient(135deg, #f5d488, var(--gold) 45%, var(--gold-2)); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: -0.06em; }
 .mark__txt { font: 700 .78rem var(--mono); letter-spacing: .3em; color: #fff; }
@@ -108,7 +107,7 @@ html:not(.js) .loader { display: none; }
 .burger[aria-expanded='true'] span:last-child { transform: translateY(-4px) rotate(-45deg); }
 
 /* ---------- HERO: liquid gold ---------- */
-.hero { position: relative; min-height: calc(100svh - 26px); display: grid; align-items: center; padding: 130px 0 190px; overflow: hidden; margin-top: -74px;
+.hero { position: relative; min-height: 100svh; display: grid; align-items: center; padding: 150px 0 190px; overflow: hidden; margin-top: -92px;
   background: radial-gradient(60% 70% at 78% 45%, #15305a 0, transparent 70%), linear-gradient(180deg, var(--navy) 0, #0d1f3d 100%); }
 .hero__grid { position: absolute; inset: 0; background-image:
   linear-gradient(rgb(255 255 255 / 6%) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 6%) 1px, transparent 1px),
@@ -163,11 +162,12 @@ html:not(.js) .loader { display: none; }
 .hero__scroll span { width: 1px; height: 54px; background: linear-gradient(var(--gold) 50%, transparent 50%); background-size: 1px 200%; animation: drip 1.8s linear infinite; }
 @keyframes drip { from { background-position: 0 -100%; } to { background-position: 0 100%; } }
 
-.mark__drop { width: 32px; height: auto; align-self: center; }
-.mark { align-items: center; gap: 12px; }
+.mark__drop { width: 46px; height: auto; align-self: center; }
+.mark { align-items: center; gap: 14px; }
 .mark__words { display: grid; line-height: 1; }
-.mark__words b { font: 700 1.28rem/1 'Poppins', var(--body); color: #fff; letter-spacing: -0.01em; padding-bottom: 5px; border-bottom: 2.5px solid var(--gold); }
-.mark__words small { font: 500 .56rem/1 'Poppins', var(--body); letter-spacing: .42em; color: #fff; margin-top: 5px; }
+.mark__words b { font: 700 1.85rem/1 'Poppins', var(--body); color: #fff; letter-spacing: -0.01em; padding-bottom: 6px; border-bottom: 3px solid var(--gold); }
+.mark__words small { font: 500 .74rem/1 'Poppins', var(--body); letter-spacing: .42em; color: #fff; margin-top: 7px; }
+@media (max-width: 640px) { .hdr__in { height: 76px; } .hero { margin-top: -76px; } .mark__drop { width: 36px; } .mark__words b { font-size: 1.4rem; } .mark__words small { font-size: .58rem; letter-spacing: .36em; } }
 .tag { display: inline-block; padding: 3px 9px; background: var(--gold); color: var(--navy); font: 700 .66rem var(--mono); letter-spacing: .06em; text-transform: uppercase; vertical-align: middle; }
 
 /* ---------- TRADING pipeline ---------- */
@@ -247,7 +247,7 @@ html:not(.js) .loader { display: none; }
 
 /* ---------- Horizontal prestations ---------- */
 .hscroll { position: relative; background: var(--navy); }
-.hscroll__sticky { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; justify-content: center; overflow: hidden; padding-top: 74px; }
+.hscroll__sticky { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; justify-content: center; overflow: hidden; padding-top: 92px; }
 .hscroll__head { position: relative; flex: none; }
 .hscroll__head .h2 { max-width: none; font-size: clamp(2rem, 4.4vw, 3.6rem); }
 .hscroll__progress { height: 2px; background: var(--line); margin-top: 6px; }
@@ -425,8 +425,8 @@ blockquote { margin: 0; }
    ===================================================================== */
 @media (max-width: 1080px) {
   .hdr.is-solid { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--navy); }
-  .hdr__nav { position: fixed; inset: 0; z-index: -1; flex-direction: column; justify-content: center; gap: 0; padding: 90px 28px 40px; background: var(--navy); clip-path: circle(0 at calc(100% - 44px) 37px); transition: clip-path .6s var(--ease); }
-  .hdr__nav.open { clip-path: circle(150% at calc(100% - 44px) 37px); }
+  .hdr__nav { position: fixed; inset: 0; z-index: -1; flex-direction: column; justify-content: center; gap: 0; padding: 90px 28px 40px; background: var(--navy); clip-path: circle(0 at calc(100% - 44px) 40px); transition: clip-path .6s var(--ease); }
+  .hdr__nav.open { clip-path: circle(150% at calc(100% - 44px) 40px); }
   .hdr__nav a { font: 800 clamp(2rem, 8vw, 3.2rem)/1.15 var(--display); padding: 10px 0; color: #fff; }
   .hdr__nav a::after { display: none; }
   .burger { display: block; margin-left: auto; }
@@ -507,4 +507,44 @@ blockquote { margin: 0; }
   .drop__level { transform: none !important; animation: none !important; }
   .drop__shine { opacity: 1; }
   .liquid { background-position: 0 .12em !important; animation: none !important; }
+}
+
+/* =====================================================================
+   Brand integration — DBS Congo logo
+   ===================================================================== */
+/* Section labels: the logo drop replaces the old "//" marker */
+.label { display: inline-flex; align-items: center; gap: 10px; }
+.label::before { content: ''; width: 13px; height: 16px; flex: none; background: url("img/brand/DBS_symbole_couleur.svg") center / contain no-repeat; }
+
+/* Logo double-wave at every dark → light transition */
+.bwave { position: absolute; left: 0; right: 0; top: -1px; width: 100%; height: clamp(46px, 6vw, 86px); pointer-events: none; z-index: 1; }
+.bwave__band { fill: var(--navy); }
+.bwave__line { fill: none; stroke: var(--gold); stroke-width: 7; vector-effect: non-scaling-stroke; }
+.bwave--n2 .bwave__band { fill: var(--navy-2); }
+
+/* Watermark drop */
+.dg { overflow: hidden; }
+.watermark { position: absolute; right: -6%; top: 50%; width: min(46vw, 620px); translate: 0 -50%; opacity: .045; pointer-events: none; }
+
+/* Scroll gauge: a logo drop that fills with oil as you scroll */
+.gauge { position: fixed; right: 22px; bottom: 22px; z-index: 90; width: 54px; display: grid; justify-items: center; gap: 4px; text-decoration: none; opacity: 0; transform: translateY(16px) scale(.9); transition: opacity .4s, transform .4s var(--ease); pointer-events: none; }
+.gauge.on { opacity: 1; transform: none; pointer-events: auto; }
+.gauge svg { width: 54px; height: 66px; filter: drop-shadow(0 8px 18px rgb(0 0 0 / 35%)); transition: transform .3s var(--ease); }
+.gauge:hover svg { transform: translateY(-4px) rotate(-6deg); }
+.gauge__level { transform: translateY(calc(200px - var(--sp, 0) * 200px)); transition: transform .25s linear; }
+.gauge__wave { animation: wave 2.6s linear infinite; }
+.gauge__wave--b { animation-direction: reverse; animation-duration: 3.8s; }
+.gauge__pct { font-size: .6rem; color: var(--gold); background: var(--navy); padding: 1px 5px; }
+.hero__scroll { display: none; }
+
+/* Mobile menu: big drop watermark */
+@media (max-width: 1080px) {
+  .hdr__nav::before { content: ''; position: absolute; right: -18%; bottom: -8%; width: 80vw; aspect-ratio: 160 / 198; background: url("img/brand/DBS_symbole_blanc.svg") center / contain no-repeat; opacity: .05; pointer-events: none; }
+}
+@media (max-width: 640px) {
+  .gauge { right: 14px; bottom: 14px; width: 44px; }
+  .gauge svg { width: 44px; height: 54px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gauge__wave { animation: none !important; }
 }

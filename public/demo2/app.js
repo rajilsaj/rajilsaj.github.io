@@ -359,3 +359,25 @@ form.addEventListener('submit', (e) => {
     $('.ok', form).focus();
   }, 1300);
 });
+
+/* =============== BRAND: logo waves + scroll gauge =============== */
+(() => {
+  // the logo's double wave (band + gold stripe) on every dark → light edge
+  const svg = (n2) => `<svg class="bwave${n2 ? ' bwave--n2' : ''}" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+    <path class="bwave__band" d="M0,0 H1440 V38 C1260,64 1080,14 900,34 C700,58 520,74 300,46 C180,30 80,30 0,40 Z" />
+    <path class="bwave__line" d="M0,62 C80,52 180,52 300,68 C520,96 700,80 900,56 C1080,36 1260,86 1440,60" />
+  </svg>`;
+  ['.about', '.sectors', '.process', '.stamps', '.contact'].forEach((sel) => {
+    const el = $(sel); if (el) el.insertAdjacentHTML('afterbegin', svg(sel === '.contact'));
+  });
+  // scroll gauge
+  const g = $('.gauge'), pct = $('.gauge__pct');
+  const upd = () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const p = max > 0 ? clamp(scrollY / max, 0, 1) : 0;
+    g.style.setProperty('--sp', p.toFixed(3));
+    pct.textContent = Math.round(p * 100) + '%';
+    g.classList.toggle('on', scrollY > innerHeight * 0.6);
+  };
+  addEventListener('scroll', upd, { passive: true }); addEventListener('resize', upd); upd();
+})();
