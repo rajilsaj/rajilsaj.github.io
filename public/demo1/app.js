@@ -1,4 +1,4 @@
-/* V's Home Care — concept demo
+/* Vs Home Care — concept demo
    Content data lives at the top; UI wiring below. No data is sent or stored. */
 
 /* ================= CONTENT ================= */
@@ -19,9 +19,9 @@ const SERVICES = [
     icon: 'i-steth',
     img: 'img/nursing.webp',
     alt: 'A smiling caregiver stands behind an older woman in a wheelchair with her hands on her shoulders',
-    short: 'Home-based nursing services according to individual needs, applicable clinical requirements, and service availability.',
-    summary: "Authorized nurse visits at home, arranged around each person's needs and the clinical requirements that apply.",
-    includes: ['Authorized RN visits at home', 'Medication box set-up (for example, an RN filling a weekly medicine box)', 'Check-ins and communication with the family', 'Other nursing support as authorized'],
+    short: 'Nurse visits at home and state-licensed private duty nursing, according to individual needs and authorization.',
+    summary: "Authorized nurse visits and state-licensed private duty nursing at home, arranged around each person's needs and the clinical requirements that apply.",
+    includes: ['Private duty nursing — Vs is state-licensed', 'Authorized RN visits at home', 'Medication box set-up (for example, an RN filling a weekly medicine box)', 'Check-ins and communication with the family', 'Other nursing support as authorized'],
   },
   {
     id: 'respite',
@@ -43,16 +43,28 @@ const SERVICES = [
     summary: 'Homemaker and chore help that keeps the home clean, calm and comfortable to live in.',
     includes: ['Light cleaning and tidying', 'Cooking and simple meal preparation', 'Laundry', 'Companionship during visits'],
   },
+  {
+    id: 'transport',
+    wide: true,
+    title: 'Medical Transportation',
+    icon: 'i-van',
+    img: null,
+    alt: '',
+    short: 'Van rides to medical appointments for Medicaid members, requested through MTM.',
+    summary: 'Our van takes people to and from their medical appointments safely and on time. Rides are covered by Medicaid and arranged through MTM, the Medicaid transportation manager.',
+    includes: ['Non-emergency rides to medical appointments', 'For Missouri Medicaid members — paid through MTM', 'Request your ride through MTM, then choose Vs', 'Friendly, door-to-door help getting in and out'],
+  },
 ];
 
 const FAQS = [
-  ['What services does V\'s provide?', 'V\'s offers personal care, nursing visits, respite care and homemaker services (such as cleaning, cooking, laundry and companionship). The services available to each person depend on their needs, eligibility and authorization.'],
-  ['Does V\'s accept Missouri Medicaid?', 'V\'s identifies as a Medicaid-approved provider for certain home care services. Coverage depends on the program and the person\'s eligibility, so please call us and we\'ll help you check what applies.'],
-  ['Which communities does V\'s serve?', 'We\'re based in Springfield, Missouri and serve nearby communities including Republic and the wider Ozarks area. Use the ZIP checker above or call us to confirm coverage for your address.'],
+  ['What services does Vs provide?', 'Vs offers personal care, nursing visits, state-licensed private duty nursing, respite care, homemaker services (such as cleaning, cooking, laundry and companionship) and medical transportation. The services available to each person depend on their needs, eligibility and authorization.'],
+  ['Does Vs accept Missouri Medicaid?', 'Yes. Vs accepts Missouri Medicaid for certain home care services, and Medicaid members can also use our van for rides to medical appointments through MTM. Send us a request and we\'ll help you check what applies.'],
+  ['Do you provide transportation to medical appointments?', 'Yes. Our van provides non-emergency rides to medical appointments for Missouri Medicaid members. The ride is paid by Medicaid through MTM, so it needs to be requested through MTM.'],
+  ['Which communities does Vs serve?', 'We\'re based in Springfield, Missouri and serve many communities across Greene County, Christian County and the wider Ozarks. Use the ZIP checker above or send us a request to confirm coverage for your address.'],
   ['Can I arrange care for a family member?', 'Yes. Many families reach out on behalf of a parent, spouse or relative. We\'ll talk with you, and with your loved one, about their needs and wishes.'],
-  ['How do I get started?', 'Call (417) 434-3554 or send a request using the form on this page. We\'ll discuss your needs, explain the options, and walk you through the next steps.'],
-  ['Is nursing care available in my home?', 'V\'s provides authorized nurse visits at home — for example, an RN setting up a medication box. What\'s available depends on individual needs, clinical requirements and authorization. Call us to discuss your situation.'],
-  ['How can I discuss payment and eligibility?', 'The easiest way is a phone call to (417) 434-3554, or email vshomeinfocare@gmail.com. Please don\'t send medical details by email — we\'ll discuss them privately.'],
+  ['How do I get started?', 'Send a request using the form on this page or email vshomeinfocare@gmail.com. We\'ll get back to you, discuss your needs, explain the options and walk you through the next steps.'],
+  ['Is nursing care available in my home?', 'Yes. Vs provides authorized nurse visits at home (for example, an RN setting up a medication box) and is state-licensed for private duty nursing. What\'s available depends on individual needs, clinical requirements and authorization.'],
+  ['How can I discuss payment and eligibility?', 'Send a request through the form or email vshomeinfocare@gmail.com. Please don\'t send medical details by email — we\'ll discuss them privately.'],
 ];
 
 /* ================= HELPERS ================= */
@@ -63,14 +75,14 @@ const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ================= RENDER ================= */
 $('#service-cards').innerHTML = SERVICES.map((s) => `
-  <article class="card reveal">
+  <article class="card reveal${s.wide ? ' card--wide' : ''}">
     <div class="card__img">
       ${s.img ? `<img src="${s.img}" alt="${s.alt}" loading="lazy" width="1024" height="683" />` : `<div class="card__art">${icon(s.icon)}</div>`}
       <span class="card__icon">${icon(s.icon)}</span>
     </div>
     <div class="card__body">
-      <h3>${s.title}</h3>
-      <p>${s.short}</p>
+      ${s.wide ? '<p class="card__kicker">New · Medicaid / MTM</p>' : ''}<h3>${s.title}</h3>
+      <p>${s.wide ? s.summary : s.short}</p>
       <div class="card__actions">
         <button class="btn btn--ghost" type="button" data-open-service="${s.id}" aria-haspopup="dialog">Learn More</button>
         <button class="btn btn--primary" type="button" data-ask-service="${s.id}">Ask About This Service</button>
@@ -154,6 +166,7 @@ function openService(id) {
   currentService = id;
   const img = $('#modal-img');
   img.parentElement.hidden = !s.img;
+  modal.classList.toggle('modal--noimg', !s.img);
   if (s.img) { img.src = s.img; img.alt = s.alt; }
   $('#modal-title').textContent = s.title;
   $('#modal-summary').textContent = s.summary;
@@ -209,10 +222,10 @@ $('#zip-form').addEventListener('submit', (e) => {
     msg.innerHTML = `${zip} is in southwest Missouri, near our Springfield base. <strong>Coverage still needs to be confirmed</strong> — <a href="#contact" data-zip-ask="${zip}">ask us about ${zip}</a>.`;
   } else if (n >= 630 && n <= 658) {
     msg.classList.add('is-warn');
-    msg.innerHTML = `${zip} is a Missouri ZIP code that may be outside our main area. Please <a href="tel:+14174343554">call us</a> and we'll let you know.`;
+    msg.innerHTML = `${zip} is a Missouri ZIP code that may be outside our main area. Please <a href="#contact" data-zip-ask="${zip}">send us a request</a> and we'll let you know.`;
   } else {
     msg.classList.add('is-warn');
-    msg.textContent = `${zip} appears to be outside Missouri. V's serves the Springfield, MO area — call us if you're arranging care for someone nearby.`;
+    msg.textContent = `${zip} appears to be outside Missouri. Vs serves the Springfield, MO area — send us a request if you're arranging care for someone nearby.`;
   }
 });
 $('#zip-input').addEventListener('input', (e) => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 5); });
@@ -279,11 +292,10 @@ form.addEventListener('submit', (e) => {
       <div class="form__success" tabindex="-1">
         <div class="tick">${icon('i-check')}</div>
         <h3 class="h3">Thank you, ${first.replace(/[<>&"]/g, '')}.</h3>
-        <p><strong>Demo only:</strong> this form isn't connected yet, so your inquiry was <strong>not</strong> sent to V's and nothing was stored.</p>
-        <p class="muted">To reach the team today, please call or email directly.</p>
+        <p><strong>Demo only:</strong> this form isn't connected yet, so your inquiry was <strong>not</strong> sent to Vs and nothing was stored.</p>
+        <p class="muted">To reach the team today, please email directly.</p>
         <div class="btn-row" style="justify-content:center">
-          <a class="btn btn--primary" href="tel:+14174343554">${icon('i-phone')} Call Us</a>
-          <a class="btn btn--ghost" href="mailto:vshomeinfocare@gmail.com">${icon('i-mail')} Email Us</a>
+          <a class="btn btn--primary" href="mailto:vshomeinfocare@gmail.com">${icon('i-mail')} Email Us</a>
         </div>
       </div>`;
     $('.form__success', form).focus();
