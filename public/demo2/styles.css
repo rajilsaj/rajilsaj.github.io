@@ -165,7 +165,7 @@ html:not(.js) .loader { display: none; }
 .mark__drop { width: 46px; height: auto; align-self: center; }
 .mark { align-items: center; gap: 14px; }
 .mark__words { display: grid; line-height: 1; }
-.mark__words b { font: 700 1.85rem/1 'Poppins', var(--body); color: #fff; letter-spacing: -0.01em; padding-bottom: 6px; border-bottom: 3px solid var(--gold); }
+.mark__words b { font: 700 1.85rem/1 'Poppins', var(--body); color: #fff; letter-spacing: -0.01em; padding-bottom: 9px; background: linear-gradient(90deg, #009543 0 33.33%, #FBDE4A 0 66.66%, #DC241F 0) bottom / 100% 3px no-repeat; }
 .mark__words small { font: 500 .74rem/1 'Poppins', var(--body); letter-spacing: .42em; color: #fff; margin-top: 7px; }
 @media (max-width: 640px) { .hdr__in { height: 76px; } .hero { margin-top: -76px; } .mark__drop { width: 36px; } .mark__words b { font-size: 1.4rem; } .mark__words small { font-size: .58rem; letter-spacing: .36em; } }
 .tag { display: inline-block; padding: 3px 9px; background: var(--gold); color: var(--navy); font: 700 .66rem var(--mono); letter-spacing: .06em; text-transform: uppercase; vertical-align: middle; }
@@ -514,7 +514,7 @@ blockquote { margin: 0; }
    ===================================================================== */
 /* Section labels: the logo drop replaces the old "//" marker */
 .label { display: inline-flex; align-items: center; gap: 10px; }
-.label::before { content: ''; width: 13px; height: 16px; flex: none; background: url("img/brand/DBS_symbole_couleur.svg") center / contain no-repeat; }
+.label::before { content: ''; width: 13px; height: 16px; flex: none; background: url("img/brand/DBS_symbole_drapeau.svg") center / contain no-repeat; }
 
 /* Logo double-wave at every dark → light transition */
 .bwave { position: absolute; left: 0; right: 0; top: -1px; width: 100%; height: clamp(46px, 6vw, 86px); pointer-events: none; z-index: 1; }
