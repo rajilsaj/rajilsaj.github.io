@@ -20,7 +20,7 @@ const TRADING = [
 const SERVICES = [
   { id: 'fourniture', n: '01', title: 'Fourniture de biens', img: 'img/fourniture.webp', alt: 'Deux agents en gilet de sécurité vérifient un stock en entrepôt',
     text: "Approvisionnement en matériels, équipements et consommables pour les secteurs industriels, miniers et institutionnels. Sélection, acheminement et livraison de produits conformes aux standards internationaux.",
-    items: ['Matériels informatiques', 'Mobilier de bureau', 'Consommables industriels', 'Équipements de sécurité', 'Pièces détachées', 'Fournitures médicales'] },
+    items: ['Mobilier de bureau', 'Consommables industriels', 'Équipements de sécurité', 'Pièces détachées', 'Fournitures médicales'] },
   { id: 'equipements', n: '02', title: 'Équipements industriels', img: 'img/equipements.webp', alt: 'Techniciens casqués autour d\'une machine industrielle',
     text: "Fourniture, installation et maintenance d'équipements industriels lourds et de précision, avec des solutions adaptées aux exigences techniques de chaque secteur.",
     items: ['Groupes électrogènes', 'Compresseurs industriels', 'Pompes et stations', 'Transformateurs', 'Équipements miniers', 'Systèmes de filtration'] },
@@ -44,11 +44,6 @@ const SECTORS = [
   ['En', 'Énergie', 'Solaire, groupes électrogènes, réseaux BT/MT.'],
   ['Bt', 'BTP', 'Bâtiments, routes et ouvrages d\'art.'],
   ['In', 'Industrie', 'Équipements lourds et de précision.'],
-  ['Sa', 'Santé', 'Centres de santé et fournitures médicales.'],
-  ['Ap', 'Administrations publiques', 'Projets institutionnels et marchés publics.'],
-  ['Tc', 'Télécommunications', 'Infrastructures et équipements techniques.'],
-  ['Ba', 'Banques & Assurances', 'Mobilier, informatique et aménagement.'],
-  ['Ho', 'Hôtellerie', 'Aménagement, énergie et équipements.'],
 ];
 
 const PROJECTS = [
