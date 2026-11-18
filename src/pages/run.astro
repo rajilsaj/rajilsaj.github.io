@@ -191,6 +191,8 @@ const evInfo = evDays.map((d) => {
       } catch (e) {}
     </script>
     <style is:global>
+      .km-tip { cursor: help; }
+      span.km-tip:hover { text-decoration: underline dotted; text-underline-offset: 3px; }
       :root {
         --bg: #0b0e13;
         --card: #151b22;
@@ -1100,6 +1102,21 @@ const evInfo = evDays.map((d) => {
     <script>
       import { GOAL_DAY, progressOn } from '~/data/runs'
 
+      // Hover any distance in miles (or pace per mile) to see it in kilometres.
+      const KM_PER_MI = 1.609344
+      const MI_RE = /(\d[\d,]*(?:\.\d+)?)(\+?)(\s*)(miles?|mi|MI)\b/g
+      const HAS_MI = new RegExp(MI_RE.source)
+      const fmtKm = (mi: number) => { const km = mi * KM_PER_MI; return `${km.toFixed(km < 10 ? 2 : 1)} km` }
+      const kmOf = (num: string) => fmtKm(parseFloat(num.replace(/,/g, '')))
+      const withKm = (text: string) => text.replace(MI_RE, (m, n) => `${m} (${kmOf(n)})`)
+      const paceKm = (pace: string) => {
+        // pace is shown as 9'32" (or 9:32)
+        const p = pace.trim().replace(/"$/, '').split(/['":]/).map(Number)
+        if (p.length !== 2 || p.some(isNaN)) return null
+        const sec = Math.round((p[0] * 60 + p[1]) / KM_PER_MI)
+        return `${Math.floor(sec / 60)}'${String(sec % 60).padStart(2, '0')}" /km`
+      }
+
       // Keep the counter, rings and year grid current in the visitor's local time, no rebuild needed.
       const el = document.querySelector<HTMLElement>('.challenge')!
       const [y, m, d] = el.dataset.start!.split('-').map(Number)
@@ -1204,7 +1221,7 @@ const evInfo = evDays.map((d) => {
       const svg = document.getElementById('evo-svg') as SVGSVGElement | null
       const readout = document.getElementById('evo-readout')
       if (svg && readout) {
-        const info: string[] = JSON.parse(readout.dataset.info!)
+        const info: string[] = (JSON.parse(readout.dataset.info!) as string[]).map(withKm)
         const left = Number(readout.dataset.l), col = Number(readout.dataset.col), vbW = Number(readout.dataset.w)
         const cursor = document.getElementById('evo-cursor')!
         const dayEls = [...svg.querySelectorAll<SVGGElement>('.evo-day')]
@@ -1245,6 +1262,47 @@ const evInfo = evDays.map((d) => {
         applyTheme(next)
         try { localStorage.setItem('run-theme', next) } catch {}
       })
+      {
+        const main = document.querySelector('main')!
+        // "3.10 mi" written as one piece of text: wrap the figure in a hover target
+        const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, {
+          acceptNode: (n) => (n.parentElement?.closest('script, style, svg, .evo-readout') ? NodeFilter.FILTER_REJECT : HAS_MI.test(n.nodeValue!) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP),
+        })
+        const nodes: Text[] = []
+        while (walker.nextNode()) nodes.push(walker.currentNode as Text)
+        for (const node of nodes) {
+          const text = node.nodeValue!, frag = document.createDocumentFragment()
+          let last = 0
+          for (const m of text.matchAll(MI_RE)) {
+            frag.append(text.slice(last, m.index))
+            const span = document.createElement('span')
+            span.className = 'km-tip'
+            span.title = kmOf(m[1])
+            span.textContent = m[0]
+            frag.append(span)
+            last = m.index! + m[0].length
+          }
+          frag.append(text.slice(last))
+          node.replaceWith(frag)
+        }
+        // figure and unit in separate elements, e.g. 12.3<small>MI</small> or <b>9:32</b><span>per mile</span>
+        for (const unit of main.querySelectorAll<HTMLElement>('small, span')) {
+          const u = unit.textContent!.trim().toLowerCase()
+          const pace = u === '/mi' || u === 'per mile'
+          if (!pace && u !== 'mi') continue
+          const num = unit.previousSibling?.textContent?.trim()
+          const host = unit.parentElement
+          if (!num || !host || host.title) continue
+          const tip = pace ? paceKm(num) : /^\d[\d,]*(\.\d+)?$/.test(num) ? kmOf(num) : null
+          if (!tip) continue
+          host.title = tip
+          host.classList.add('km-tip')
+        }
+        // existing tooltips (calendar cells, tags, splits) get the km figure too
+        for (const el of main.querySelectorAll<HTMLElement>('[title]')) {
+          if (!el.classList.contains('km-tip') && HAS_MI.test(el.title)) el.title = withKm(el.title)
+        }
+      }
     </script>
   </body>
 </html>
