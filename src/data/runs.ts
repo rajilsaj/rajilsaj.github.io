@@ -612,6 +612,35 @@ export const runs: Run[] = [
     ],
     notes: 'Easy recovery run the morning after the 10K race, laps through downtown. Award: 5K Run. Air quality 59',
   },
+  {
+    date: '2026-11-18',
+    time: '4:57 AM – 6:27 AM',
+    location: 'Fayetteville',
+    workoutTime: '1:23:11',
+    elapsedTime: '1:29:10',
+    distanceMi: 7.73,
+    activeCal: 798,
+    totalCal: 921,
+    elevationFt: 434,
+    avgPowerW: 184,
+    avgCadenceSpm: 162,
+    avgPace: '10:45',
+    avgHrBpm: 155,
+    hrZones: ['5:18', '15:24', '16:09', '33:02', '13:14'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 112, min1: 111, min2: 116 },
+    effort: 7,
+    tempF: 33,
+    humidityPct: 97,
+    splits: [
+      { time: '11:07', hr: 143 },
+      { time: '11:36', hr: 150 },
+      { time: '11:53', hr: 140 },
+      { time: '9:43', hr: 162 },
+      { time: '9:05', hr: 164 },
+    ], // only miles 1–5 visible in the screenshots
+    notes: 'Coldest run yet (33°F), laps through downtown, picking up the pace from mile 4. Air quality 57',
+  },
 ]
 
 /**
