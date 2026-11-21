@@ -189,6 +189,12 @@ const evInfo = evDays.map((d) => {
         var t = localStorage.getItem('run-theme')
         if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t
       } catch (e) {}
+      // One screen, one view at a time: phones open on "now", wide screens remember the right-hand panel.
+      try {
+        var wide = matchMedia('(min-width: 1000px)').matches
+        var v = wide ? localStorage.getItem('run-view') : 'now'
+        document.documentElement.dataset.view = /^(now|days|weighins|evolution)$/.test(v || '') ? v : wide ? 'days' : 'now'
+      } catch (e) {}
     </script>
     <style is:global>
       .km-tip { cursor: help; }
@@ -238,18 +244,85 @@ const evInfo = evDays.map((d) => {
         color-scheme: light;
       }
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      html { background: var(--bg); color: var(--text); -webkit-text-size-adjust: 100%; }
+      html { background: var(--bg); color: var(--text); -webkit-text-size-adjust: 100%; height: 100%; overflow: hidden; }
       body {
         background: var(--bg);
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         line-height: 1.3;
-        min-height: 100vh;
-        overflow-x: hidden;
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
       }
-      main { max-width: 760px; margin: 0 auto; padding: max(28px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(60px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+      /* The whole page is one screen. Phones: header, one view, tab bar. Wide screens: dashboard left, log right.
+         Long content scrolls inside its own panel; main only scrolls as a last resort on very short screens. */
+      main {
+        height: 100%; max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px;
+        overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--line) transparent;
+        padding: max(12px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+      }
+      .side, .stage { display: contents; }
+      .pane { order: 1; flex: none; }
+      .stage .pane { flex: 1 1 0; min-height: min(280px, 60vh); }
+      @media (max-width: 999.98px) {
+        :root:not([data-view]) .pane:not(.pane-now),
+        :root[data-view='now'] .pane:not(.pane-now),
+        :root[data-view='year'] .pane:not(.pane-year),
+        :root[data-view='days'] .pane:not(.pane-days),
+        :root[data-view='weighins'] .pane:not(.pane-weighins),
+        :root[data-view='evolution'] .pane:not(.pane-evolution) { display: none; }
+      }
 
-      header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+      /* view switch: bottom tab bar on phones, pills above the right-hand panel on wide screens */
+      .views { order: 2; flex: none; position: sticky; bottom: 0; z-index: 5; display: flex; gap: 4px; padding: 5px; background: var(--card); border: 1px solid var(--track); border-radius: 18px; box-shadow: 0 -6px 18px var(--bg); }
+      .views button { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; font: inherit; font-size: 0.7rem; font-weight: 700; color: var(--muted); background: none; border: 0; border-radius: 13px; padding: 6px 4px 5px; cursor: pointer; transition: background 0.2s, color 0.2s; }
+      .views button i { font-style: normal; font-size: 1.15rem; line-height: 1.1; }
+      .views button[aria-selected='true'] { background: var(--bar); color: #0b0e13; }
+      .views button:focus-visible { outline: 2px solid var(--bar); outline-offset: 2px; }
+
+      @media (min-width: 1000px) {
+        main { max-width: 1500px; display: grid; grid-template-columns: minmax(400px, 1fr) minmax(0, 1.45fr); grid-template-rows: auto auto minmax(0, 1fr); gap: 12px 14px; padding: 16px 20px 14px; overflow: hidden; }
+        header { grid-column: 1 / -1; }
+        .side { display: flex; flex-direction: column; gap: 12px; grid-column: 1; grid-row: 2 / 4; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+        .stage { display: flex; grid-column: 2; grid-row: 3; min-height: 0; min-width: 0; }
+        .stage .pane { min-height: 0; min-width: 0; }
+        .views { position: static; grid-column: 2; grid-row: 2; justify-self: start; border-radius: 999px; padding: 4px; box-shadow: none; }
+        .views button { flex: none; flex-direction: row; gap: 6px; font-size: 0.85rem; padding: 7px 14px; border-radius: 999px; }
+        .views button i { font-size: 1em; }
+        .views [data-go='now'], .views [data-go='year'] { display: none; }
+        /* short laptop screens: trim the dashboard so it still fits without scrolling */
+        @media (max-height: 700px) {
+          main { gap: 10px 14px; padding-top: 12px; padding-bottom: 10px; }
+          .side { gap: 10px; }
+          header .runner { width: 44px; height: 44px; }
+          header h1 { font-size: 1.5rem; }
+          .side .challenge { padding: 12px 18px 10px; }
+          .side .rings { --ring: clamp(56px, 12vh, 150px); margin-top: 8px; }
+          .side .ring-sub { margin-top: 5px; }
+          .side .yeargrid { padding: 10px 14px; }
+          .side .yg-head { margin-bottom: 6px; }
+          .side .yg-foot { display: none; }
+          .side footer { display: none; }
+        }
+        /* tall screens: the year board stacks its two halves into bigger squares instead of leaving the card above half empty */
+        @media (min-height: 900px) {
+          .side .yg { flex-direction: column; gap: 12px; }
+          .side .yg-half + .yg-half { --wd: 24px; }
+          .side .yg-half + .yg-half .wd { visibility: visible; }
+        }
+        :root[data-view='weighins'] .stage .pane:not(.pane-weighins),
+        :root[data-view='evolution'] .stage .pane:not(.pane-evolution),
+        :root:not([data-view='weighins']):not([data-view='evolution']) .stage .pane:not(.pane-days) { display: none; }
+      }
+
+      header { flex: none; display: flex; align-items: center; gap: 14px; }
       header .titles { flex: 1; min-width: 0; }
+      header p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      @media (max-width: 559px) {
+        header { gap: 10px; }
+        header .runner { width: 42px; height: 42px; }
+        header .theme-toggle { width: 36px; height: 36px; }
+        header p { font-size: 0.78rem; }
+      }
 
       /* black & white theme switch */
       .theme-toggle {
@@ -288,7 +361,7 @@ const evInfo = evDays.map((d) => {
       header p { color: var(--muted); font-size: 0.95rem; margin-top: 2px; }
       h2 { font-size: 1.2rem; font-weight: 700; margin: 26px 0 10px; }
 
-      .challenge { background: linear-gradient(135deg, var(--card) 0%, var(--card-2) 100%); border-radius: 18px; padding: 20px 20px 18px; margin-bottom: 14px; border: 1px solid var(--track); min-width: 0; max-width: 100%; }
+      .challenge { background: linear-gradient(135deg, var(--card) 0%, var(--card-2) 100%); border-radius: 18px; padding: 20px 20px 18px; border: 1px solid var(--track); min-width: 0; max-width: 100%; flex: 1 0 auto; display: flex; flex-direction: column; justify-content: center; }
       .challenge .top { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; }
       .challenge .range { margin-left: auto; }
       @media (max-width: 559px) {
@@ -314,25 +387,26 @@ const evInfo = evDays.map((d) => {
       .challenge .range b { color: var(--text); font-weight: 600; }
 
       /* three rings: days (toward the next milestone), months and years (through the current one) */
-      .rings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+      .rings { --ring: clamp(56px, 14vh, 150px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: clamp(10px, 2.4vh, 22px); }
       .ring { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
-      .ring svg { width: 100%; max-width: 104px; aspect-ratio: 1; transform: rotate(-90deg); display: block; }
+      .ring svg { width: 100%; max-width: var(--ring); aspect-ratio: 1; transform: rotate(-90deg); display: block; }
       .ring circle { fill: none; stroke-width: 3.4; }
       .ring-bg { stroke: var(--bar-track); }
       .ring-fg { stroke: var(--bar); stroke-linecap: round; stroke-dasharray: 100; transition: stroke-dashoffset 0.8s ease; }
-      .ring-num { position: absolute; top: 0; left: 0; right: 0; aspect-ratio: 1; max-width: 104px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
+      .ring-num { position: absolute; top: 0; left: 0; right: 0; aspect-ratio: 1; max-width: var(--ring); margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
       .ring-num b { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em; }
       .ring-num span { font-size: 0.68rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 3px; }
       .ring-sub { color: var(--muted); font-size: 0.74rem; margin-top: 8px; line-height: 1.25; text-wrap: balance; }
       @media (max-width: 399px) { .ring-num b { font-size: 1.3rem; } .ring-num span { font-size: 0.6rem; } }
+      @media (max-height: 620px) { .ring-num b { font-size: 1.2rem; } .ring-num span { font-size: 0.56rem; margin-top: 1px; } .ring-sub { margin-top: 5px; } .challenge { padding-top: 14px; padding-bottom: 12px; } }
 
       /* year board, GitHub contributions style: week columns, weekday rows, squares shaded by distance */
-      .yeargrid { background: var(--card); border-radius: 16px; padding: 14px 16px 12px; margin-bottom: 14px; }
+      .yeargrid { background: var(--card); border-radius: 16px; padding: 14px 16px 12px; }
       .yg-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
       .yg-head h2 { margin: 0; font-size: 1rem; }
       .yg-sum { color: var(--muted); font-size: 0.8rem; }
       .yg { display: flex; gap: 6px; }
-      .yg-half { --wd: 24px; --gap: 3px; flex: 1 1 0; min-width: 0; }
+      .yg-half { --wd: 24px; --gap: 3px; flex: 1 1 0; min-width: 0; container: yghalf / inline-size; }
       .yg-half + .yg-half { --wd: 0px; }
       .yg-half + .yg-half .wd { visibility: hidden; }
       .yg-months, .yg-cells { display: grid; grid-template-columns: var(--wd) repeat(var(--weeks), minmax(0, 1fr)); column-gap: var(--gap); }
@@ -360,17 +434,18 @@ const evInfo = evDays.map((d) => {
       .cell.bday, .cell.recovery { position: relative; overflow: visible; }
       .cell.recovery::after { content: '🧘'; }
       .cell.bday::after { content: '🎂'; }
-      .cell.bday::after, .cell.recovery::after { position: absolute; inset: -35%; display: grid; place-items: center; font-size: 0.75rem; line-height: 1; font-style: normal; }
+      .cell.bday::after, .cell.recovery::after { position: absolute; inset: -35%; display: grid; place-items: center; font-size: 0.75rem; font-size: clamp(7px, calc(100cqw / (var(--weeks) + 2) * 0.95), 15px); line-height: 1; font-style: normal; }
+      /* small squares (the narrow dashboard column): a quiet dot marks recovery days instead of the emoji */
+      @container yghalf (max-width: 340px) { .cell.recovery::after { content: ''; inset: 32%; border-radius: 50%; background: var(--muted); } }
       .yg-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; color: var(--muted); font-size: 0.72rem; }
       .legend { display: inline-flex; align-items: center; gap: 3px; }
       .legend .cell { margin: 0 1px; }
       @media (prefers-reduced-motion: reduce) { .ring-fg { transition: none; } }
 
-      /* tiles: 2 per row on phones, 3 on tablets, all 5 in one row on desktop; last row always stretches to fill */
+      /* tiles: three per row; the last row always stretches to fill */
       .summary { display: flex; flex-wrap: wrap; gap: 10px; }
-      .tile { flex: 1 1 calc(50% - 10px); min-width: 0; background: var(--card); border-radius: 14px; padding: 14px 14px; container-type: inline-size; }
-      @media (min-width: 600px) { .tile { flex-basis: calc(33.333% - 10px); } }
-      @media (min-width: 740px) { .tile { flex-basis: 0; } }
+      .tile { flex: 1 1 calc(33.333% - 10px); min-width: 0; background: var(--card); border-radius: 14px; padding: 12px 14px; container-type: inline-size; }
+      @media (max-width: 559px), (max-height: 700px) { .summary { gap: 8px; } .tile { padding: 9px 11px; } .tile .label { font-size: 0.74rem; } .tile .sub { font-size: 0.7rem; } }
       .tile .label { color: var(--muted); font-size: 0.82rem; font-weight: 600; }
       .tile .value { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: clip; }
       .tile .value small { font-size: 0.6em; margin-left: 2px; }
@@ -379,8 +454,9 @@ const evInfo = evDays.map((d) => {
       @container (max-width: 150px) { .tile .value { font-size: 1.35rem; } }
       @container (max-width: 120px) { .tile .value { font-size: 1.15rem; } }
 
-      .table-wrap { background: var(--card); border-radius: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
-      .table-wrap::-webkit-scrollbar { height: 6px; }
+      .table-wrap { background: var(--card); border-radius: 16px; overflow: auto; overscroll-behavior: contain; container: daylog / inline-size; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+      .daylog thead th { position: sticky; top: 0; z-index: 2; background: var(--card); box-shadow: inset 0 -1px var(--line); }
+      .table-wrap::-webkit-scrollbar { height: 6px; width: 6px; }
       .table-wrap::-webkit-scrollbar-track { background: transparent; }
       .table-wrap::-webkit-scrollbar-thumb { background: var(--line); border-radius: 999px; }
       table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
@@ -406,9 +482,9 @@ const evInfo = evDays.map((d) => {
       .green { color: var(--green); } .cyan { color: var(--cyan); } .orange { color: var(--orange); } .purple { color: var(--purple); }
       .empty { color: var(--muted); padding: 20px; text-align: center; }
 
-      /* wider screens: eight columns, so keep cells compact enough to fit without scrolling */
-      @media (min-width: 740px) {
-        .daylog th, .daylog td { padding: 12px 7px; }
+      /* wide panel: eight columns, so keep cells compact enough to fit without scrolling */
+      @container daylog (min-width: 680px) {
+        .daylog th, .daylog td { padding: 12px 6px; }
         .daylog th:first-child, .daylog td:first-child { padding-left: 14px; }
         .daylog th:last-child, .daylog td:last-child { padding-right: 14px; }
         .daylog th { font-size: 0.7rem; letter-spacing: 0.02em; }
@@ -417,8 +493,8 @@ const evInfo = evDays.map((d) => {
         .daylog tr.details td { padding: 12px 14px; }
       }
 
-      /* phones and small tablets: each day becomes a card with a two-column grid of labelled stats */
-      @media (max-width: 739px) {
+      /* narrow panel (phones, or a slim right-hand column): each day becomes a card with a two-column grid of labelled stats */
+      @container daylog (max-width: 679.98px) {
         .daylog thead { display: none; }
         .daylog, .daylog tbody { display: block; }
         .daylog tr { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px 14px; padding: 14px 16px 16px; border-bottom: 1px solid var(--line); }
@@ -473,7 +549,7 @@ const evInfo = evDays.map((d) => {
       .split { font-size: 0.8rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--card); font-variant-numeric: tabular-nums; }
       .split.fast { color: #0b0e13; background: var(--green); }
       .split.slow { color: #fff; background: var(--red); }
-      @media (max-width: 739px) {
+      @container daylog (max-width: 679.98px) {
         .daylog tr.details { display: block; padding: 0; }
         .daylog tr.expandable:hover td, .daylog tr.expandable[aria-expanded='true'] td { background: none; }
         .daylog tr.expandable[aria-expanded='true'] { background: var(--card-2); }
@@ -534,17 +610,8 @@ const evInfo = evDays.map((d) => {
       .combo-nums b { color: var(--text); }
       @media (prefers-reduced-motion: reduce) { .bike *, .ride-tag .wheel { animation: none !important; } }
 
-      /* weight: tabs for the weigh-in table and the evolution chart */
-      .tabbar { display: inline-flex; gap: 4px; padding: 4px; background: var(--card); border-radius: 999px; margin-bottom: 12px; }
-      .tabbar button { font: inherit; font-size: 0.85rem; font-weight: 700; color: var(--muted); background: none; border: 0; border-radius: 999px; padding: 7px 14px; cursor: pointer; transition: background 0.2s, color 0.2s; }
-      .tabbar button[aria-selected='true'] { background: var(--bar); color: #0b0e13; }
-      .tabbar button:focus-visible { outline: 2px solid var(--bar); outline-offset: 2px; }
-      /* both tabs take the chart's height: the chart stays in the flow (just invisible when not selected),
-         the weigh-in summary is laid over it and scrolls inside if it ever runs longer */
-      .wpanels { position: relative; }
-      #panel-evolution[hidden] { display: block; visibility: hidden; }
-      #panel-weighins[hidden] { display: none; }
-      .wsum { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--card); border-radius: 16px; padding: 16px; overflow: hidden; }
+      /* weight: the weigh-in summary and the evolution chart are two views, each filling the panel */
+      .wsum { display: flex; flex-direction: column; background: var(--card); border-radius: 16px; padding: 16px; overflow: hidden; }
       @media (max-width: 559px) {
         .wsum { padding: 12px; }
         .wsum .evo-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
@@ -569,7 +636,8 @@ const evInfo = evDays.map((d) => {
       .wg-lb .delta { margin-top: 0; }
       .evo-stats b.good { color: var(--green); }
       .evo-stats b.bad { color: var(--red); }
-      .evo { background: var(--card); border-radius: 16px; padding: 16px; }
+      .evo { display: flex; flex-direction: column; background: var(--card); border-radius: 16px; padding: 16px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+      .evo > * { flex: none; }
       .evo-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 10px; }
       .evo-stats div { display: flex; flex-direction: column; gap: 2px; min-width: 0; background: var(--card-2); border-radius: 12px; padding: 10px 12px; }
       .evo-stats span { color: var(--muted); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -579,7 +647,9 @@ const evInfo = evDays.map((d) => {
       .evo-stats em.good { color: var(--green); }
       .evo-stats em.bad { color: var(--red); }
       @media (max-width: 559px) { .evo { padding: 12px; } .evo-stats { grid-template-columns: 1fr; } .evo-stats div { flex-direction: row; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; } .evo-stats span { flex-basis: 100%; } }
-      .evo-chart svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+      /* the chart keeps its shape while there is room and shrinks (letterboxed) when the panel is short */
+      .evo .evo-chart { position: relative; flex: 0 1 auto; aspect-ratio: 640 / 360; min-height: 150px; }
+      .evo-chart svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
       .evo-title { fill: var(--text); font-size: 15px; font-weight: 700; }
       .evo-axis { fill: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
       @media (max-width: 559px) { .evo-title { font-size: 19px; } .evo-axis { font-size: 16px; } }
@@ -629,7 +699,7 @@ const evInfo = evDays.map((d) => {
       .sw.line { height: 3px; width: 16px; border-radius: 2px; background: var(--green); }
       .sw.cum { height: 0; width: 16px; border-radius: 0; border-top: 2px dashed var(--text); }
 
-      footer { color: var(--muted); font-size: 0.8rem; margin-top: 30px; text-align: center; }
+      footer { color: var(--muted); font-size: 0.75rem; margin-top: auto; padding-top: 4px; text-align: center; }
       footer a { color: var(--muted); }
     </style>
   </head>
@@ -656,7 +726,8 @@ const evInfo = evDays.map((d) => {
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light mode" title="Switch to light mode"></button>
       </header>
 
-      <section class="challenge" aria-label="Challenge progress" data-start={startDate}>
+      <div class="side">
+      <section class="challenge pane pane-now" aria-label="Challenge progress" data-start={startDate}>
         <div class="body">
           <div class="top">
             <div class="count"><small class="pre">Day</small><span id="day-now">{dayNow}</span></div>
@@ -678,7 +749,7 @@ const evInfo = evDays.map((d) => {
         </div>
       </section>
 
-      <section class="yeargrid" aria-label={`Year ${prog.years + 1}, one square per day`}>
+      <section class="yeargrid pane pane-year" aria-label={`Year ${prog.years + 1}, one square per day`}>
         <div class="yg-head">
           <h2>Year {prog.years + 1}</h2>
           <span class="yg-sum">{yearRuns} {yearRuns === 1 ? 'run' : 'runs'} in year {prog.years + 1}</span>
@@ -706,7 +777,7 @@ const evInfo = evDays.map((d) => {
         </div>
       </section>
 
-      <section aria-label="Totals" class="summary">
+      <section aria-label="Totals" class="summary pane pane-now">
         <div class="tile">
           <div class="label">Runs</div>
           <div class="value">{count}</div>
@@ -750,9 +821,19 @@ const evInfo = evDays.map((d) => {
           </div>
         </div>
       </section>
+      <footer class="pane pane-year">Outdoor runs, rides and walks recorded with Apple Watch · <a href="/">rajil.me</a></footer>
+      </div>
 
-      <h2>Day by day</h2>
-      <div class="table-wrap">
+      <nav class="views" role="tablist" aria-label="Views">
+        <button type="button" role="tab" data-go="now" aria-selected="true"><i aria-hidden="true">🏃</i>Now</button>
+        <button type="button" role="tab" data-go="year" aria-selected="false"><i aria-hidden="true">🗓️</i>Year</button>
+        <button type="button" role="tab" data-go="days" aria-selected="false"><i aria-hidden="true">📋</i>Days</button>
+        {weightLog.length > 1 && <button type="button" role="tab" data-go="weighins" aria-selected="false"><i aria-hidden="true">⚖️</i>Weight</button>}
+        {weightLog.length > 1 && <button type="button" role="tab" data-go="evolution" aria-selected="false"><i aria-hidden="true">📈</i>Trend</button>}
+      </nav>
+
+      <div class="stage">
+      <div class="table-wrap pane pane-days" role="region" aria-label="Day by day">
         {days.length === 0 && <p class="empty">Nothing logged yet.</p>}
         {days.length > 0 && (
           <table class="daylog" id="daylog" data-last-day={lastDay}>
@@ -982,14 +1063,8 @@ const evInfo = evDays.map((d) => {
       </div>
 
       {weightLog.length > 1 && (
-        <section class="wtabs" aria-label="Weight">
-          <h2>Weight</h2>
-          <div class="tabbar" role="tablist" aria-label="Weight views">
-            <button role="tab" id="tab-weighins" aria-controls="panel-weighins" aria-selected="true">⚖️ Weigh-ins</button>
-            <button role="tab" id="tab-evolution" aria-controls="panel-evolution" aria-selected="false" tabindex="-1">📈 Evolution</button>
-          </div>
-          <div class="wpanels">
-          <div class="wsum" role="tabpanel" id="panel-weighins" aria-labelledby="tab-weighins">
+        <>
+          <div class="wsum pane pane-weighins" role="region" aria-label="Weigh-ins">
             <div class="evo-stats">
               <div><span>Now</span><b>{latestWeight!.lb.toFixed(1)}<small>lb</small></b><em>{fmtDate(latestWeight!.date, { month: 'short', day: 'numeric' })}</em></div>
               <div><span>Since Day 0</span><b class:list={[weightChange == null ? '' : weightChange <= 0 ? 'good' : 'bad']}>{weightChange == null ? '=' : signed(weightChange, '').trim()}<small>lb</small></b><em>from {firstWeight!.lb.toFixed(1)} lb</em></div>
@@ -1012,7 +1087,7 @@ const evInfo = evDays.map((d) => {
               ))}
             </ol>
           </div>
-          <div class="evo" role="tabpanel" id="panel-evolution" aria-labelledby="tab-evolution" hidden>
+          <div class="evo pane pane-evolution" role="region" aria-label="Weight and miles over time">
             <div class="evo-stats">
               <div><span>Weight</span><b>{firstWeight!.lb.toFixed(1)} → {latestWeight!.lb.toFixed(1)}<small>lb</small></b><em class:list={[weightChange == null ? '' : weightChange <= 0 ? 'good' : 'bad']}>{weightChange == null ? 'steady' : signed(weightChange, 'lb')}</em></div>
               <div><span>Run miles since Day 0</span><b>{evRunning.toFixed(1)}<small>mi</small></b><em>{count} runs · {fmtDuration(totalSec)}</em></div>
@@ -1093,11 +1168,9 @@ const evInfo = evDays.map((d) => {
               <span>🏆 longest run</span>
             </div>
           </div>
-          </div>
-        </section>
+        </>
       )}
-
-      <footer>Outdoor runs, rides and walks recorded with Apple Watch · <a href="/">rajil.me</a></footer>
+      </div>
     </main>
     <script>
       import { GOAL_DAY, progressOn } from '~/data/runs'
@@ -1184,51 +1257,53 @@ const evInfo = evDays.map((d) => {
         }
       }
 
-      // Weight tabs: weigh-in table first, evolution chart second (remembered per browser).
-      const tabs = [...document.querySelectorAll<HTMLButtonElement>('.wtabs [role=tab]')]
+      // Views: phones show one at a time from the bottom tab bar; wide screens keep the dashboard on the
+      // left and switch only the right-hand panel (remembered per browser).
+      const root = document.documentElement
+      const viewBtns = [...document.querySelectorAll<HTMLButtonElement>('.views [data-go]')]
+      const wide = matchMedia('(min-width: 1000px)')
       const evo = document.querySelector<HTMLElement>('.evo')
-      const selectTab = (tab: HTMLButtonElement, focus = false) => {
-        for (const t of tabs) {
-          const on = t === tab
-          t.setAttribute('aria-selected', String(on))
-          t.tabIndex = on ? 0 : -1
-          document.getElementById(t.getAttribute('aria-controls')!)!.hidden = !on
-        }
-        if (focus) tab.focus()
+      const setView = (wanted: string, save = false) => {
+        let view = viewBtns.some((b) => b.dataset.go === wanted) ? wanted : 'now'
+        if (wide.matches && (view === 'now' || view === 'year')) view = 'days'
+        root.dataset.view = view
+        for (const b of viewBtns) b.setAttribute('aria-selected', String(b.dataset.go === view))
         // replay the draw-in each time the chart opens
-        if (evo && tab.id === 'tab-evolution') {
+        if (evo && view === 'evolution') {
           evo.classList.remove('play')
           void evo.offsetWidth
           evo.classList.add('play')
         }
-        try { localStorage.setItem('run-weight-tab', tab.id) } catch {}
+        if (save && wide.matches) try { localStorage.setItem('run-view', view) } catch {}
       }
-      tabs.forEach((t, i) => {
-        t.addEventListener('click', () => selectTab(t))
-        t.addEventListener('keydown', (e) => {
-          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-            e.preventDefault()
-            selectTab(tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length], true)
-          }
+      for (const b of viewBtns) {
+        b.addEventListener('click', () => setView(b.dataset.go!, true))
+        b.addEventListener('keydown', (e) => {
+          if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
+          e.preventDefault()
+          const shown = viewBtns.filter((x) => x.offsetParent)
+          const next = shown[(shown.indexOf(b) + (e.key === 'ArrowRight' ? 1 : shown.length - 1)) % shown.length]
+          next.focus()
+          setView(next.dataset.go!, true)
         })
-      })
-      try {
-        const saved = tabs.find((t) => t.id === localStorage.getItem('run-weight-tab'))
-        if (saved && saved.id !== 'tab-weighins') selectTab(saved)
-      } catch {}
+      }
+      wide.addEventListener('change', () => setView(root.dataset.view ?? 'now'))
+      setView(root.dataset.view ?? 'now')
 
       // Evolution chart scrubber: hover or drag across the chart to read any day.
       const svg = document.getElementById('evo-svg') as SVGSVGElement | null
       const readout = document.getElementById('evo-readout')
       if (svg && readout) {
         const info: string[] = (JSON.parse(readout.dataset.info!) as string[]).map(withKm)
-        const left = Number(readout.dataset.l), col = Number(readout.dataset.col), vbW = Number(readout.dataset.w)
+        const left = Number(readout.dataset.l), col = Number(readout.dataset.col)
         const cursor = document.getElementById('evo-cursor')!
         const dayEls = [...svg.querySelectorAll<SVGGElement>('.evo-day')]
         let current = -1
         const show = (e: PointerEvent) => {
-          const box = svg.getBoundingClientRect()
-          const x = ((e.clientX - box.left) / box.width) * vbW
+          // map through the SVG's own transform, so it stays right when the chart is letterboxed
+          const ctm = svg.getScreenCTM()
+          if (!ctm) return
+          const x = new DOMPoint(e.clientX, e.clientY).matrixTransform(ctm.inverse()).x
           const i = Math.max(0, Math.min(info.length - 1, Math.floor((x - left) / col)))
           if (i === current) return
           dayEls[current]?.classList.remove('on')
@@ -1246,7 +1321,6 @@ const evInfo = evDays.map((d) => {
       }
 
       // Black & white switch: toggles between dark (default) and light, remembered per browser.
-      const root = document.documentElement
       const toggle = document.getElementById('theme-toggle')!
       const themeColor = document.querySelector<HTMLMetaElement>('meta[name=theme-color]')!
       const applyTheme = (theme: 'dark' | 'light') => {
