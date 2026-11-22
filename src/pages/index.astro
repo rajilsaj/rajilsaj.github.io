@@ -1,6 +1,6 @@
 ---
 import Layout from '~/layouts/Layout.astro'
-import { getSortedPosts } from '~/utils'
+import { getSortedPosts, dateString } from '~/utils'
 import { getCollection, render } from 'astro:content'
 import { Image } from 'astro:assets'
 import PostPreview from '~/components/PostPreview.astro'
@@ -26,6 +26,8 @@ const avatars = [
 
 const sortedPosts = await getSortedPosts()
 const recentPosts = sortedPosts.reverse().slice(0, 5)
+// The blog leads the homepage: the newest post is featured, any older ones are listed under it
+const [featured, ...olderPosts] = recentPosts
 
 // Latest run, straight from src/data/runs.ts — updates whenever a run is added
 const running = runTotals()
@@ -33,6 +35,35 @@ const latest = running.latest
 ---
 
 <Layout>
+  {
+    featured && (
+      <section class="mb-12" aria-label="Blog">
+        <div class="mb-3 flex items-baseline justify-between gap-4">
+          <h2 class="text-sm font-semibold tracking-widest text-foreground/55 uppercase">Blog</h2>
+          <a href="/posts" class="text-sm text-foreground/55 no-underline hover:text-foreground hover:underline">all posts →</a>
+        </div>
+        <a
+          href={`/posts/${featured.id}`}
+          class="featured-post group block rounded-lg border border-separator/60 p-5 no-underline transition-colors hover:border-foreground/40 sm:p-6"
+        >
+          <time datetime={featured.data.published.toISOString()} class="text-sm text-foreground/45">
+            {dateString(featured.data.published)}
+          </time>
+          <h3 class="mt-1 text-2xl leading-tight font-bold text-balance sm:text-3xl">{featured.data.title}</h3>
+          {featured.data.description && <p class="mt-2 text-foreground/70">{featured.data.description}</p>}
+          <p class="mt-4 text-sm font-semibold group-hover:underline">Read the post →</p>
+        </a>
+        {olderPosts.length > 0 && (
+          <div class="mt-4 flex flex-col">
+            {olderPosts.map((post) => (
+              <PostPreview post={post} />
+            ))}
+          </div>
+        )}
+      </section>
+    )
+  }
+
   <div class="flex flex-col items-center justify-center gap-8">
     <div class="avatar-wrap relative shrink-0">
       <div
@@ -108,23 +139,6 @@ const latest = running.latest
     )
   }
 
-  {
-    recentPosts.length > 0 && (
-      <section class="mt-12">
-        <h2 class="mb-4 text-lg font-semibold">Posts</h2>
-        <div class="flex flex-col">
-          {recentPosts.map((post) => (
-            <PostPreview post={post} />
-          ))}
-        </div>
-        <p class="mt-5 text-sm">
-          <a href="/posts" class="no-underline hover:underline">
-            → all posts
-          </a>
-        </p>
-      </section>
-    )
-  }
 </Layout>
 
 <style is:global>
