@@ -7,7 +7,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, ''
 
 const days = challengeDays() // every calendar day since Day 0 through today, oldest → newest (rendered newest first)
 const lastDay = days[days.length - 1]?.day ?? 0
-const { count, measured, totalMi, totalSec, avgPaceSec } = runTotals()
+const { count, measured, totalMi, totalSec, avgPaceSec, latest: latestRun } = runTotals()
 const cross = activityTotals()
 // per-kind wording and colours for cross-training (rides and walks)
 const KIND = {
@@ -43,6 +43,21 @@ const delta = (cur: number | undefined, prev: number | undefined, fmt: (n: numbe
 }
 const signed = (n: number, unit: string) => `${n > 0 ? '+' : '−'}${Math.abs(n).toFixed(1)} ${unit}`
 
+// every distance and pace is rendered twice (miles and kilometres); the mi/km switch shows one of them
+const KM = 1.609344
+const kmOf = (mi: number) => (mi * KM).toFixed(2)
+const paceKm = (secPerMi: number) => fmtPace(Math.round(secPerMi / KM))
+
+// Day log, newest first. Finished days with nothing logged collapse into one slim line per streak.
+type DayItem = { d: (typeof days)[number] } | { gap: (typeof days)[number][] }
+const items: DayItem[] = []
+for (const d of [...days].reverse()) {
+  const quiet = d.rest && !d.run && !d.activity && d.weight == null && d.pushups == null && d.sleep == null && !isBirthday(d.date) && d.day !== GOAL_DAY
+  const last = items[items.length - 1]
+  if (quiet && last && 'gap' in last) last.gap.push(d)
+  else items.push(quiet ? { gap: [d] } : { d })
+}
+
 // challenge progress (server-side fallback; the browser recomputes it live)
 const startDate = CHALLENGE_START
 const prog = progressOn(todayIso())
@@ -62,7 +77,7 @@ const cellTitle = (date: string) => {
   const r = runOn.get(date)
   const what = r ? (r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : 'Run') : isRestDay(date) ? '🧘 Recovery day' : 'No run'
   const act = activityOn(date)
-  return `${isBirthday(date) ? '🎂 Birthday · ' : ''}${what}${act ? ` + ${KIND[act.kind].emoji} ${act.distanceMi.toFixed(2)} mi ${KIND[act.kind].noun}` : ''} · Day ${dayNumber(date)} · ${fmtDate(date, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
+  return `${isBirthday(date) ? '🎂 Birthday · ' : ''}${r?.badge ? `${r.badge.emoji} ${r.badge.label} · ` : ''}${what}${act ? ` + ${KIND[act.kind].emoji} ${act.distanceMi.toFixed(2)} mi ${KIND[act.kind].noun}` : ''} · Day ${dayNumber(date)} · ${fmtDate(date, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
 }
 const yearDates = challengeYear(prog.years).flatMap((m) => m.dates)
 const yearRuns = yearDates.filter((d) => runOn.has(d)).length
@@ -194,6 +209,11 @@ const evInfo = evDays.map((d) => {
         var wide = matchMedia('(min-width: 1000px)').matches
         var v = wide ? localStorage.getItem('run-view') : 'now'
         document.documentElement.dataset.view = /^(now|days|weighins|evolution)$/.test(v || '') ? v : wide ? 'days' : 'now'
+      } catch (e) {}
+      // Reader's choices for the day log: miles or kilometres, compact or full rows.
+      try {
+        if (localStorage.getItem('run-unit') === 'km') document.documentElement.dataset.unit = 'km'
+        if (localStorage.getItem('run-density') === 'full') document.documentElement.dataset.density = 'full'
       } catch (e) {}
     </script>
     <style is:global>
@@ -431,10 +451,11 @@ const evInfo = evDays.map((d) => {
       .cell.future { opacity: 0.4; }
       .cell.today { outline: 2px solid var(--text); outline-offset: -1px; }
       /* birthday: a little cake on top of that day's square */
-      .cell.bday, .cell.recovery { position: relative; overflow: visible; }
+      .cell.bday, .cell.recovery, .cell.badge { position: relative; overflow: visible; }
       .cell.recovery::after { content: '🧘'; }
+      .cell.badge::after { content: attr(data-emoji); }
       .cell.bday::after { content: '🎂'; }
-      .cell.bday::after, .cell.recovery::after { position: absolute; inset: -35%; display: grid; place-items: center; font-size: 0.75rem; font-size: clamp(7px, calc(100cqw / (var(--weeks) + 2) * 0.95), 15px); line-height: 1; font-style: normal; }
+      .cell.bday::after, .cell.recovery::after, .cell.badge::after { position: absolute; inset: -35%; display: grid; place-items: center; font-size: 0.75rem; font-size: clamp(7px, calc(100cqw / (var(--weeks) + 2) * 0.95), 15px); line-height: 1; font-style: normal; }
       /* small squares (the narrow dashboard column): a quiet dot marks recovery days instead of the emoji */
       @container yghalf (max-width: 340px) { .cell.recovery::after { content: ''; inset: 32%; border-radius: 50%; background: var(--muted); } }
       .yg-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; color: var(--muted); font-size: 0.72rem; }
@@ -453,6 +474,32 @@ const evInfo = evDays.map((d) => {
       /* shrink the big number when the tile itself is narrow, whatever the viewport */
       @container (max-width: 150px) { .tile .value { font-size: 1.35rem; } }
       @container (max-width: 120px) { .tile .value { font-size: 1.15rem; } }
+
+      /* mi/km switch: both figures are in the page, one is shown */
+      .u-km { display: none; }
+      :root[data-unit='km'] .u-km { display: inline; }
+      :root[data-unit='km'] .u-mi { display: none; }
+
+      /* day log: a slim toolbar (show, sort, units, row size) above the scrolling list */
+      .days { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+      .days .table-wrap { flex: 1 1 0; min-height: 0; }
+      .daybar { flex: none; display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+      .daybar::-webkit-scrollbar { display: none; }
+      .seg { flex: none; display: inline-flex; background: var(--card); border: 1px solid var(--track); border-radius: 999px; padding: 2px; }
+      .seg button, .daybar select { font: inherit; font-size: 0.76rem; font-weight: 700; color: var(--muted); background: none; border: 0; border-radius: 999px; padding: 5px 10px; cursor: pointer; white-space: nowrap; }
+      .seg button small { font-size: 0.9em; font-weight: 600; opacity: 0.7; margin-left: 3px; }
+      .seg button[aria-pressed='true'] { background: var(--bar); color: #0b0e13; }
+      .seg button:focus-visible, .daybar select:focus-visible { outline: 2px solid var(--bar); outline-offset: 1px; }
+      .daybar select { flex: none; background: var(--card); border: 1px solid var(--track); color: var(--text); padding: 7px 8px; }
+      .daybar .push { margin-left: auto; }
+      .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+      .daylog tr.f-out { display: none !important; }
+      /* a streak of recovery days: one slim line */
+      .daylog tr.gap td { padding: 5px 14px; color: var(--muted); font-size: 0.78rem; white-space: normal; }
+      /* holiday / special-day pill */
+      .hol-tag { display: block; width: max-content; margin-top: 6px; font-size: 0.7rem; font-weight: 800; padding: 3px 9px; border-radius: 999px; color: #0b0e13; white-space: nowrap; background: linear-gradient(90deg, #ffb340, #ff7a3d); }
+      .dt-note { font-size: 0.85rem; line-height: 1.45; margin: 0 4px 12px; }
+      .ride .dt-note { margin: 10px 0 0; color: var(--muted); }
 
       .table-wrap { background: var(--card); border-radius: 16px; overflow: auto; overscroll-behavior: contain; container: daylog / inline-size; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
       .daylog thead th { position: sticky; top: 0; z-index: 2; background: var(--card); box-shadow: inset 0 -1px var(--line); }
@@ -491,7 +538,29 @@ const evInfo = evDays.map((d) => {
         .daylog td .v { font-size: 1rem; }
         .daylog .zones { min-width: 72px; }
         .daylog tr.details td { padding: 12px 14px; }
+        /* compact rows (default): one line per day, the deltas and recovery heart rate wait in "Full rows" */
+        :root:not([data-density='full']) .daylog tr:not(.details):not(.gap) > td { padding-top: 7px; padding-bottom: 7px; }
+        :root:not([data-density='full']) .daylog .delta, :root:not([data-density='full']) .daylog .rec { display: none; }
+        :root:not([data-density='full']) .daylog .daycell .datesub { display: inline; margin-left: 8px; }
+        :root:not([data-density='full']) .daylog .more { display: inline; margin: 0 0 0 6px; }
+        :root:not([data-density='full']) .daylog .zones { margin-top: 4px; }
+        :root:not([data-density='full']) .daylog .daycell :is(.hol-tag, .bday-tag, .ride-tag, .goal-tag) { display: inline-block; vertical-align: middle; margin-top: 4px; }
       }
+      /* latest run at a glance on the phone "Now" screen; tap to open the day log */
+      .latest { display: block; width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer; background: var(--card); border: 1px solid var(--track); border-radius: 14px; padding: 10px 14px 12px; }
+      .latest:focus-visible { outline: 2px solid var(--bar); outline-offset: 2px; }
+      .latest-top { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 0.78rem; color: var(--muted); }
+      .latest-top b { color: var(--text); font-size: 0.82rem; }
+      .latest-top .hol-tag { margin-top: 0; }
+      .latest-top .go { margin-left: auto; font-weight: 700; }
+      .latest-nums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+      .latest-nums div { display: flex; flex-direction: column; min-width: 0; }
+      .latest-nums b { font-size: 1.05rem; white-space: nowrap; letter-spacing: -0.01em; }
+      .latest-nums div > span { color: var(--muted); font-size: 0.66rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+      .latest .zones { margin-top: 8px; }
+      @media (min-width: 1000px) { .latest { display: none; } }
+      :root:not([data-density='full']) .daylog .more { font-size: 0; }
+      :root:not([data-density='full']) .daylog .more .chev { font-size: 0.8rem; margin: 0; }
 
       /* narrow panel (phones, or a slim right-hand column): each day becomes a card with a two-column grid of labelled stats */
       @container daylog (max-width: 679.98px) {
@@ -501,7 +570,9 @@ const evInfo = evDays.map((d) => {
         .daylog tr:last-child { border-bottom: none; }
         .daylog td { display: block; padding: 0; border: 0; white-space: normal; min-width: 0; }
         .daylog td.daycell { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font-size: 1.05rem; }
-        .daylog .goal-tag, .daylog .bday-tag, .daylog .ride-tag { margin-top: 0; }
+        .daylog .goal-tag, .daylog .bday-tag, .daylog .ride-tag, .daylog .hol-tag { margin-top: 0; }
+        .daylog tr.gap { display: block; padding: 0; }
+        .daylog tr.gap td { padding: 6px 16px; margin: 0; }
         .daylog td.daycell .datesub { display: inline; margin: 0; }
         .daylog td[colspan] { grid-column: 1 / -1; }
         /* run stats two per row; weight, push-ups and sleep three per row */
@@ -513,6 +584,17 @@ const evInfo = evDays.map((d) => {
         .daylog td .v { font-size: 1.05rem; }
         .daylog .delta { display: inline-block; margin: 0 0 0 6px; white-space: nowrap; }
         .daylog .zones { max-width: 160px; }
+        /* compact cards (default): the four run numbers on one line, empty cells dropped, no deltas */
+        :root:not([data-density='full']) .daylog tr:not(.details):not(.gap) { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 5px 8px; padding: 9px 14px 10px; }
+        :root:not([data-density='full']) .daylog td[data-label] { grid-column: span 3; }
+        :root:not([data-density='full']) .daylog td[data-label='Weight'], :root:not([data-density='full']) .daylog td[data-label='Push-ups'], :root:not([data-density='full']) .daylog td[data-label='Sleep'] { grid-column: span 4; }
+        :root:not([data-density='full']) .daylog td.nil { display: none; }
+        :root:not([data-density='full']) .daylog td[data-label]::before { font-size: 0.6rem; margin-bottom: 0; }
+        :root:not([data-density='full']) .daylog td .v { font-size: 0.92rem; white-space: nowrap; }
+        :root:not([data-density='full']) .daylog td.daycell { font-size: 0.95rem; }
+        :root:not([data-density='full']) .daylog .delta, :root:not([data-density='full']) .daylog .rec { display: none; }
+        :root:not([data-density='full']) .daylog .zones { min-width: 0; height: 4px; margin-top: 4px; }
+        :root:not([data-density='full']) .daylog tr.rest td[colspan] { margin-bottom: 0; }
       }
 
       /* click a day to open its details: heart-rate zones up front, a few key numbers, mile splits */
@@ -762,7 +844,7 @@ const evInfo = evDays.map((d) => {
                 <span class="wd"></span><span class="wd">Mon</span><span class="wd"></span><span class="wd">Wed</span><span class="wd"></span><span class="wd">Fri</span><span class="wd"></span>
                 {h.cells.map((date) =>
                   date ? (
-                    <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday, bday: isBirthday(date), recovery: !isBirthday(date) && isRestDay(date) }]} data-date={date} title={cellTitle(date)}></i>
+                    <i class:list={['cell', `l${level(date)}`, { future: date > buildToday, today: date === buildToday, bday: isBirthday(date), badge: !isBirthday(date) && !!runOn.get(date)?.badge, recovery: !isBirthday(date) && isRestDay(date) }]} data-date={date} data-emoji={runOn.get(date)?.badge?.emoji} title={cellTitle(date)}></i>
                   ) : (
                     <i class="cell pad"></i>
                   ),
@@ -777,6 +859,27 @@ const evInfo = evDays.map((d) => {
         </div>
       </section>
 
+      {latestRun && (
+        <button type="button" class="latest pane pane-now" id="latest" aria-label="Latest run, open the day log">
+          <span class="latest-top">
+            <b>Latest run</b> Day {latestRun.day} · {fmtDate(latestRun.date, { weekday: 'short', month: 'short', day: 'numeric' })}
+            {latestRun.badge && <span class="hol-tag"><span aria-hidden="true">{latestRun.badge.emoji}</span> {latestRun.badge.label}</span>}
+            <span class="go" aria-hidden="true">all days ›</span>
+          </span>
+          <span class="latest-nums">
+            <div><b>{latestRun.distanceMi != null ? <><span class="u-mi">{latestRun.distanceMi.toFixed(2)} mi</span><span class="u-km">{kmOf(latestRun.distanceMi)} km</span></> : '–'}</b><span>Distance</span></div>
+            <div><b>{latestRun.workoutTime ?? '–'}</b><span>Time</span></div>
+            <div><b>{latestRun.avgPace ? <><span class="u-mi">{fmtPace(toSec(latestRun.avgPace))}/mi</span><span class="u-km">{paceKm(toSec(latestRun.avgPace))}/km</span></> : '–'}</b><span>Pace</span></div>
+            <div><b>{latestRun.avgHrBpm ? `${latestRun.avgHrBpm} bpm` : '–'}</b><span>Heart rate</span></div>
+          </span>
+          {latestRun.hrZones && (
+            <span class="zones" aria-hidden="true">
+              {latestRun.hrZones.map((z, zi) => <i class={`z${zi + 1}`} style={`flex-grow:${toSec(z)}`}></i>)}
+            </span>
+          )}
+        </button>
+      )}
+
       <section aria-label="Totals" class="summary pane pane-now">
         <div class="tile">
           <div class="label">Runs</div>
@@ -785,12 +888,12 @@ const evInfo = evDays.map((d) => {
         </div>
         <div class="tile">
           <div class="label">Distance</div>
-          <div class="value blue">{totalMi.toFixed(1)}<small>MI</small></div>
-          <div class="sub">{measured ? (totalMi / measured).toFixed(2) : '–'} mi per run</div>
+          <div class="value blue"><span class="u-mi">{totalMi.toFixed(1)}<small>MI</small></span><span class="u-km">{(totalMi * KM).toFixed(1)}<small>KM</small></span></div>
+          <div class="sub">{measured ? <><span class="u-mi">{(totalMi / measured).toFixed(2)} mi</span><span class="u-km">{kmOf(totalMi / measured)} km</span></> : '–'} per run</div>
         </div>
         <div class="tile">
           <div class="label">Avg. pace</div>
-          <div class="value cyan">{totalMi > 0 ? fmtPace(avgPaceSec) : '–'}<small>/MI</small></div>
+          <div class="value cyan">{totalMi > 0 ? <><span class="u-mi">{fmtPace(avgPaceSec)}<small>/MI</small></span><span class="u-km">{paceKm(avgPaceSec)}<small>/KM</small></span></> : '–'}</div>
           <div class="sub">across all runs</div>
         </div>
         {cross.count > 0 && (
@@ -833,7 +936,31 @@ const evInfo = evDays.map((d) => {
       </nav>
 
       <div class="stage">
-      <div class="table-wrap pane pane-days" role="region" aria-label="Day by day">
+      <div class="days pane pane-days">
+      <div class="daybar" role="toolbar" aria-label="Day log options">
+        <div class="seg" role="group" aria-label="Show">
+          <button type="button" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" data-filter="run" aria-pressed="false">🏃 Runs<small>{count}</small></button>
+          {cross.count > 0 && <button type="button" data-filter="cross" aria-pressed="false">🚶 Cross<small>{cross.count}</small></button>}
+          <button type="button" data-filter="body" aria-pressed="false">⚖️ Body</button>
+        </div>
+        <label><span class="sr">Sort</span>
+          <select id="day-sort">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="mi">Longest runs</option>
+            <option value="pace">Fastest runs</option>
+          </select>
+        </label>
+        <div class="seg push" role="group" aria-label="Units">
+          <button type="button" data-unit="mi" aria-pressed="true">mi</button>
+          <button type="button" data-unit="km" aria-pressed="false">km</button>
+        </div>
+        <div class="seg" role="group" aria-label="Row size">
+          <button type="button" id="density-btn" aria-pressed="false" title="Show the change since the previous run, recovery heart rate and empty columns">Full rows</button>
+        </div>
+      </div>
+      <div class="table-wrap" role="region" aria-label="Day by day">
         {days.length === 0 && <p class="empty">Nothing logged yet.</p>}
         {days.length > 0 && (
           <table class="daylog" id="daylog" data-last-day={lastDay}>
@@ -843,28 +970,44 @@ const evInfo = evDays.map((d) => {
               </tr>
             </thead>
             <tbody>
-              {[...days].reverse().map((d) => {
+              {items.map((it) => {
+                if ('gap' in it) {
+                  const to = it.gap[0], from = it.gap[it.gap.length - 1]
+                  return (
+                    <tr class="rest gap" data-k="rest">
+                      <td colspan="8">
+                        🧘 {it.gap.length === 1
+                          ? `Recovery day · Day ${to.day} · ${fmtDate(to.date, { weekday: 'short', month: 'short', day: 'numeric' })}`
+                          : `${it.gap.length} recovery days · Day ${from.day}–${to.day} · ${fmtDate(from.date, { month: 'short', day: 'numeric' })} – ${fmtDate(to.date, { month: 'short', day: 'numeric' })}`}
+                      </td>
+                    </tr>
+                  )
+                }
+                const d = it.d
                 const i = d.day // index in the oldest → newest array
                 const r = d.run
                 // compare against the most recent run before this day, skipping rest days
                 const p = days.slice(0, i).reverse().find((x) => x.run)?.run
                 const w = d.weight
                 const pu = d.pushups
-                const runCells: [string, string, string, Delta][] = r
+                // [label, value, colour, delta, value in km, delta in km]
+                const paceSec = r?.avgPace ? toSec(r.avgPace) : undefined
+                const prevPaceSec = p?.avgPace ? toSec(p.avgPace) : undefined
+                const runCells: [string, string, string, Delta, string?, Delta?][] = r
                   ? [
-                      ['Distance', r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : '–', 'blue', delta(r.distanceMi, p?.distanceMi, (n) => `${n.toFixed(2)} mi`)],
+                      ['Distance', r.distanceMi != null ? `${r.distanceMi.toFixed(2)} mi` : '–', 'blue', delta(r.distanceMi, p?.distanceMi, (n) => `${n.toFixed(2)} mi`), r.distanceMi != null ? `${kmOf(r.distanceMi)} km` : undefined, delta(r.distanceMi, p?.distanceMi, (n) => `${kmOf(n)} km`)],
                       ['Time', r.workoutTime ?? '–', 'yellow', delta(r.workoutTime ? toSec(r.workoutTime) : undefined, p?.workoutTime ? toSec(p.workoutTime) : undefined, fmtDuration)],
-                      ['Pace', r.avgPace ? `${fmtPace(toSec(r.avgPace))}/mi` : '–', 'cyan', delta(r.avgPace ? toSec(r.avgPace) : undefined, p?.avgPace ? toSec(p.avgPace) : undefined, fmtDuration, true)],
+                      ['Pace', paceSec ? `${fmtPace(paceSec)}/mi` : '–', 'cyan', delta(paceSec, prevPaceSec, fmtDuration, true), paceSec ? `${paceKm(paceSec)}/km` : undefined, delta(paceSec, prevPaceSec, (n) => fmtDuration(Math.round(n / KM)), true)],
                       ['Heart rate', r.avgHrBpm ? `${r.avgHrBpm} bpm` : '–', 'orange', delta(r.avgHrBpm, p?.avgHrBpm, (n) => `${n} bpm`, true)],
                     ]
                   : d.activity
                     ? // no run that day: the walk or ride fills the same columns (no deltas, runs aren't compared with walks)
                       [
-                        ['Distance', `${d.activity.distanceMi.toFixed(2)} mi`, 'blue', null],
+                        ['Distance', `${d.activity.distanceMi.toFixed(2)} mi`, 'blue', null, `${kmOf(d.activity.distanceMi)} km`],
                         ['Time', d.activity.workoutTime, 'yellow', null],
                         d.activity.avgPace
-                          ? ['Pace', `${fmtPace(toSec(d.activity.avgPace))}/mi`, 'cyan', null]
-                          : ['Speed', d.activity.avgMph != null ? `${d.activity.avgMph} mph` : '–', 'cyan', null],
+                          ? ['Pace', `${fmtPace(toSec(d.activity.avgPace))}/mi`, 'cyan', null, `${paceKm(toSec(d.activity.avgPace))}/km`]
+                          : ['Speed', d.activity.avgMph != null ? `${d.activity.avgMph} mph` : '–', 'cyan', null, d.activity.avgMph != null ? `${(d.activity.avgMph * KM).toFixed(1)} km/h` : undefined],
                         ['Heart rate', d.activity.avgHrBpm ? `${d.activity.avgHrBpm} bpm` : '–', 'orange', null],
                       ]
                     : []
@@ -909,16 +1052,19 @@ const evInfo = evDays.map((d) => {
                   <tr
                     class:list={[{ rest: !r && !act, expandable: hasDetails }]}
                     data-details={hasDetails ? d.date : undefined}
+                    data-k={[r && 'run', act && 'cross', (w != null || pu != null || d.sleep != null) && 'body'].filter(Boolean).join(' ') || 'rest'}
+                    data-mi={r?.distanceMi}
+                    data-pace={paceSec}
                     tabindex={hasDetails ? 0 : undefined}
                     aria-expanded={hasDetails ? 'false' : undefined}
                     aria-controls={hasDetails ? `details-${d.date}` : undefined}
                   >
-                    <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span>{isBirthday(d.date) && <span class="bday-tag" title="Happy birthday!"><span class="cake" aria-hidden="true">🎂</span> {d.run ? 'Birthday run' : 'Birthday'} <span aria-hidden="true">🎉🎈🥳</span></span>}{act && k && <span class:list={['ride-tag', `kind-${act.kind}`]} title={`${r ? `Run + ${k.noun}` : k.title} · ${act.distanceMi.toFixed(2)} mi`}><span class="wheel" aria-hidden="true">{k.emoji}</span> {r ? `Double day · +${act.distanceMi.toFixed(2)} mi` : k.day}</span>}{d.day === GOAL_DAY && <span class="goal-tag">🏆 Challenge {GOAL_DAY} achieved</span>}{hasDetails && <span class="more">details<i class="chev" aria-hidden="true">▾</i></span>}</td>
+                    <td class="daycell">Day {d.day}<span class="datesub">{fmtDate(d.date, { weekday: 'short', month: 'short', day: 'numeric' })}</span>{isBirthday(d.date) && <span class="bday-tag" title="Happy birthday!"><span class="cake" aria-hidden="true">🎂</span> {d.run ? 'Birthday run' : 'Birthday'} <span aria-hidden="true">🎉🎈🥳</span></span>}{r?.badge && <span class="hol-tag"><span aria-hidden="true">{r.badge.emoji}</span> {r.badge.label}</span>}{act && k && <span class:list={['ride-tag', `kind-${act.kind}`]} title={`${r ? `Run + ${k.noun}` : k.title} · ${act.distanceMi.toFixed(2)} mi`}><span class="wheel" aria-hidden="true">{k.emoji}</span> {r ? `Double day · +${act.distanceMi.toFixed(2)} mi` : k.day}</span>}{d.day === GOAL_DAY && <span class="goal-tag">🏆 Challenge {GOAL_DAY} achieved</span>}{hasDetails && <span class="more">details<i class="chev" aria-hidden="true">▾</i></span>}</td>
                     {main ? (
-                      runCells.map(([label, v, c, dl], ci) => (
+                      runCells.map(([label, v, c, dl, vKm, dlKm], ci) => (
                         <td data-label={label}>
-                          <span class={`v ${c}`}>{v}</span>
-                          {dl && <span class={`delta ${dl.dir}`}>{dl.text}</span>}
+                          <span class={`v ${c}`}>{vKm ? <><span class="u-mi">{v}</span><span class="u-km">{vKm}</span></> : v}</span>
+                          {dl && <span class={`delta ${dl.dir}`}>{dlKm ? <><span class="u-mi">{dl.text}</span><span class="u-km">{dlKm.text}</span></> : dl.text}</span>}
                           {ci === 3 && rowZ.total > 0 && (
                             <span class="zones" aria-label="Time in heart rate zones">
                               {rowZ.sec.map((s, zi) => (
@@ -933,7 +1079,7 @@ const evInfo = evDays.map((d) => {
                       <td colspan="4"><span class="rest-label">{d.rest ? <><span class="rest-emoji" aria-hidden="true">🧘</span>Recovery day</> : 'No run'}</span></td>
                     )}
                     {bodyCells.map(([label, v, c, dl]) => (
-                      <td data-label={label}>
+                      <td data-label={label} class:list={[{ nil: v === '–' }]}>
                         <span class={`v ${c}`}>{v}</span>
                         {dl && <span class={`delta ${dl.dir}`}>{dl.text}</span>}
                       </td>
@@ -947,6 +1093,7 @@ const evInfo = evDays.map((d) => {
                             {[r.time, r.location, r.tempF != null && `${r.tempF}°F`, r.humidityPct != null && `${r.humidityPct}% humidity`, r.effort != null && `effort ${r.effort} · ${effortLabel(r.effort).toLowerCase()}`].filter(Boolean).join(' · ')}
                           </p>
                         )}
+                        {r?.notes && <p class="dt-note">{r.notes}</p>}
                         {r && zoneTotal > 0 && (
                           <div class="hz">
                             <div class="hz-top">
@@ -978,7 +1125,7 @@ const evInfo = evDays.map((d) => {
                           <div class="dt-splits">
                             <span class="dt-label">Mile splits</span>
                             {splitSec.map((sp) => (
-                              <span class:list={['split', { fast: sp === fastest && fastest !== slowest, slow: sp === slowest && fastest !== slowest }]}>{fmtPace(sp)}</span>
+                              <span class:list={['split', { fast: sp === fastest && fastest !== slowest, slow: sp === slowest && fastest !== slowest }]}><span class="u-mi">{fmtPace(sp)}</span><span class="u-km">{paceKm(sp)}</span></span>
                             ))}
                           </div>
                         )}
@@ -1049,6 +1196,7 @@ const evInfo = evDays.map((d) => {
                                 <div class="combo-nums"><b>{combo.mi.toFixed(2)} mi</b> moved · <b>{fmtDuration(combo.sec)}</b> active · <b>{combo.cal.toLocaleString('en-US')}</b> cal · <b>{combo.ft}</b> ft up</div>
                               </div>
                             )}
+                            {act.notes && <p class="dt-note">{act.notes}</p>}
                           </div>
                         )}
                       </td>
@@ -1060,6 +1208,7 @@ const evInfo = evDays.map((d) => {
             </tbody>
           </table>
         )}
+      </div>
       </div>
 
       {weightLog.length > 1 && (
@@ -1145,6 +1294,7 @@ const evInfo = evDays.map((d) => {
                 <circle class="evo-cumdot" cx={evX(evDays.length - 1)} cy={evCumY(evRunning)} r="4.5" />
                 {/* moments worth a flag */}
                 {evLongest.runMi > 0 && <text class="evo-flag" x={evX(evLongest.day)} y={EV.mBot - evMH(evLongest.runMi + evLongest.actMi) - 8}>🏆</text>}
+                {evDays.filter((d) => d.run?.badge && d !== evLongest).map((d) => <text class="evo-flag" x={evX(d.day)} y={EV.mBot - evMH(d.runMi + d.actMi) - 8}>{d.run!.badge!.emoji}</text>)}
                 {evDays.filter((d) => isBirthday(d.date)).map((d) => <text class="evo-flag" x={evX(d.day)} y={EV.wBot + 26}>🎂</text>)}
                 {/* day axis */}
                 {evDays.filter((d) => d.day % evStep === 0).map((d) => (
@@ -1244,17 +1394,68 @@ const evInfo = evDays.map((d) => {
         for (let n = lastBuilt + 1; n <= day; n++) {
           const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + n)
           const tr = document.createElement('tr')
-          tr.className = 'rest'
-          const label = n < day ? '<span class="rest-emoji" aria-hidden="true">🧘</span>Recovery day' : 'No run'
-          tr.innerHTML =
-            `<td class="daycell">Day ${n}<span class="datesub"></span>${n === GOAL_DAY ? `<span class="goal-tag">🏆 Challenge ${GOAL_DAY} achieved</span>` : ''}</td>` +
-            `<td colspan="4"><span class="rest-label">${label}</span></td>` +
-            `<td data-label="Weight"><span class="v purple">–</span></td>` +
-            `<td data-label="Push-ups"><span class="v green">–</span></td>` +
-            `<td data-label="Sleep"><span class="v blue">–</span></td>`
-          tr.querySelector('.datesub')!.textContent = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+          tr.className = 'rest gap'
+          tr.dataset.k = 'rest'
+          const td = document.createElement('td')
+          td.colSpan = 8
+          td.textContent = `${n < day ? '🧘 Recovery day' : 'No run yet'} · Day ${n} · ${date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}${n === GOAL_DAY ? ` · 🏆 Challenge ${GOAL_DAY} achieved` : ''}`
+          tr.append(td)
           tbody.prepend(tr)
         }
+
+        // Toolbar: show all days, only runs, only cross-training or only days with a body log; sort by date,
+        // distance or pace (ranking keeps runs only). Each row travels with its details panel.
+        const pairs = [...tbody.querySelectorAll<HTMLElement>('tr:not(.details)')].map((row) => ({
+          row,
+          det: row.dataset.details ? document.getElementById(`details-${row.dataset.details}`) : null,
+        }))
+        const filterBtns = [...document.querySelectorAll<HTMLButtonElement>('.daybar [data-filter]')]
+        const sortSel = document.getElementById('day-sort') as HTMLSelectElement | null
+        let filter = 'all'
+        const applyLog = () => {
+          const sort = sortSel?.value ?? 'newest'
+          const ranked = sort === 'mi' || sort === 'pace'
+          const num = (p: (typeof pairs)[number]) => Number(p.row.dataset[sort])
+          const order =
+            sort === 'oldest' ? [...pairs].reverse()
+            : sort === 'mi' ? [...pairs].sort((a, b) => (num(b) || 0) - (num(a) || 0))
+            : sort === 'pace' ? [...pairs].sort((a, b) => (num(a) || Infinity) - (num(b) || Infinity))
+            : pairs
+          for (const p of order) {
+            const kinds = (p.row.dataset.k ?? '').split(' ')
+            const out = (filter !== 'all' && !kinds.includes(filter)) || (ranked && !p.row.dataset[sort])
+            p.row.classList.toggle('f-out', out)
+            p.det?.classList.toggle('f-out', out)
+            tbody.append(p.row)
+            if (p.det) tbody.append(p.det)
+          }
+          for (const b of filterBtns) b.setAttribute('aria-pressed', String(b.dataset.filter === filter))
+          daylog.parentElement!.scrollTop = 0
+        }
+        for (const b of filterBtns) b.addEventListener('click', () => { filter = b.dataset.filter!; applyLog() })
+        sortSel?.addEventListener('change', applyLog)
+      }
+
+      // Units and row size, remembered per browser.
+      {
+        const html = document.documentElement
+        const unitBtns = [...document.querySelectorAll<HTMLButtonElement>('.daybar [data-unit]')]
+        const setUnit = (u: string) => {
+          if (u === 'km') html.dataset.unit = 'km'
+          else delete html.dataset.unit
+          for (const b of unitBtns) b.setAttribute('aria-pressed', String(b.dataset.unit === u))
+        }
+        setUnit(html.dataset.unit === 'km' ? 'km' : 'mi')
+        for (const b of unitBtns) b.addEventListener('click', () => { setUnit(b.dataset.unit!); try { localStorage.setItem('run-unit', b.dataset.unit!) } catch {} })
+        const densityBtn = document.getElementById('density-btn')
+        densityBtn?.setAttribute('aria-pressed', String(html.dataset.density === 'full'))
+        densityBtn?.addEventListener('click', () => {
+          const full = html.dataset.density !== 'full'
+          if (full) html.dataset.density = 'full'
+          else delete html.dataset.density
+          densityBtn.setAttribute('aria-pressed', String(full))
+          try { localStorage.setItem('run-density', full ? 'full' : 'compact') } catch {}
+        })
       }
 
       // Views: phones show one at a time from the bottom tab bar; wide screens keep the dashboard on the
@@ -1289,6 +1490,7 @@ const evInfo = evDays.map((d) => {
       }
       wide.addEventListener('change', () => setView(root.dataset.view ?? 'now'))
       setView(root.dataset.view ?? 'now')
+      document.getElementById('latest')?.addEventListener('click', () => setView('days', true))
 
       // Evolution chart scrubber: hover or drag across the chart to read any day.
       const svg = document.getElementById('evo-svg') as SVGSVGElement | null

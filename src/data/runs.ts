@@ -45,6 +45,8 @@ export type Run = {
   /** Per-mile splits from the Splits screen: time for that mile ('mm:ss') and average heart rate */
   splits?: { time: string; hr?: number }[]
   notes?: string
+  /** Special day (holiday, race…): an emoji pill on the row and on the year board */
+  badge?: { emoji: string; label: string }
 }
 
 /** Zone boundaries shown in Apple Fitness (bpm). */
@@ -640,6 +642,64 @@ export const runs: Run[] = [
       { time: '9:05', hr: 164 },
     ], // only miles 1–5 visible in the screenshots
     notes: 'Coldest run yet (33°F), laps through downtown, picking up the pace from mile 4. Air quality 57',
+  },
+  {
+    date: '2026-11-21',
+    time: '5:35 AM – 7:28 AM',
+    location: 'Fayetteville',
+    workoutTime: '1:25:18',
+    elapsedTime: '1:53:09',
+    distanceMi: 8.02,
+    activeCal: 793,
+    totalCal: 918,
+    elevationFt: 389,
+    avgPowerW: 181,
+    avgCadenceSpm: 168,
+    avgPace: '10:38',
+    avgHrBpm: 150,
+    hrZones: ['2:02', '8:49', '41:58', '13:06', '0:00'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 146, min1: 115, min2: 113 },
+    effort: 5,
+    tempF: 51,
+    humidityPct: 68,
+    splits: [
+      { time: '10:33', hr: 146 },
+      { time: '10:37', hr: 143 },
+      { time: '9:55', hr: 151 },
+      { time: '10:20', hr: 157 },
+      { time: '11:23', hr: 143 },
+    ], // only miles 1–5 visible in the screenshots
+    notes: 'Saturday long run down Morganton Rd from the All American Fwy into downtown. Air quality 53',
+  },
+  {
+    date: '2026-11-26',
+    time: '5:11 AM – 6:29 AM',
+    location: 'Fayetteville',
+    workoutTime: '1:17:48',
+    distanceMi: 7.08,
+    activeCal: 713,
+    totalCal: 828,
+    elevationFt: 428,
+    avgPowerW: 177,
+    avgCadenceSpm: 168,
+    avgPace: '10:59',
+    avgHrBpm: 151,
+    hrZones: ['1:06', '14:02', '43:35', '18:16', '0:26'],
+    hrZoneRanges: ['<131', '132–144', '145–156', '157–169', '170+'],
+    recoveryHr: { end: 137, min1: 118, min2: 118 },
+    effort: 6,
+    tempF: 60,
+    humidityPct: 96,
+    splits: [
+      { time: '11:14', hr: 145 },
+      { time: '10:40', hr: 150 },
+      { time: '10:40', hr: 151 },
+      { time: '10:53', hr: 158 },
+      { time: '10:54', hr: 153 },
+    ], // only miles 1–5 visible in the screenshots
+    notes: 'Thanksgiving morning run in the rain, a steady loop out Morganton Rd and back. Award: 10K Run. Air quality 25',
+    badge: { emoji: '🦃', label: 'Thanksgiving run' },
   },
 ]
 
